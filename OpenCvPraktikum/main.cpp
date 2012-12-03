@@ -15,9 +15,9 @@
 #include <map>
 #include <string>
  
-//std::map<std::string, std::string> g_pages;
-//std::mutex g_pages_mutex;
-// 
+std::map<std::string, std::string> g_pages;
+std::mutex g_pages_mutex;
+ 
 //void save_page(const std::string &url)
 //{
 //    // simulate a long page fetch
@@ -28,7 +28,7 @@
 //    g_pages[url] = result;
 //    g_pages_mutex.unlock();
 //}
-// 
+ 
 int main() 
 {
 //    std::thread t1(save_page, "http://foo");
@@ -43,10 +43,22 @@ int main()
 //    g_pages_mutex.unlock();
     
     FileManager manager;
-
-    DBG("Blub")
-    //manager.find(".jpg","/home");
+    NewCamHandler* in = new NewCamHandler();
+    in->setUseIpCam(false);
+    in->open();
+    CvVideoCapture cap(in);
+    cap.setFramesToRecord(100);
+    cap.setOutput("bla.avi");
+    //cap.start();
+ 
+    std::thread* recordThread = new std::thread(cap);
+    recordThread->join();
     
+    DBG("Blub");
+    
+    
+    //manager.find(".jpg","/home");
+//    
     return EXIT_SUCCESS;
     
 }

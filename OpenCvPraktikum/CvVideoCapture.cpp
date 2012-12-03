@@ -27,7 +27,7 @@ CvVideoCapture::CvVideoCapture() {
 }
 
 CvVideoCapture::CvVideoCapture(ImageInput* in) {
-    capture = NULL;
+    capture = in;
     writer = NULL;
     startTime = 0;
     scaleToHeight = 0;
@@ -41,6 +41,20 @@ CvVideoCapture::CvVideoCapture(ImageInput* in) {
 
 }
 
+CvVideoCapture::CvVideoCapture(const CvVideoCapture& other) {
+    capture = NULL;
+    writer = NULL;
+    startTime = 0;
+    scaleToHeight = 0;
+    scaleToWidth = 0;
+    recordSeconds = 0;
+    recording = false;
+    frame = cv::Mat();
+    fps = 25;
+    frames_to_record = 0;
+
+
+}
 
 CvVideoCapture::~CvVideoCapture() {
     // TODO Auto-generated destructor stub
@@ -56,7 +70,7 @@ bool CvVideoCapture::start() {
         if (recording) {
             return false;
         }
-        recordThread = new std::thread(&CvVideoCapture::record, this);
+       
         return true;
     } else {
         //err("Capture ist NULL");
@@ -119,24 +133,30 @@ cv::Mat CvVideoCapture::getFrame() {
 }
 
 void CvVideoCapture::record() {
-    if (recording) {
+     if (recording) {
         return;
     }
+    DBG("sds1")
+    recording=true;
+    
     if (writer == NULL) {
-        writer = new cv::VideoWriter(outputname, CODEC_DEFAULT, fps, cv::Size(1280, 720), true);
+        writer = new cv::VideoWriter(outputname, 05, fps, cv::Size(1280, 720), true);
 
     }
+    DBG("sds2")
     if (capture == NULL) {
         //FIXME:
     }
+    
     time(&startTime);
     time_t current;
     time(&current);
     int framecount = 0;
 
+    DBG("sds")
     while ((startTime - current) < recordSeconds and framecount < frames_to_record) {
         if (!recording)break;
-        
+        DBG("sds")
         time(&current);
         framecount++;
         capture->next();
@@ -153,8 +173,12 @@ void CvVideoCapture::record() {
 
     }
     writer->release();
-    
+}
 
+void CvVideoCapture::operator()(){
+    record();
+    //cout<<"Hallo"<<endl;
+    
 }
 
 void CvVideoCapture::nextFrame() {
@@ -210,6 +234,10 @@ void CvVideoCapture::setFrame(Mat mat) {
 
 void CvVideoCapture::setInput(ImageInput* in){
     capture=in;
+}
+
+void CvVideoCapture::setOutput(std::string out){
+    outputname=out;
 }
 
 /*
