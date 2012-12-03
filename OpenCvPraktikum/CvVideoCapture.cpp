@@ -12,7 +12,7 @@
 //#define err(x) std::cout<<x<<std::endl;
 
 CvVideoCapture::CvVideoCapture() {
-    capture = NULL;
+    /*capture = NULL;*/
     writer = NULL;
     startTime = 0;
     scaleToHeight = 0;
@@ -27,6 +27,7 @@ CvVideoCapture::CvVideoCapture() {
 }
 
 CvVideoCapture::CvVideoCapture(ImageInput* in) {
+    if (in == NULL) printf("capture is null\n");
     capture = in;
     writer = NULL;
     startTime = 0;
@@ -42,7 +43,6 @@ CvVideoCapture::CvVideoCapture(ImageInput* in) {
 }
 
 CvVideoCapture::CvVideoCapture(const CvVideoCapture& other) {
-    capture = NULL;
     writer = NULL;
     startTime = 0;
     scaleToHeight = 0;
@@ -133,17 +133,26 @@ cv::Mat CvVideoCapture::getFrame() {
 }
 
 void CvVideoCapture::record() {
-     if (recording) {
+    DBG("sds1")
+    printf("lol?\n");
+    if (recording || false) {
         return;
     }
-    DBG("sds1")
+    
     recording=true;
     
+    Mat frame;
+    if (capture == NULL) printf("capture null\n");
+    if (fps == 0) printf("fps is 0\n");
+    capture->next();
+    
+    frame = capture->getImage() ; // get first frame for size
+    
     if (writer == NULL) {
-        writer = new cv::VideoWriter(outputname, CV_FOURCC('D','I','V','X'), 30, cv::Size(640, 480), true);
+        writer = new cv::VideoWriter(outputname, CV_FOURCC('D','I','V','X'), 25, frame.size(), true);
 
     }
-    DBG("sds2")
+    printf("sds2\n");
     if (capture == NULL) {
         //FIXME:
     }
@@ -153,20 +162,27 @@ void CvVideoCapture::record() {
     time(&current);
     int framecount = 0;
 
-    DBG("sds")
-    while ((startTime - current) < recordSeconds and framecount < frames_to_record) {
-        if (!recording)break;
-        DBG("sds")
-        time(&current);
+    printf("sds\n");
+    while (/*(startTime - current) < recordSeconds and*/ framecount < frames_to_record) {
+       // if (!recording)break;
+        printf("sds\n");
+        //time(&current);
         framecount++;
+        printf("%d %d\n", framecount, frames_to_record);
+        
         capture->next();
+        
         Mat frm=capture->getImage();
+        
         setFrame(frm);
         
+        
+        /*
         if(imageMod!=NULL){
             //frm=getFrame();
             imageMod->modify(&frm);
-        }
+        }*/
+        
         writer->write(frm);
 
 
