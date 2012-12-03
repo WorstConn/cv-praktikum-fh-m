@@ -4,7 +4,6 @@
  *  Created on: 18.11.2012
  *      Author: Nils Frenking
  */
-#define DEBUG
 
 #include "header.h"
 
@@ -14,7 +13,7 @@
 #include <mutex>
 #include <map>
 #include <string>
-#if 0
+#if 1
 std::map<std::string, std::string> g_pages;
 std::mutex g_pages_mutex;
  
@@ -46,13 +45,15 @@ int main()
     NewCamHandler* in = new NewCamHandler();
     in->setUseIpCam(false);
     in->open();
+    if (in == NULL) printf("is hier schon null\n");
     CvVideoCapture cap(in);
-    cap.setFramesToRecord(100);
+    cap.setFramesToRecord(50);
     cap.setOutput("bla.avi");
     //cap.start();
  
-    std::thread* recordThread = new std::thread(cap);
-    recordThread->join();
+  //std::thread* recordThread = new std::thread(cap);
+    //recordThread->join();
+    cap.record();
     
     DBG("Blub");
     
@@ -63,6 +64,7 @@ int main()
     
 }
 #endif
+#if 0
 int main(int, char**)
    {
            VideoCapture capture(0); // open the default camera
@@ -101,3 +103,4 @@ int main(int, char**)
            // the recorded video will be closed automatically in the VideoWriter destructor
            return 0;
   }
+#endif

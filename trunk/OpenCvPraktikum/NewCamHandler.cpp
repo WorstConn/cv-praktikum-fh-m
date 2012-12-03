@@ -142,7 +142,7 @@ void NewCamHandler::dispose() {
 
 bool NewCamHandler::grabNext() {
     
-    if (cap.isOpened()) {
+    if (!cap.isOpened()) {
         cout << "VideoCaptue ist NULL!" << endl;
         return false;
     }
