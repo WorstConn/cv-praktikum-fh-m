@@ -140,7 +140,7 @@ void CvVideoCapture::record() {
     recording=true;
     
     if (writer == NULL) {
-        writer = new cv::VideoWriter(outputname, 05, fps, cv::Size(1280, 720), true);
+        writer = new cv::VideoWriter(outputname, CV_FOURCC('D','I','V','X'), 30, cv::Size(640, 480), true);
 
     }
     DBG("sds2")
