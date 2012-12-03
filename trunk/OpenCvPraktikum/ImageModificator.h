@@ -17,8 +17,8 @@ class ImageModificator {
 public:
 	ImageModificator();
 	virtual ~ImageModificator();
-	void modify(IplImage*);
-	void modify(cv::Mat*);
+	 virtual void modify(IplImage*);
+	virtual void modify(cv::Mat*);
 };
 
 #endif /* IMAGEMODIFICATOR_H_ */

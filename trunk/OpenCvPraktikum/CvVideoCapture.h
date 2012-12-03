@@ -108,6 +108,9 @@ public:
 	CvVideoCapture();
         
         CvVideoCapture(ImageInput* in);
+        
+        CvVideoCapture(const CvVideoCapture&);
+        
 	virtual ~CvVideoCapture();
 	/**
 	 * Startet die aufnahme
@@ -136,11 +139,17 @@ public:
         cv::Mat getFrame();
         
         void record();
-
+        
+        void operator()();
+        
         void setFramesToRecord(int frames);
         void release();
         
         void setInput(ImageInput* in);
+        
+        void setOutput(std::string out);
+        
+        
         
 };
 
