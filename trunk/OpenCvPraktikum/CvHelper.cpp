@@ -2,8 +2,7 @@
  * cvHelper.cpp
  *
  *  Created on: 07.11.2012
- *  Source from: http://opencv.willowgarage.com/wiki/DisplayManyImages
- *  Modified by: Nils Frenking
+ *  Modified by: Nils Frenking, Julian Cordes
  */
 
 

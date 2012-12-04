@@ -2,7 +2,7 @@
  * CamHandler.cpp
  *
  *  Created on: 06.11.2012
- *      Author: Nils Frenking
+ *      Author: Nils Frenking, Julian Cordes
  */
 
 #include "header.h"
