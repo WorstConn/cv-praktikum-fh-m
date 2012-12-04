@@ -171,5 +171,28 @@ void NewCamHandler::releaseAll() {
 }
 
 bool NewCamHandler::opened() {
+    
+    
+    
     return isOpen();
 }
+
+int NewCamHandler::inputWidth(){
+    if(!cap.isOpened()){
+        DBG("Capture is not Open -> Width is 0");
+        return 0;
+    }
+    return static_cast<int>(cap.get(CV_CAP_PROP_FRAME_WIDTH));
+}
+
+
+int NewCamHandler::inputHeight(){
+    if(!cap.isOpened()){
+        DBG("Capture is not Open -> Width is 0");
+        return 0;
+    }
+    return static_cast<int>(cap.get(CV_CAP_PROP_FRAME_HEIGHT));
+}
+
+
+

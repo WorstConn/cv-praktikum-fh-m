@@ -134,7 +134,7 @@ public:
     /**
      * Setzt einen Modifizierer der jeden Frame bearbeitet
      */
-    void setImageModifikator(ImageModificator mod);
+    void setImageModifikator(ImageModificator& mod);
 
     bool isRecording();
 
@@ -145,11 +145,14 @@ public:
     void operator()();
 
     void setFramesToRecord(int frames);
+    
     void release();
 
     void setInput(ImageInput& in);
 
     void setOutput(String out);
+    
+    void setTimeToRecord(int secs);
 
 
 

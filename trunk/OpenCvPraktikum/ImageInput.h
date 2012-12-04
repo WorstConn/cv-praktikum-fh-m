@@ -19,10 +19,12 @@ public:
     ImageInput(const ImageInput&);
     virtual ~ImageInput();
 
-    virtual Mat getImage()=0;
-    virtual void next()=0;
-    virtual void releaseAll()=0;
-    virtual bool opened()=0;
+    virtual Mat getImage() = 0;
+    virtual void next() = 0;
+    virtual void releaseAll() = 0;
+    virtual bool opened() = 0;
+    virtual int inputHeight() = 0;
+    virtual int inputWidth() = 0;
 private:
 
 };

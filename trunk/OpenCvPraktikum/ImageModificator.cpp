@@ -12,12 +12,25 @@ ImageModificator::ImageModificator() {
 
 }
 
+ImageModificator::ImageModificator(const ImageModificator&) {
+
+
+}
+
 ImageModificator::~ImageModificator() {
 
 }
 
-
 void ImageModificator::modify(cv::Mat*) {
-
+    //NIX
 }
+
+/**
+ * Gibt an, dass dieser Modifikator nix tut...
+ * @return immer <code>false</code>
+ */
+bool ImageModificator::doesAction() {
+    return false;
+}
+
 
