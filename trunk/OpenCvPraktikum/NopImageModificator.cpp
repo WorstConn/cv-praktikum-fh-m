@@ -2,7 +2,7 @@
  * NopImageModificator.cpp
  *
  *  Created on: 17.11.2012
- *      Author: ertai
+ *      Author: Nils Frenking
  */
 
 #include "header.h"

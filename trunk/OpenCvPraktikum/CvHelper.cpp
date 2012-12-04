@@ -6,7 +6,7 @@
  *  Modified by: Nils Frenking
  */
 
-#include <valarray>
+
 
 #include "header.h"
 using namespace std;

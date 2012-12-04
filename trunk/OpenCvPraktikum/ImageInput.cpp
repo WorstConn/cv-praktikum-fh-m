@@ -10,9 +10,13 @@
 ImageInput::ImageInput() {
 }
 
-ImageInput::ImageInput(const ImageInput& orig) {
-}
 
 ImageInput::~ImageInput() {
+    
 }
+
+ImageInput::ImageInput(const ImageInput&){
+    
+}
+
 

@@ -2,7 +2,7 @@
  * NopImageModificator.h
  *
  *  Created on: 17.11.2012
- *      Author: ertai
+ *      Author: Nils Frenking
  */
 
 #ifndef NOPIMAGEMODIFICATOR_H_

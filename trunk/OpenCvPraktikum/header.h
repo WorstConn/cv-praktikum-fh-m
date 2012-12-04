@@ -2,7 +2,7 @@
  * header.h
  *
  *  Created on: 17.11.2012
- *      Author: ertai
+ *      Author: Nils Frenking
  */
 
 #ifndef HEADER_H_
@@ -26,6 +26,9 @@
 
 #ifdef DEBUG
 #define DBG(X) printf("DBG: %s %d %s\n", X,__LINE__,(char*)__func__);
+#define DBG4(X,Y,Z,W) std::cout<<"DBG: "<< X << " " << Y << " " << Z<< " " << W << " " <<__LINE__<< " " <<(char*)__func__<<std::endl;
+#define DBG3(X,Y,Z) std::cout<<"DBG: "<< X << " " << Y << " " << Z<< " " <<__LINE__<< " " <<(char*)__func__<<std::endl;
+#define DBG2(X,Y) std::cout<<"DBG: "<< X << " " << Y << " " <<__LINE__<< " " <<(char*)__func__<<std::endl;
 #else
 #define DBG(X) do {} while(0);
 #endif
@@ -38,8 +41,9 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <errno.h>
-
+#include <valarray>
 #define MAXPATHLEN 500
+
 struct inode_struct {
     struct inode_struct *next;
     int inode;

@@ -38,6 +38,7 @@ public:
     virtual Mat getImage();
     virtual void next();
     virtual void releaseAll();
+    virtual bool opened();
 
 };
 
