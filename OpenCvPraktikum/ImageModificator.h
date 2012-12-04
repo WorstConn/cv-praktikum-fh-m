@@ -2,7 +2,7 @@
  * ImageModificator.h
  *
  *  Created on: 17.11.2012
- *      Author: ertai
+ *      Author: Nils Frenking
  */
 
 #ifndef IMAGEMODIFICATOR_H_
@@ -17,7 +17,6 @@ class ImageModificator {
 public:
 	ImageModificator();
 	virtual ~ImageModificator();
-	 virtual void modify(IplImage*);
 	virtual void modify(cv::Mat*);
 };
 

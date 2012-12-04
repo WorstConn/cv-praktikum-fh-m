@@ -2,18 +2,23 @@
  * CVVideoCapture.cpp
  *
  *  Created on: 17.11.2012
- *      Author: ertai
+ *      Author: Nils Frenking
  */
 
 #include <thread>
 
 #include "header.h"
 
+
+using namespace std;
+using namespace cv;
 //#define err(x) std::cout<<x<<std::endl;
 
-CvVideoCapture::CvVideoCapture() {
-    /*capture = NULL;*/
-    writer = NULL;
+CvVideoCapture::CvVideoCapture(ImageInput& in) : capture(in) {
+
+
+    //capture=(in);
+    writer = VideoWriter();
     startTime = 0;
     scaleToHeight = 0;
     scaleToWidth = 0;
@@ -26,32 +31,19 @@ CvVideoCapture::CvVideoCapture() {
 
 }
 
-CvVideoCapture::CvVideoCapture(ImageInput* in) {
-    if (in == NULL) printf("capture is null\n");
-    capture = in;
-    writer = NULL;
-    startTime = 0;
-    scaleToHeight = 0;
-    scaleToWidth = 0;
-    recordSeconds = 0;
-    recording = false;
-    frame = cv::Mat();
-    fps = 25;
-    frames_to_record = 0;
+CvVideoCapture::CvVideoCapture(const CvVideoCapture& other) : capture(other.capture) {
+    capture = other.capture;
+    writer = other.writer;
+    startTime = other.startTime;
+    scaleToHeight = other.scaleToHeight;
 
-
-}
-
-CvVideoCapture::CvVideoCapture(const CvVideoCapture& other) {
-    writer = NULL;
-    startTime = 0;
-    scaleToHeight = 0;
-    scaleToWidth = 0;
-    recordSeconds = 0;
-    recording = false;
-    frame = cv::Mat();
-    fps = 25;
-    frames_to_record = 0;
+    scaleToWidth = other.scaleToWidth;
+    recordSeconds = other.recordSeconds;
+    recording = other.recording;
+    frame = other.frame;
+    fps = other.fps;
+    frames_to_record = other.frames_to_record;
+    outputname = other.outputname;
 
 
 }
@@ -66,16 +58,14 @@ void record();
 // TODO: Naja, die ganze Logik eben...
 
 bool CvVideoCapture::start() {
-    if (capture != NULL && writer != NULL) {
-        if (recording) {
-            return false;
-        }
-       
-        return true;
-    } else {
-        //err("Capture ist NULL");
-        return false;
-    }
+
+//    if (recording) {
+//        return false;
+//    }
+    recthread = new std::thread(&CvVideoCapture::record, this);
+    recthread->join();
+    return true;
+
 
 
 }
@@ -105,7 +95,7 @@ void CvVideoCapture::setRecordingTime(int len) {
 
 }
 
-void CvVideoCapture::setImageModifikator(ImageModificator* mod) {
+void CvVideoCapture::setImageModifikator(ImageModificator mod) {
     if (!recording) {
         imageMod = mod;
     } else {
@@ -133,77 +123,96 @@ cv::Mat CvVideoCapture::getFrame() {
 }
 
 void CvVideoCapture::record() {
-    DBG("sds1")
-    printf("lol?\n");
-    if (recording || false) {
-        return;
-    }
-    
-    recording=true;
-    
-    Mat frame;
-    if (capture == NULL) printf("capture null\n");
-    if (fps == 0) printf("fps is 0\n");
-    capture->next();
-    
-    frame = capture->getImage() ; // get first frame for size
-    
-    if (writer == NULL) {
-        writer = new cv::VideoWriter(outputname, CV_FOURCC('D','I','V','X'), 25, frame.size(), true);
 
+    DBG("Record");
+    //    if (recording || false) {
+    //        return;
+    //    }
+
+    recording = true;
+
+    if (!capture.opened()) {
+        DBG("Capture is not Open");
     }
-    printf("sds2\n");
-    if (capture == NULL) {
-        //FIXME:
+    Mat frame;
+    if (fps == 0) {
+        DBG("FPS is 0 setting to 30");
+        fps = 30;
     }
-    
+    capture.next();
+
+
+    frame = capture.getImage(); // get first frame for size
+
+    if (frame.data != NULL) {
+        DBG("Got first frame");
+        DBG3("Frame size is", frame.cols, frame.rows);
+    } else {
+        DBG("Error getting first frame");
+    }
+
+    if (!writer.isOpened()) {
+        DBG("Writer is not Open");
+        DBG2("Video Outputname: ", outputname);
+        writer.open(outputname, CV_FOURCC('D', 'I', 'V', 'X'), fps, Size(640, 480));
+        if (writer.isOpened()) {
+            DBG("VideoWriter is not open");
+        } else {
+            DBG("Error opening VideoWriter... end");
+            return;
+        }
+        //writer.open(outputname, CV_FOURCC('D', 'I', 'V', 'X'), fps, frame.size(), true);
+    }
+
+
+
     time(&startTime);
     time_t current;
     time(&current);
     int framecount = 0;
 
-    printf("sds\n");
+
     while (/*(startTime - current) < recordSeconds and*/ framecount < frames_to_record) {
-       // if (!recording)break;
-        printf("sds\n");
+        // if (!recording)break;
+
         //time(&current);
         framecount++;
         printf("%d %d\n", framecount, frames_to_record);
-        
-        capture->next();
-        
-        Mat frm=capture->getImage();
-        
+
+        capture.next();
+
+        Mat frm = capture.getImage();
+
         setFrame(frm);
-        
-        
+
+
         /*
         if(imageMod!=NULL){
             //frm=getFrame();
             imageMod->modify(&frm);
         }*/
-        
-        writer->write(frm);
+
+        writer.write(frm);
 
 
 
     }
-    writer->release();
+    writer.release();
 }
 
-void CvVideoCapture::operator()(){
+void CvVideoCapture::operator()() {
     record();
     //cout<<"Hallo"<<endl;
-    
+
 }
 
 void CvVideoCapture::nextFrame() {
 
     try {
-        if (capture == NULL) throw Exception();
+        if (!capture.opened()) throw Exception();
 
-        capture->next();
-        setFrame(capture->getImage());
+        capture.next();
+        setFrame(capture.getImage());
     } catch (Exception& ex) {
         cerr << "Fehler: " << ex.what() << endl;
     }
@@ -214,19 +223,19 @@ void CvVideoCapture::release() {
 }
 
 void CvVideoCapture::releaseCapture() {
-    if (capture != NULL) {
-        capture->releaseAll();
+    if (capture.opened()) {
+        capture.releaseAll();
 
-        delete capture;
+
     } else {
         cerr << "VideoCapture konnte nicht freigegeben werden" << endl;
     }
 }
 
 void CvVideoCapture::releaseVideoWriter() {
-    if (writer != NULL && !recording) {
-        writer->release();
-        delete writer;
+    if (!recording) {
+        writer.release();
+
     } else {
         cerr << "VideoWriter konnte nicht freigegeben werden" << endl;
     }
@@ -248,12 +257,12 @@ void CvVideoCapture::setFrame(Mat mat) {
     frame_mutex.unlock();
 }
 
-void CvVideoCapture::setInput(ImageInput* in){
-    capture=in;
+void CvVideoCapture::setInput(ImageInput& in) {
+    capture = in;
 }
 
-void CvVideoCapture::setOutput(std::string out){
-    outputname=out;
+void CvVideoCapture::setOutput(String out) {
+    outputname = out;
 }
 
 /*

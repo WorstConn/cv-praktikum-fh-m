@@ -66,7 +66,7 @@ bool NewCamHandler::releaseCapture() {
     if (!connected) {
         return false;
     }
-    if (&cap == NULL) {
+    if (!cap.isOpened()) {
         return false;
     }
     cap.release();
@@ -76,7 +76,7 @@ bool NewCamHandler::releaseCapture() {
 
 bool NewCamHandler::close() {
     if (connected) {
-        if (&cap != NULL) {
+        if (cap.isOpened()) {
             cap.release();
 
             return true;
@@ -90,7 +90,7 @@ bool NewCamHandler::close() {
 }
 
 bool NewCamHandler::releaseCurrentImage() {
-    if (&currentImage == NULL) {
+    if (currentImage.data == NULL) {
         return true;
     }
     currentImage.release();
@@ -99,7 +99,7 @@ bool NewCamHandler::releaseCurrentImage() {
 }
 
 bool NewCamHandler::openDefIpCam() {
-    if (&cap == NULL) {
+    if (!cap.isOpened()) {
         cap = VideoCapture();
     }
     if (cap.isOpened()) {
@@ -117,7 +117,7 @@ bool NewCamHandler::openDefIpCam() {
 }
 
 bool NewCamHandler::openDefWebCam() {
-    if (&cap == NULL) {
+    if (!cap.isOpened()) {
         cap = VideoCapture();
     }
     if (cap.isOpened()) {
@@ -126,6 +126,8 @@ bool NewCamHandler::openDefWebCam() {
     }
 
     bool result = cap.open(0);
+    
+
     if (!result) {
         return false;
     } else {
@@ -141,29 +143,33 @@ void NewCamHandler::dispose() {
 }
 
 bool NewCamHandler::grabNext() {
-    
+
     if (!cap.isOpened()) {
         cout << "VideoCaptue ist NULL!" << endl;
         return false;
     }
     releaseCurrentImage();
     cap >> currentImage;
-    
+
 
     return true;
 
 }
 
-void NewCamHandler::next(){
-    
-    if(!grabNext())throw Exception();
+void NewCamHandler::next() {
+
+    if (!grabNext())throw Exception();
 }
 
-Mat NewCamHandler::getImage(){
+Mat NewCamHandler::getImage() {
     return currentImage;
 }
 
-void NewCamHandler::releaseAll(){
+void NewCamHandler::releaseAll() {
     releaseCapture();
     releaseCurrentImage();
+}
+
+bool NewCamHandler::opened() {
+    return isOpen();
 }

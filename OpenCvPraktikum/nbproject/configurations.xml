@@ -72,8 +72,9 @@
             <pElem>/usr/local/include/opencv</pElem>
             <pElem>/usr/local/include/opencv2</pElem>
           </incDir>
-          <commandLine>-std=gnu++0x</commandLine>
+          <commandLine>-std=gnu++0x -pipe</commandLine>
           <preprocessorList>
+            <Elem>DEBUG</Elem>
             <Elem>__GXX_EXPERIMENTAL_CXX0X__</Elem>
           </preprocessorList>
           <warningLevel>2</warningLevel>
