@@ -25,12 +25,12 @@
 #ifdef __unix__
 
 #ifdef DEBUG
-#define DBG(X) printf("DBG: %s %d %s\n", X,__LINE__,(char*)__func__);
-#define DBG4(X,Y,Z,W) std::cout<<"DBG: "<< X << " " << Y << " " << Z<< " " << W << " " <<__LINE__<< " " <<(char*)__func__<<std::endl;
-#define DBG3(X,Y,Z) std::cout<<"DBG: "<< X << " " << Y << " " << Z<< " " <<__LINE__<< " " <<(char*)__func__<<std::endl;
-#define DBG2(X,Y) std::cout<<"DBG: "<< X << " " << Y << " " <<__LINE__<< " " <<(char*)__func__<<std::endl;
+#define DBG(format, ...) \
+        printf("DBG: \"");\
+        printf(format, ##__VA_ARGS__);\
+        printf("\" line: %d function: %s\n", __LINE__,(char*) __func__);
 #else
-#define DBG(X) do {} while(0);
+#define DBG(format, ...) do {} while(0);
 #endif
 
 
