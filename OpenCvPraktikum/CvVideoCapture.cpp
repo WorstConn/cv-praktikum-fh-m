@@ -16,8 +16,6 @@ using namespace cv;
 
 CvVideoCapture::CvVideoCapture(ImageInput& in) : capture(in) {
 
-
-    //capture=(in);
     writer = VideoWriter();
     startTime = 0;
     scaleToHeight = 0;
@@ -35,8 +33,8 @@ CvVideoCapture::CvVideoCapture(const CvVideoCapture& other) : capture(other.capt
     capture = other.capture;
     writer = other.writer;
     startTime = other.startTime;
+    imageMod = other.imageMod;
     scaleToHeight = other.scaleToHeight;
-
     scaleToWidth = other.scaleToWidth;
     recordSeconds = other.recordSeconds;
     recording = other.recording;
@@ -44,25 +42,20 @@ CvVideoCapture::CvVideoCapture(const CvVideoCapture& other) : capture(other.capt
     fps = other.fps;
     frames_to_record = other.frames_to_record;
     outputname = other.outputname;
+    recording = other.recording;
 
 
 }
 
 CvVideoCapture::~CvVideoCapture() {
-    // TODO Auto-generated destructor stub
+
 
 }
 
-void record();
 
-// TODO: Naja, die ganze Logik eben...
 
 bool CvVideoCapture::start() {
-
-//    if (recording) {
-//        return false;
-//    }
-    recthread = new std::thread(&CvVideoCapture::record, this);
+    recthread = new thread(&CvVideoCapture::record, this);
     recthread->join();
     return true;
 
@@ -88,14 +81,16 @@ void CvVideoCapture::setScale(int x, int y) {
 
 void CvVideoCapture::setRecordingTime(int len) {
     if (!recording) {
-        recordSeconds = len;
+        if (len > 0) {
+            recordSeconds = len;
+        }
     } else {
         cerr << "Aufnahmedauer kann nur geaendert werden, wenn keine Aufnahme getstartet wurde." << endl;
     }
 
 }
 
-void CvVideoCapture::setImageModifikator(ImageModificator mod) {
+void CvVideoCapture::setImageModifikator(ImageModificator& mod) {
     if (!recording) {
         imageMod = mod;
     } else {
@@ -112,7 +107,7 @@ cv::Mat CvVideoCapture::getFrame() {
         /* Lock anfordern*/
         frame_mutex.lock();
         /*Aktuellen Frame Kopieren*/
-        cv::Mat m = cv::Mat(frame.rows, frame.cols, frame.type());
+        Mat m = Mat(frame.rows, frame.cols, frame.type());
         frame.copyTo(m);
         /* Lock freigeben*/
         frame_mutex.unlock();
@@ -124,85 +119,85 @@ cv::Mat CvVideoCapture::getFrame() {
 
 void CvVideoCapture::record() {
 
-    DBG("Record");
-    //    if (recording || false) {
-    //        return;
-    //    }
-
+    // <editor-fold defaultstate="collapsed" desc="Vorbedingungen und Fehlerabfrage">
     recording = true;
-
     if (!capture.opened()) {
-        DBG("Capture is not Open");
+        DBG("Capture is not Open... end");
+        return;
+
     }
-    Mat frame;
     if (fps == 0) {
         DBG("FPS is 0 setting to 30");
         fps = 30;
     }
-    capture.next();
-
-
-    frame = capture.getImage(); // get first frame for size
-
-    if (frame.data != NULL) {
-        DBG("Got first frame");
-        DBG3("Frame size is", frame.cols, frame.rows);
+    Size frameSize = Size(capture.inputWidth(), capture.inputHeight());
+    if (frameSize.width <= 0 || frameSize.height <= 0) {
+        DBG("Error getting framesize");
     } else {
-        DBG("Error getting first frame");
+        DBG3("Got framesize of input: ", frameSize.width, frameSize.height);
     }
-
     if (!writer.isOpened()) {
-        DBG("Writer is not Open");
-        DBG2("Video Outputname: ", outputname);
+        DBG("Writer is not open");
+
         writer.open(outputname, CV_FOURCC('D', 'I', 'V', 'X'), fps, Size(640, 480));
         if (writer.isOpened()) {
-            DBG("VideoWriter is not open");
+            DBG("VideoWriter is now open");
         } else {
             DBG("Error opening VideoWriter... end");
             return;
         }
-        //writer.open(outputname, CV_FOURCC('D', 'I', 'V', 'X'), fps, frame.size(), true);
-    }
 
+    }// </editor-fold>
 
-
+    // <editor-fold defaultstate="collapsed" desc="Zeit und Framecounter Initialisierung">
     time(&startTime);
     time_t current;
     time(&current);
-    int framecount = 0;
+    int framecount = 0; // </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="Aufnahme Schleife">
+    while (recording) {
 
 
-    while (/*(startTime - current) < recordSeconds and*/ framecount < frames_to_record) {
-        // if (!recording)break;
+        if (frames_to_record != 0 and frames_to_record < framecount) {
+            break;
+        }
+        if (recordSeconds != 0 and ((long int) (current - startTime)) > ((long int) (recordSeconds + 2))) {
+            break;
+        }
 
-        //time(&current);
+
+
+        time(&current);
         framecount++;
-        printf("%d %d\n", framecount, frames_to_record);
 
         capture.next();
-
         Mat frm = capture.getImage();
-
         setFrame(frm);
 
 
-        /*
-        if(imageMod!=NULL){
-            //frm=getFrame();
-            imageMod->modify(&frm);
-        }*/
+
+        if (imageMod.doesAction()) {
+            //frm=getFrame();  // Falls es zu 'Concurrent modification error' kommt...
+            imageMod.modify(&frm);
+        }
 
         writer.write(frm);
 
 
 
-    }
+    }// </editor-fold>
+
+    // <editor-fold defaultstate="collapsed" desc="Aufräumen...">
     writer.release();
+    recording = false;
+    startTime = (long int) 0; // </editor-fold>
+
 }
 
 void CvVideoCapture::operator()() {
     record();
-    //cout<<"Hallo"<<endl;
+
 
 }
 
@@ -265,9 +260,11 @@ void CvVideoCapture::setOutput(String out) {
     outputname = out;
 }
 
-/*
- * http://www.justsoftwaresolutions.co.uk/threading/multithreading-in-c++0x-part-3.html
- * http://de.cppreference.com/w/cpp/thread/mutex
- * Compiler Flag: -std=gnu++0x
- * 
- **/
+void CvVideoCapture::setTimeToRecord(int secs) {
+    setRecordingTime(secs);
+}
+
+
+// TODO: Zum testen den ImageModifikator ableiten
+// TODO: Join nur bei bedarf
+// TODO: Test mit Ansichtsfenster ->(Hat sich der Aufwand gelont?)

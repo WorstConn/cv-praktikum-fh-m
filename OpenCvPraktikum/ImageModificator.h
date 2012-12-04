@@ -9,15 +9,14 @@
 #define IMAGEMODIFICATOR_H_
 
 #include "header.h"
-/**
- * Abstrakte Klasse
- */
-class ImageModificator {
 
+class ImageModificator {
 public:
-	ImageModificator();
-	virtual ~ImageModificator();
-	virtual void modify(cv::Mat*);
+    ImageModificator();
+    ImageModificator(const ImageModificator&);
+    virtual ~ImageModificator();
+    virtual void modify(cv::Mat*);
+    virtual bool doesAction(); // etwas stupide...
 };
 
 #endif /* IMAGEMODIFICATOR_H_ */

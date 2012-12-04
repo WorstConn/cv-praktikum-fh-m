@@ -60,7 +60,7 @@ typedef struct inode_struct Inode;
 #include "VideoHandler.h"
 #include "CamHandler.h"
 #include "ImageModificator.h"
-#include "NopImageModificator.h"
+
 #include "CvVideoCapture.h"
 
 

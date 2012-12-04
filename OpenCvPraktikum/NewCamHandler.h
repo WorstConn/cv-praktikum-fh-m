@@ -39,6 +39,8 @@ public:
     virtual void next();
     virtual void releaseAll();
     virtual bool opened();
+    virtual int inputHeight();
+    virtual int inputWidth();
 
 };
 
