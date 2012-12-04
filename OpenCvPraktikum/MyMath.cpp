@@ -2,7 +2,7 @@
  * Math.cpp
  *
  *  Created on: 10.11.2012
- *      Author: Nils Frenking
+ *      Author: Nils Frenking, Julian Cordes
  */
 
 #include "header.h"

@@ -2,7 +2,7 @@
  * NewCamHandler.h
  *
  *  Created on: 04.11.2012
- *      Author: Nils Frenking
+ *      Author: Nils Frenking, Julian Cordes
  */
 
 #ifndef NEWCAMHANDLER_H_

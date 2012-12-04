@@ -1,6 +1,6 @@
 /* 
  * File:   FileManager.cpp
- * Author: Nils Frenking
+ * Author: Nils Frenking, Julian Cordes
  * 
  * Created on 28. November 2012, 23:28
  */

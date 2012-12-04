@@ -1,6 +1,6 @@
 /* 
  * File:   ImageInput.h
- * Author: Nils Frenking
+ * Author: Nils Frenking, Julian Cordes
  *
  * Created on 29. November 2012, 18:57
  */
