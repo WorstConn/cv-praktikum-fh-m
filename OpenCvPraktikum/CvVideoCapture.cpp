@@ -134,7 +134,7 @@ void CvVideoCapture::record() {
     if (frameSize.width <= 0 || frameSize.height <= 0) {
         DBG("Error getting framesize");
     } else {
-        DBG3("Got framesize of input: ", frameSize.width, frameSize.height);
+        DBG("Got framesize of input: %d %d", frameSize.width, frameSize.height);
     }
     if (!writer.isOpened()) {
         DBG("Writer is not open");
