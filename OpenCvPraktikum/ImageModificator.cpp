@@ -21,16 +21,15 @@ ImageModificator::~ImageModificator() {
 
 }
 
-void ImageModificator::modify(cv::Mat*) {
+void ImageModificator::modify(cv::Mat&) {
     //NIX
+    DBG("No Modification done");
 }
 
-/**
- * Gibt an, dass dieser Modifikator nix tut...
- * @return immer <code>false</code>
- */
 bool ImageModificator::doesAction() {
     return false;
 }
+
+
 
 

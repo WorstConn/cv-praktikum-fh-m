@@ -105,6 +105,15 @@ public:
     
     virtual Mat median_Blur(Mat input, int size, bool copy=false);
     
+    /**
+     * Gibt die Id des Codecs zur&auml;ck 
+     * @param codec String des Codecs z.b. "DIVX"
+     * @return 
+     */
+    virtual int codecFromString(String codec);
+    
+    virtual Mat& scaleImage(Mat& img,const float scale);
+    
 };
 
 

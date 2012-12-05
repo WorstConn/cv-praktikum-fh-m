@@ -16,13 +16,15 @@
 
 int main() {
 
-    NewCamHandler in = NewCamHandler();
+    CamHandler in = CamHandler();
     in.setUseIpCam(false);
     in.open();
 
     CvVideoCapture cap(in);
     cap.setFramesToRecord(500);
     cap.setTimeToRecord(10);
+    ScaleModificator mod;
+    cap.setImageModifikator(mod);  // Bringt irgendwie nichts...
     cap.setOutput("bla2.avi");
     cap.start();
 
@@ -30,3 +32,7 @@ int main() {
     return EXIT_SUCCESS;
 
 }
+
+// Tipp: falls dir das Erstellen immer zu lange dauert, 
+// gehe in den Projektordner und führe von dort 'make -j N' -> N anzahl der synchronen "JOBS"
+

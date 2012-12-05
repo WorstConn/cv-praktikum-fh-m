@@ -9,13 +9,15 @@
 #define IMAGEMODIFICATOR_H_
 
 #include "header.h"
+using namespace std;
+using namespace cv;
 
 class ImageModificator {
 public:
     ImageModificator();
     ImageModificator(const ImageModificator&);
     virtual ~ImageModificator();
-    virtual void modify(cv::Mat*);
+    virtual void modify(Mat&);
     virtual bool doesAction(); // etwas stupide...
 };
 

@@ -15,13 +15,12 @@
 #define __GXX_EXPERIMENTAL_CXX0X__
 #endif
 
-/**
- * Standard-Codec (Nur Linux!!)
- */
-#define CODEC_DEFAULT CV_FOURCC_DEFAULT
+
 
 using namespace std;
 using namespace cv;
+
+
 
 class CvVideoCapture {
 private:
@@ -39,14 +38,11 @@ private:
      * Ausgabedateiname
      */
     String outputname;
-    /**
-     * Falls > 0, wird das Bild skaliert
-     */
-    int scaleToWidth;
+
     /**
      * Falls > 0 , wird das Bild skaliert
      */
-    int scaleToHeight;
+    float scaleFac;
     /**
      * Dauer der Aufnahme
      */
@@ -125,7 +121,7 @@ public:
     /**
      * Setzt die Skalierung des Videos
      */
-    void setScale(int, int);
+    void setScale(float);
     /**
      * Setzt die Zeit die die Aufnahme dauern soll
      */
@@ -134,11 +130,11 @@ public:
     /**
      * Setzt einen Modifizierer der jeden Frame bearbeitet
      */
-    void setImageModifikator(ImageModificator& mod);
+    void setImageModifikator(ImageModificator mod);
 
     bool isRecording();
 
-    cv::Mat getFrame();
+    Mat getFrame();
 
     void record();
 

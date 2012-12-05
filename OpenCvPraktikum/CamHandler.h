@@ -5,73 +5,85 @@
  *      Author: Nils Frenking, Julian Cordes
  */
 
-#ifndef CAMHANDLER_H_
-#define CAMHANDLER_H_
-#include "header.h"
+#ifndef NEWCAMHANDLER_H_
+#define NEWCAMHANDLER_H_
+#include <cv.h>
+#include <highgui.h>
+#include "ACamHandler.h"
+using namespace cv;
 
-class CamHandler : public ImageSequenceInput{
+class CamHandler: public ACamHandler {
 private:
-	/**
-	 * Versucht die Standard-Webcam zu oeffnen
-	 */
-	virtual bool openDefWebCam()=0;
-	/**
-	 * Versucht die Standard-IPCam zu oeffenen
-	 */
-	virtual bool openDefIpCam()=0;
-protected:
-	const char* defaultIpCamURL;
-	bool connected;
-	bool ipCam;
+	Mat currentImage;
+	VideoCapture cap;
+	virtual bool openDefWebCam();
 
+	virtual bool openDefIpCam();
 public:
-
 	CamHandler();
 	CamHandler(const char* camURL);
 	virtual ~CamHandler();
-	/**
-	 * Oeffnet die Verbindung mit der Kamera
-	 */
-	virtual bool open()=0;
-	/**
-	 * Gibt an, ob eine Verbindung besteht
-	 */
-	bool isOpen();
-	/**
-	 * Schliesst eine bestehende Verbindung
-	 */
-	virtual bool close()=0;
-	/**
-	 * Gibt die Resourcen der des Capturers frei
-	 */
-	virtual bool releaseCapture()=0;
-	/**
-	 * Gibt das Bild des aktuellen Frames frei
-	 */
-	virtual bool releaseCurrentImage()=0;
 
-	/**
-	 * Gibt den aktuellen Frame als IplImage(Veraltet) zurueck
-	 */
-	virtual IplImage currentIplImage()=0;
-	/**
-	 * Gibt den aktuellen Frame als cv::Mat zurueck
-	 */
-	virtual cv::Mat currentMatImage()=0;
 
-	/**
-	 * Holt das naechste Bild von der Kamera
-	 */
-	virtual bool grabNext()=0;
+	virtual bool open();
+    
+	virtual bool close();
+	virtual bool releaseCapture();
+	virtual bool releaseCurrentImage();
+	virtual IplImage currentIplImage();
+	virtual Mat currentMatImage();
+	virtual bool grabNext();
+	virtual void dispose();
+    
+    
+    /*
+     * Funktionen der Basisklasse
+     * 
+     */
+    
+    /**
+     * Gibt das Aktuelle Bild zur&uuml;ck
+     * @return das Bild
+     */
+    virtual Mat getImage();
+    
+    /**
+     * Holt das n&auml;chste Bild
+     */
+    virtual void next();
+    /**
+     * Gibt alles Frei
+     */
+    virtual void releaseAll();
+    /**
+     * Ist die Kamera bereit
+     * @return true, wenn die Kamera initialisiert wurde
+     */
+    virtual bool opened();
+    /**
+     * Bildh&ouml;he des Kamerabildes
+     * @return die h&ouml;he in PX
+     */
+    virtual int inputHeight();
+    
+    /**
+     * Bildbreite des Kamerabildes
+     * @return die h&ouml;he in PX
+     */
+    virtual int inputWidth();
+    
+    /**
+     * Fps der Kamera
+     * @return die FPS
+     */
+    virtual int inputFps();
+    
+    /**
+     * Gibt an, ob das Kamerabild zu RGB umgewandelt werden sollte.
+     *
+     */
+    virtual bool shouldConvertToRGB();
 
-	/**
-	 * Versucht alle Resourcen frei zu geben
-	 */
-	virtual void dispose()=0;
-
-	void setUseIpCam(bool val);
-
-	bool useIpCam();
 };
 
-#endif /* CAMHANDLER_H_ */
+#endif /* NEWCAMHANDLER_H_ */
