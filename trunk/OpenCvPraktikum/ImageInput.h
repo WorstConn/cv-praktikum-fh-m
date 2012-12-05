@@ -25,6 +25,8 @@ public:
     virtual bool opened() = 0;
     virtual int inputHeight() = 0;
     virtual int inputWidth() = 0;
+    virtual int inputFps()=0;
+    virtual bool shouldConvertToRGB()=0;
 private:
 
 };

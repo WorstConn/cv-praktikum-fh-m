@@ -18,11 +18,10 @@ CvVideoCapture::CvVideoCapture(ImageInput& in) : capture(in) {
 
     writer = VideoWriter();
     startTime = 0;
-    scaleToHeight = 0;
-    scaleToWidth = 0;
+    scaleFac = 0;
     recordSeconds = 0;
     recording = false;
-    frame = cv::Mat();
+    frame = Mat();
     fps = 25;
     frames_to_record = 0;
 
@@ -34,8 +33,7 @@ CvVideoCapture::CvVideoCapture(const CvVideoCapture& other) : capture(other.capt
     writer = other.writer;
     startTime = other.startTime;
     imageMod = other.imageMod;
-    scaleToHeight = other.scaleToHeight;
-    scaleToWidth = other.scaleToWidth;
+    scaleFac = other.scaleFac;
     recordSeconds = other.recordSeconds;
     recording = other.recording;
     frame = other.frame;
@@ -52,8 +50,6 @@ CvVideoCapture::~CvVideoCapture() {
 
 }
 
-
-
 bool CvVideoCapture::start() {
     recthread = new thread(&CvVideoCapture::record, this);
     recthread->join();
@@ -69,10 +65,9 @@ bool CvVideoCapture::stop() {
     return true;
 }
 
-void CvVideoCapture::setScale(int x, int y) {
+void CvVideoCapture::setScale(float scale) {
     if (!recording) {
-        scaleToHeight = y;
-        scaleToWidth = x;
+        scaleFac = scale;
     } else {
         cerr << "Skalierung kann nur geaendert werden, wenn keine Aufnahme getstartet wurde." << endl;
     }
@@ -90,9 +85,14 @@ void CvVideoCapture::setRecordingTime(int len) {
 
 }
 
-void CvVideoCapture::setImageModifikator(ImageModificator& mod) {
+void CvVideoCapture::setImageModifikator(ImageModificator mod) {
     if (!recording) {
         imageMod = mod;
+#ifdef DEBUG
+        if(!imageMod.doesAction()){
+            DBG("Gesetzter Modifikator ist ein Dummie");
+        }
+#endif
     } else {
         cerr << "Modifikator kann nur geaendert werden, wenn keine Aufnahme getstartet wurde." << endl;
     }
@@ -139,7 +139,7 @@ void CvVideoCapture::record() {
     if (!writer.isOpened()) {
         DBG("Writer is not open");
 
-        writer.open(outputname, CV_FOURCC('D', 'I', 'V', 'X'), fps, Size(640, 480));
+        writer.open(outputname, CODEC_DEFAULT, fps, Size(640, 480));
         if (writer.isOpened()) {
             DBG("VideoWriter is now open");
         } else {
@@ -177,9 +177,11 @@ void CvVideoCapture::record() {
 
 
 
-        if (imageMod.doesAction()) {
-            //frm=getFrame();  // Falls es zu 'Concurrent modification error' kommt...
-            imageMod.modify(&frm);
+        if(imageMod.doesAction()){
+
+        //frm=getFrame();  // Falls es zu 'Concurrent modification error' kommt...
+
+        imageMod.modify(frm);
         }
 
         writer.write(frm);

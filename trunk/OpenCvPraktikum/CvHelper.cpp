@@ -401,7 +401,7 @@ vector<Rect> CvHelper::detectAll(Mat& img, CascadeClassifier& cascade) {
          * Ist das erkannte Gesicht zu klein (radius kleiner gleich 10% der Bildbreite)
          */
         if (radius <= cvRound(((float) img.cols)*0.1)) {
-             return vector<Rect > ();
+            return vector<Rect > ();
         }
         circle(img, center, radius, color, 2, 8, 0);
 
@@ -475,43 +475,58 @@ bool CvHelper::zero(Rect r) {
     return (r.width == 0 && r.height == 0 && r.x == 0 && r.y == 0);
 }
 
-Mat CvHelper::gaussianBlur(Mat input, int size, bool copy){
-    if(copy){
-        Mat erg=Mat(input.rows,input.cols,input.type());
-        GaussianBlur(input,erg,Size(size,size),0.0,0.0);
+Mat CvHelper::gaussianBlur(Mat input, int size, bool copy) {
+    if (copy) {
+        Mat erg = Mat(input.rows, input.cols, input.type());
+        GaussianBlur(input, erg, Size(size, size), 0.0, 0.0);
         return erg;
-    }else{
-        GaussianBlur(input,input,Size(size,size),0.0,0.0);
+    } else {
+        GaussianBlur(input, input, Size(size, size), 0.0, 0.0);
         return input;
     }
-    
+
 }
 
-Mat CvHelper::homgenousBlur(Mat input, int size, Point anchor, bool copy){
-    if(copy){
-        Mat erg=Mat(input.rows,input.cols,input.type());
-        blur(input,erg,Size(size,size),anchor);
+Mat CvHelper::homgenousBlur(Mat input, int size, Point anchor, bool copy) {
+    if (copy) {
+        Mat erg = Mat(input.rows, input.cols, input.type());
+        blur(input, erg, Size(size, size), anchor);
         return erg;
-        
-    }else{
-         blur(input,input,Size(size,size),anchor);
-        return input;
-    }
-}
 
-
-Mat CvHelper::median_Blur(Mat input, int size, bool copy){
-    if(copy){
-        Mat erg=Mat(input.rows,input.cols,input.type());
-        medianBlur(input,erg,size);
-        
-        return erg;
-    }else{
-        medianBlur(input,input,size);
+    } else {
+        blur(input, input, Size(size, size), anchor);
         return input;
     }
 }
 
+Mat CvHelper::median_Blur(Mat input, int size, bool copy) {
+    if (copy) {
+        Mat erg = Mat(input.rows, input.cols, input.type());
+        medianBlur(input, erg, size);
+
+        return erg;
+    } else {
+        medianBlur(input, input, size);
+        return input;
+    }
+}
+
+int CvHelper::codecFromString(String codec) {
+    if (codec.length() != 4) {
+        DBG("Falsche länge: %i", (int) codec.length());
+        return -2;
+    }
+    return -2; //FIXME: not implemented yet
+}
+
+Mat& CvHelper::scaleImage(Mat& img, const float scale) {
+    if (img.data == NULL) {
+        DBG("Image hat keine Daten");
+        return img;
+    }
+    img*scale;
+    return img;
+}
 
 /**
  * Histogram

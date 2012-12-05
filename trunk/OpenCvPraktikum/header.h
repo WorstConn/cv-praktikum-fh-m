@@ -8,6 +8,9 @@
 #ifndef HEADER_H_
 #define HEADER_H_
 
+
+#define CODEC_DEFAULT CV_FOURCC('D','I','V','X')
+
 #include <thread>
 #include <mutex>
 #include <string>
@@ -21,6 +24,7 @@
 #include <pthread.h>
 #include <highgui/highgui.hpp>
 #include <opencv2/video/video.hpp>
+
 
 #ifdef __unix__
 
@@ -57,17 +61,20 @@ typedef struct inode_struct Inode;
 
 #include "ImageInput.h"
 #include "ImageSequenceInput.h"
-#include "VideoHandler.h"
+#include "ACamHandler.h"
 #include "CamHandler.h"
+
+
 #include "ImageModificator.h"
+#include "ScaleModificator.h"
 
 #include "CvVideoCapture.h"
-
-
 #include "CvHelper.h"
 
+
+
 #include "MyMath.h"
-#include "NewCamHandler.h"
+
 #include "FileManager.h"
 
 
