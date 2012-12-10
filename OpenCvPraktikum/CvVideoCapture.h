@@ -150,7 +150,8 @@ public:
     
     void setTimeToRecord(int secs);
 
-
+    void joinThread();
+    
 
 };
 

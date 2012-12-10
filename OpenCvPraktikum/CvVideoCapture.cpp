@@ -24,6 +24,7 @@ CvVideoCapture::CvVideoCapture(ImageInput& in) : capture(in) {
     frame = Mat();
     fps = 25;
     frames_to_record = 0;
+    imageMod = NULL;
 
 
 }
@@ -52,7 +53,7 @@ CvVideoCapture::~CvVideoCapture() {
 
 bool CvVideoCapture::start() {
     recthread = new thread(&CvVideoCapture::record, this);
-    recthread->join();
+    DBG("thread gestartet!");
     return true;
 
 
@@ -135,6 +136,7 @@ void CvVideoCapture::record() {
     Size frameSize = Size(capture.inputWidth(), capture.inputHeight());
     if (imageMod != NULL && imageMod->doesAction()) {
         if (imageMod->getScale() != 1.0f) {
+            DBG("Modifier skaliert den Frame um %f", imageMod->getScale());
             frameSize.height = static_cast<int> (((float) frameSize.height) * imageMod->getScale());
             frameSize.width = static_cast<int> (((float) frameSize.width) * imageMod->getScale());
         }
@@ -191,8 +193,6 @@ void CvVideoCapture::record() {
 
                 imageMod->modify(frm);
             }
-        } else {
-            DBG("Kein Modifizierer verwendet");
         }
 
         writer.write(frm);
@@ -277,7 +277,16 @@ void CvVideoCapture::setTimeToRecord(int secs) {
     setRecordingTime(secs);
 }
 
+void CvVideoCapture::joinThread() {
+    if (recthread == NULL) {
+        DBG("Thread ist NULL");
+        return;
+    }
+    if (!recthread->joinable()) {
+        DBG("Thread kann nicht gejoint werden");
+        return;
+    }
+    recthread->join();
+}
 
-// TODO: Zum testen den ImageModifikator ableiten
-// TODO: Join nur bei bedarf
 // TODO: Test mit Ansichtsfenster ->(Hat sich der Aufwand gelont?)
