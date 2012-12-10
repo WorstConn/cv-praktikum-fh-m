@@ -70,6 +70,7 @@ typedef struct inode_struct Inode;
 
 #include "CvVideoCapture.h"
 #include "CvHelper.h"
+#include "View/Window.h"
 
 
 

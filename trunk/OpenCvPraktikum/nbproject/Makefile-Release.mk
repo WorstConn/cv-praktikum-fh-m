@@ -45,6 +45,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/CamHandler.o \
 	${OBJECTDIR}/ImageSequenceInput.o \
 	${OBJECTDIR}/ACamHandler.o \
+	${OBJECTDIR}/View/Window.o \
 	${OBJECTDIR}/ImageModificator.o
 
 
@@ -121,6 +122,11 @@ ${OBJECTDIR}/ACamHandler.o: ACamHandler.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/ACamHandler.o ACamHandler.cpp
+
+${OBJECTDIR}/View/Window.o: View/Window.cpp 
+	${MKDIR} -p ${OBJECTDIR}/View
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/View/Window.o View/Window.cpp
 
 ${OBJECTDIR}/ImageModificator.o: ImageModificator.cpp 
 	${MKDIR} -p ${OBJECTDIR}

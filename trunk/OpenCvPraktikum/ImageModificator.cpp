@@ -21,10 +21,7 @@ ImageModificator::~ImageModificator() {
 
 }
 
-void ImageModificator::modify(cv::Mat&) {
-    //NIX
-    DBG("No Modification done");
-}
+
 
 bool ImageModificator::doesAction() {
     return false;

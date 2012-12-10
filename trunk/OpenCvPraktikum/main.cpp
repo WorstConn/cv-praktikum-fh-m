@@ -24,10 +24,12 @@ int main() {
     cap.setFramesToRecord(500);
     cap.setTimeToRecord(5);
     ScaleModificator mod;
-    cap.setImageModifikator(&mod);  // Bringt irgendwie nichts...
+    //cap.setImageModifikator(&mod);  // Bringt irgendwie nichts...
     cap.setOutput("bla2.avi");
     cap.start();
-
+    DBG("vor join!");
+    cap.joinThread();
+    
 
     return EXIT_SUCCESS;
 
