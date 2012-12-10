@@ -35,17 +35,16 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/ScaleModificator.o \
 	${OBJECTDIR}/CvHelper.o \
 	${OBJECTDIR}/MyMath.o \
-	${OBJECTDIR}/VideoHandler.o \
 	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/NewCamHandler.o \
 	${OBJECTDIR}/ImageInput.o \
 	${OBJECTDIR}/FileManager.o \
 	${OBJECTDIR}/CvVideoCapture.o \
 	${OBJECTDIR}/CamHandler.o \
-	${OBJECTDIR}/NopImageModificator.o \
 	${OBJECTDIR}/ImageSequenceInput.o \
+	${OBJECTDIR}/ACamHandler.o \
 	${OBJECTDIR}/ImageModificator.o
 
 
@@ -73,6 +72,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/opencvpraktikum: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/opencvpraktikum ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
+${OBJECTDIR}/ScaleModificator.o: ScaleModificator.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/ScaleModificator.o ScaleModificator.cpp
+
 ${OBJECTDIR}/CvHelper.o: CvHelper.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
@@ -83,20 +87,10 @@ ${OBJECTDIR}/MyMath.o: MyMath.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/MyMath.o MyMath.cpp
 
-${OBJECTDIR}/VideoHandler.o: VideoHandler.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/VideoHandler.o VideoHandler.cpp
-
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
-
-${OBJECTDIR}/NewCamHandler.o: NewCamHandler.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/NewCamHandler.o NewCamHandler.cpp
 
 ${OBJECTDIR}/ImageInput.o: ImageInput.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -118,15 +112,15 @@ ${OBJECTDIR}/CamHandler.o: CamHandler.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/CamHandler.o CamHandler.cpp
 
-${OBJECTDIR}/NopImageModificator.o: NopImageModificator.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/NopImageModificator.o NopImageModificator.cpp
-
 ${OBJECTDIR}/ImageSequenceInput.o: ImageSequenceInput.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/ImageSequenceInput.o ImageSequenceInput.cpp
+
+${OBJECTDIR}/ACamHandler.o: ACamHandler.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/ACamHandler.o ACamHandler.cpp
 
 ${OBJECTDIR}/ImageModificator.o: ImageModificator.cpp 
 	${MKDIR} -p ${OBJECTDIR}

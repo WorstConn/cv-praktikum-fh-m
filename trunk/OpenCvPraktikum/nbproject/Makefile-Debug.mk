@@ -35,17 +35,16 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/ScaleModificator.o \
 	${OBJECTDIR}/CvHelper.o \
 	${OBJECTDIR}/MyMath.o \
-	${OBJECTDIR}/VideoHandler.o \
 	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/NewCamHandler.o \
 	${OBJECTDIR}/ImageInput.o \
 	${OBJECTDIR}/FileManager.o \
 	${OBJECTDIR}/CvVideoCapture.o \
 	${OBJECTDIR}/CamHandler.o \
-	${OBJECTDIR}/NopImageModificator.o \
 	${OBJECTDIR}/ImageSequenceInput.o \
+	${OBJECTDIR}/ACamHandler.o \
 	${OBJECTDIR}/ImageModificator.o
 
 
@@ -53,8 +52,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-m64 -std=gnu++0x -pipe
-CXXFLAGS=-m64 -std=gnu++0x -pipe
+CCFLAGS=-m64 -std=gnu++0x
+CXXFLAGS=-m64 -std=gnu++0x
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -73,65 +72,60 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/opencvpraktikum: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/opencvpraktikum ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
+${OBJECTDIR}/ScaleModificator.o: ScaleModificator.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/ScaleModificator.o ScaleModificator.cpp
+
 ${OBJECTDIR}/CvHelper.o: CvHelper.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -D__GXX_EXPERIMENTAL_CXX0X__ -DDEBUG -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/CvHelper.o CvHelper.cpp
+	$(COMPILE.cc) -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/CvHelper.o CvHelper.cpp
 
 ${OBJECTDIR}/MyMath.o: MyMath.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -D__GXX_EXPERIMENTAL_CXX0X__ -DDEBUG -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/MyMath.o MyMath.cpp
-
-${OBJECTDIR}/VideoHandler.o: VideoHandler.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -D__GXX_EXPERIMENTAL_CXX0X__ -DDEBUG -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/VideoHandler.o VideoHandler.cpp
+	$(COMPILE.cc) -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/MyMath.o MyMath.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -D__GXX_EXPERIMENTAL_CXX0X__ -DDEBUG -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
-
-${OBJECTDIR}/NewCamHandler.o: NewCamHandler.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -D__GXX_EXPERIMENTAL_CXX0X__ -DDEBUG -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/NewCamHandler.o NewCamHandler.cpp
+	$(COMPILE.cc) -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
 ${OBJECTDIR}/ImageInput.o: ImageInput.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -D__GXX_EXPERIMENTAL_CXX0X__ -DDEBUG -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/ImageInput.o ImageInput.cpp
+	$(COMPILE.cc) -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/ImageInput.o ImageInput.cpp
 
 ${OBJECTDIR}/FileManager.o: FileManager.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -D__GXX_EXPERIMENTAL_CXX0X__ -DDEBUG -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/FileManager.o FileManager.cpp
+	$(COMPILE.cc) -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/FileManager.o FileManager.cpp
 
 ${OBJECTDIR}/CvVideoCapture.o: CvVideoCapture.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -D__GXX_EXPERIMENTAL_CXX0X__ -DDEBUG -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/CvVideoCapture.o CvVideoCapture.cpp
+	$(COMPILE.cc) -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/CvVideoCapture.o CvVideoCapture.cpp
 
 ${OBJECTDIR}/CamHandler.o: CamHandler.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -D__GXX_EXPERIMENTAL_CXX0X__ -DDEBUG -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/CamHandler.o CamHandler.cpp
-
-${OBJECTDIR}/NopImageModificator.o: NopImageModificator.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -D__GXX_EXPERIMENTAL_CXX0X__ -DDEBUG -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/NopImageModificator.o NopImageModificator.cpp
+	$(COMPILE.cc) -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/CamHandler.o CamHandler.cpp
 
 ${OBJECTDIR}/ImageSequenceInput.o: ImageSequenceInput.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -D__GXX_EXPERIMENTAL_CXX0X__ -DDEBUG -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/ImageSequenceInput.o ImageSequenceInput.cpp
+	$(COMPILE.cc) -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/ImageSequenceInput.o ImageSequenceInput.cpp
+
+${OBJECTDIR}/ACamHandler.o: ACamHandler.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/ACamHandler.o ACamHandler.cpp
 
 ${OBJECTDIR}/ImageModificator.o: ImageModificator.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -D__GXX_EXPERIMENTAL_CXX0X__ -DDEBUG -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/ImageModificator.o ImageModificator.cpp
+	$(COMPILE.cc) -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/ImageModificator.o ImageModificator.cpp
 
 # Subprojects
 .build-subprojects:

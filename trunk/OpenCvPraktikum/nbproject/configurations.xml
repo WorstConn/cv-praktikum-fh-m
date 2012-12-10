@@ -12,6 +12,8 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>ACamHandler.cpp</itemPath>
+      <itemPath>ACamHandler.h</itemPath>
       <itemPath>CamHandler.cpp</itemPath>
       <itemPath>CamHandler.h</itemPath>
       <itemPath>CvHelper.cpp</itemPath>
@@ -29,12 +31,8 @@
       <itemPath>Makefile</itemPath>
       <itemPath>MyMath.cpp</itemPath>
       <itemPath>MyMath.h</itemPath>
-      <itemPath>NewCamHandler.cpp</itemPath>
-      <itemPath>NewCamHandler.h</itemPath>
-      <itemPath>NopImageModificator.cpp</itemPath>
-      <itemPath>NopImageModificator.h</itemPath>
-      <itemPath>VideoHandler.cpp</itemPath>
-      <itemPath>VideoHandler.h</itemPath>
+      <itemPath>ScaleModificator.cpp</itemPath>
+      <itemPath>ScaleModificator.h</itemPath>
       <itemPath>header.h</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
@@ -72,7 +70,7 @@
             <pElem>/usr/local/include/opencv</pElem>
             <pElem>/usr/local/include/opencv2</pElem>
           </incDir>
-          <commandLine>-std=gnu++0x -pipe</commandLine>
+          <commandLine>-std=gnu++0x</commandLine>
           <preprocessorList>
             <Elem>DEBUG</Elem>
             <Elem>__GXX_EXPERIMENTAL_CXX0X__</Elem>

@@ -18,15 +18,20 @@ ScaleModificator::ScaleModificator(const ScaleModificator& orig) {
 ScaleModificator::~ScaleModificator() {
 }
 
+
+
 void ScaleModificator::modify(cv::Mat& mat) {
-    CvHelper helper;
-    mat = helper.scaleImage((mat), 2.0);
-
-
+    CvHelper *helper = CvHelper::getInstance();
+    mat = helper->scaleImage((mat), 2.0);
+    
 }
 
 bool ScaleModificator::doesAction() {
 
     return true;
+}
+
+float ScaleModificator::getScale(){
+    return 2.0f;
 }
 

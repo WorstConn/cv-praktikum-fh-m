@@ -85,11 +85,12 @@ void CvVideoCapture::setRecordingTime(int len) {
 
 }
 
-void CvVideoCapture::setImageModifikator(ImageModificator mod) {
+void CvVideoCapture::setImageModifikator(ImageModificator *mod) {
     if (!recording) {
+        if (mod == NULL) throw Exception();
         imageMod = mod;
 #ifdef DEBUG
-        if(!imageMod.doesAction()){
+        if (!imageMod->doesAction()) {
             DBG("Gesetzter Modifikator ist ein Dummie");
         }
 #endif
@@ -128,9 +129,16 @@ void CvVideoCapture::record() {
     }
     if (fps == 0) {
         DBG("FPS is 0 setting to 30");
-        fps = 30;
+        fps = capture.inputFps();
     }
+
     Size frameSize = Size(capture.inputWidth(), capture.inputHeight());
+    if (imageMod != NULL && imageMod->doesAction()) {
+        if (imageMod->getScale() != 1.0f) {
+            frameSize.height = static_cast<int> (((float) frameSize.height) * imageMod->getScale());
+            frameSize.width = static_cast<int> (((float) frameSize.width) * imageMod->getScale());
+        }
+    }
     if (frameSize.width <= 0 || frameSize.height <= 0) {
         DBG("Error getting framesize");
     } else {
@@ -139,7 +147,7 @@ void CvVideoCapture::record() {
     if (!writer.isOpened()) {
         DBG("Writer is not open");
 
-        writer.open(outputname, CODEC_DEFAULT, fps, Size(640, 480));
+        writer.open(outputname, CODEC_DEFAULT, fps, frameSize);
         if (writer.isOpened()) {
             DBG("VideoWriter is now open");
         } else {
@@ -176,12 +184,15 @@ void CvVideoCapture::record() {
         setFrame(frm);
 
 
+        if (imageMod != NULL) {
+            if (imageMod->doesAction()) {
 
-        if(imageMod.doesAction()){
+                //frm=getFrame();  // Falls es zu 'Concurrent modification error' kommt...
 
-        //frm=getFrame();  // Falls es zu 'Concurrent modification error' kommt...
-
-        imageMod.modify(frm);
+                imageMod->modify(frm);
+            }
+        } else {
+            DBG("Kein Modifizierer verwendet");
         }
 
         writer.write(frm);

@@ -13,9 +13,10 @@ using namespace cv;
 
 class CvHelper {
 private:
-
+    CvHelper();
     map<int, String> imageTypeMap;
     String imageTypeToString(Mat img);
+    static CvHelper *instance;
 
     /**
      * Zeichnet Text auf ein Bild
@@ -28,8 +29,10 @@ private:
      */
     Mat drawString(Mat inputImg, String text, Scalar color, int posX, int posY);
 public:
-    CvHelper();
     virtual ~CvHelper();
+    
+    
+    static CvHelper* getInstance();
 
 
 

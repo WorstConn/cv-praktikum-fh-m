@@ -11,6 +11,8 @@
 using namespace std;
 using namespace cv;
 
+CvHelper* CvHelper::instance = NULL;
+
 /**
  * Zeichnet Text auf ein Bild
  * @param inputImg Das Bild
@@ -136,6 +138,16 @@ Mat CvHelper::buildImageGrid(vector<Mat*> images, vector<String> imageTags, Scal
 
 CvHelper::CvHelper() {
     imageTypeMap = std::map<int, String > ();
+
+}
+
+CvHelper* CvHelper::getInstance() {
+    if (instance == NULL) {
+        instance = new CvHelper();
+        
+    }
+    
+    return instance;
 
 }
 
@@ -524,9 +536,15 @@ Mat& CvHelper::scaleImage(Mat& img, const float scale) {
         DBG("Image hat keine Daten");
         return img;
     }
-    img*scale;
+   
+    Mat scaled=Mat::zeros(Size(((int)((float)img.size().width)*scale),((int)((float)img.size().height)*scale)), img.type());//Mat(Size(((int)((float)img.size().width)*scale),((int)((float)img.size().height)*scale)), img.type());
+    
+    resize(img,scaled,scaled.size(),0,0,INTER_LINEAR);
+    
+    img=scaled;
     return img;
 }
+
 
 /**
  * Histogram

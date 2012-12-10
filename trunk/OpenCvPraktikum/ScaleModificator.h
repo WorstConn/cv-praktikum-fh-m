@@ -19,6 +19,7 @@ public:
     ScaleModificator(const ScaleModificator& orig);
     virtual ~ScaleModificator();
     void modify(Mat&);
+    float getScale();
     bool doesAction();
 private:
 

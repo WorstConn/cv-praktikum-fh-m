@@ -17,8 +17,9 @@ public:
     ImageModificator();
     ImageModificator(const ImageModificator&);
     virtual ~ImageModificator();
-    virtual void modify(Mat&);
+    virtual void modify(Mat&) = 0;
     virtual bool doesAction(); // etwas stupide...
+    virtual float getScale()=0;
 };
 
 #endif /* IMAGEMODIFICATOR_H_ */
