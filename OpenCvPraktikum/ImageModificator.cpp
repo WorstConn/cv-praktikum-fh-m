@@ -30,6 +30,10 @@ bool ImageModificator::doesAction() {
     return false;
 }
 
+float ImageModificator::getScale() {
+    return 1.0f;
+}
+
 
 
 

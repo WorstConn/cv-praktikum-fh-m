@@ -74,7 +74,7 @@ private:
      * Erleichtert das vor-verarbeiten (beliebige Operation) der Videoframes
      * Vorstellbar sind Graustufen-Bilder,
      */
-    ImageModificator imageMod;
+    ImageModificator *imageMod;
 
     /**
      * Aktueller Videoframe
@@ -130,7 +130,7 @@ public:
     /**
      * Setzt einen Modifizierer der jeden Frame bearbeitet
      */
-    void setImageModifikator(ImageModificator mod);
+    void setImageModifikator(ImageModificator *mod);
 
     bool isRecording();
 
