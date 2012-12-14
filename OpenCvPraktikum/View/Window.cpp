@@ -61,7 +61,7 @@ void Window::showWindow() {
         DBG("Name des Fensters ist leer!");
         return;
     }
-    namedWindow(this->name, WINDOW_NORMAL);
+    namedWindow(this->name, CV_GUI_EXPANDED);
     show = true;
 
     refreshThread = new thread(&Window::loop, this);
