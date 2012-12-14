@@ -20,9 +20,9 @@ int main() {
     input.setUseIpCam(false);
     input.open();
 
-//    if (input.requestFormat(r720p)) {
-//        DBG("Auflösung geändert");
-//    }
+    if (input.requestFormat(r720p)) {
+        DBG("Auflösung geändert");
+    }
     CvVideoCapture cap(input);
    // cap.setFramesToRecord(500);
   //  cap.setTimeToRecord(5);
