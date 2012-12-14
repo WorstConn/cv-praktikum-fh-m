@@ -39,6 +39,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/CvHelper.o \
 	${OBJECTDIR}/MyMath.o \
 	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/Control/RecorderCtl.o \
 	${OBJECTDIR}/ImageInput.o \
 	${OBJECTDIR}/FileManager.o \
 	${OBJECTDIR}/CvVideoCapture.o \
@@ -46,6 +47,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/ImageSequenceInput.o \
 	${OBJECTDIR}/ACamHandler.o \
 	${OBJECTDIR}/View/Window.o \
+	${OBJECTDIR}/VideoInput.o \
 	${OBJECTDIR}/ImageModificator.o
 
 
@@ -93,6 +95,11 @@ ${OBJECTDIR}/main.o: main.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
+${OBJECTDIR}/Control/RecorderCtl.o: Control/RecorderCtl.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Control
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Control/RecorderCtl.o Control/RecorderCtl.cpp
+
 ${OBJECTDIR}/ImageInput.o: ImageInput.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
@@ -127,6 +134,11 @@ ${OBJECTDIR}/View/Window.o: View/Window.cpp
 	${MKDIR} -p ${OBJECTDIR}/View
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/View/Window.o View/Window.cpp
+
+${OBJECTDIR}/VideoInput.o: VideoInput.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/VideoInput.o VideoInput.cpp
 
 ${OBJECTDIR}/ImageModificator.o: ImageModificator.cpp 
 	${MKDIR} -p ${OBJECTDIR}

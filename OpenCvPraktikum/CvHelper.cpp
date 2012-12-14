@@ -344,7 +344,7 @@ Rect CvHelper::detectBiggest(Mat& img, CascadeClassifier& cascade) {
             }
 
         } catch (Exception& err) {
-            cout << err.what() << endl;
+            cout << err.msg << endl;
         }
 
     }

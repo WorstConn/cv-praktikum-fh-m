@@ -20,10 +20,11 @@
 using namespace std;
 using namespace cv;
 
-
-
 class CvVideoCapture {
 private:
+
+    const static int DEFAULT_FRAME_COUNT = 7200*25;
+    const static int DEFAULT_DURATION = 7200;
 
     /**
      * Der Video-Writer;
@@ -103,7 +104,8 @@ private:
 
 
 public:
-   
+    
+    void requestNext();
 
     CvVideoCapture(ImageInput& in);
 
@@ -141,17 +143,19 @@ public:
     void operator()();
 
     void setFramesToRecord(int frames);
-    
+
     void release();
 
     void setInput(ImageInput& in);
 
     void setOutput(String out);
-    
+
     void setTimeToRecord(int secs);
 
     void joinThread();
-    
+
+    bool available();
+
 
 };
 
