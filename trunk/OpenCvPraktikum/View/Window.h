@@ -17,11 +17,21 @@ public:
     Window(const Window& orig);
     void setCurrentImage(Mat *current);
     void showWindow();
+    bool isShowing();
+    void closeWindow();
     virtual ~Window();
+    
+    
 private:
     String name;
     int width, height;
     Mat *currentImage;
+    int updateIntervall;
+    bool show;
+    thread *refreshThread;
+    void loop();
+    int refreshDelay;
+    mutex imageMutex;
     
 
 };

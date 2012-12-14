@@ -16,20 +16,26 @@
 
 int main() {
 
-    CamHandler in = CamHandler();
-    in.setUseIpCam(false);
-    in.open();
+    CamHandler input = CamHandler();
+    input.setUseIpCam(false);
+    input.open();
 
-    CvVideoCapture cap(in);
-    cap.setFramesToRecord(500);
-    cap.setTimeToRecord(5);
-    ScaleModificator mod;
-    //cap.setImageModifikator(&mod);  // Bringt irgendwie nichts...
+//    if (input.requestFormat(r720p)) {
+//        DBG("Auflösung geändert");
+//    }
+    CvVideoCapture cap(input);
+   // cap.setFramesToRecord(500);
+  //  cap.setTimeToRecord(5);
     cap.setOutput("bla2.avi");
-    cap.start();
-    DBG("vor join!");
-    cap.joinThread();
-    
+    RecorderCtl ctl = RecorderCtl("Test");
+    ctl.setCapture(&cap);
+    ctl.startGrabInput();
+    sleep(10);
+    ctl.startRecording();
+    sleep(10);
+    ctl.stopRecording();
+    ctl.stopGrabbing();
+    ScaleModificator mod;
 
     return EXIT_SUCCESS;
 

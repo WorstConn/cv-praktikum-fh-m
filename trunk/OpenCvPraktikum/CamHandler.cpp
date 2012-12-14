@@ -150,6 +150,9 @@ bool CamHandler::grabNext() {
     }
     releaseCurrentImage();
     cap >> currentImage;
+    if(currentImage.empty()){
+        return false;
+    }
 
 
     return true;
@@ -207,6 +210,83 @@ bool CamHandler::shouldConvertToRGB() {
         return 0;
     }
     return static_cast<bool> (cap.get(CV_CAP_PROP_CONVERT_RGB));
+}
+
+/**
+ * Versucht eine Andere Bildgr&ouml;&szlig;e von der Kamera anzufordern.
+ * @param newResolution Die Aufl&ouml;sung, die von der Kamera angefordert wird.
+ * @return <code>true</code>, wenn die &Auml;nderung angenommen wurden, sonst <code>false</code>.
+ */
+bool CamHandler::requestFormat(INPUT_FORMAT fmt) {
+    Point2i res = formatToDimension(fmt);
+    if (res.x == 0 || res.y == 0) {
+        DBG("Ungueltige Aufloesung");
+
+        return false;
+    }
+    if (!cap.isOpened()) {
+        DBG("Keine Verbindung");
+        return false;
+    }
+    try {
+        cap.set(CV_CAP_PROP_FRAME_HEIGHT, static_cast<double> (res.y));
+        cap.set(CV_CAP_PROP_FRAME_WIDTH, static_cast<double> (res.x));
+
+        int chkx, chky;
+        chkx = static_cast<int> (cap.get(CV_CAP_PROP_FRAME_WIDTH));
+        chky = static_cast<int> (cap.get(CV_CAP_PROP_FRAME_HEIGHT));
+
+        if (chkx != res.x || chky != res.y) {
+            return false;
+        }else{
+            return true;
+        }
+        
+    } catch (Exception& ex) {
+        DBG("%s", ex.what());
+
+    }
+    return false;
+}
+
+/**
+ * Gibt die aktuelle <code>RESOLUTION</code> des Kamerabildes zur&uuml;ck.
+ * @return die aktuelle <code>RESOLUTION</code>.
+ */
+INPUT_FORMAT CamHandler::currentCamInputFormat() {
+    int w, h;
+    w = inputWidth();
+    h = inputHeight();
+    if (h <= 0 || w <= 0) {
+        return rNULL;
+    }
+    if (h == 480 && w == 640) {
+        return r480p;
+    }
+    if (w == 1280 && h == 720) {
+        return r720p;
+    }
+    if (w == 1920 && h == 1080) {
+        return r1080p;
+    }
+    return rUnknown;
+}
+
+Point2i CamHandler::formatToDimension(INPUT_FORMAT fmt) {
+    switch (fmt) {
+        case rNULL:
+            return Point2i(0, 0);
+        case rUnknown:
+            return Point2i(0, 0);
+        case r480p:
+            return Point2i(640, 480);
+        case r720p:
+            return Point2i(1280, 720);
+        case r1080p:
+            return Point2i(1920, 1080);
+        default: 
+            return Point2i(0, 0);
+    }
 }
 
 

@@ -25,7 +25,7 @@ CvVideoCapture::CvVideoCapture(ImageInput& in) : capture(in) {
     fps = 25;
     frames_to_record = 0;
     imageMod = NULL;
-
+    
 
 }
 
@@ -42,6 +42,7 @@ CvVideoCapture::CvVideoCapture(const CvVideoCapture& other) : capture(other.capt
     frames_to_record = other.frames_to_record;
     outputname = other.outputname;
     recording = other.recording;
+   
 
 
 }
@@ -150,6 +151,7 @@ void CvVideoCapture::record() {
         DBG("Writer is not open");
 
         writer.open(outputname, CODEC_DEFAULT, fps, frameSize);
+
         if (writer.isOpened()) {
             DBG("VideoWriter is now open");
         } else {
@@ -164,7 +166,14 @@ void CvVideoCapture::record() {
     time_t current;
     time(&current);
     int framecount = 0; // </editor-fold>
+    if (frames_to_record == 0) {
 
+        frames_to_record = DEFAULT_FRAME_COUNT;
+
+    }
+    if (recordSeconds == 0) {
+        recordSeconds = DEFAULT_DURATION;
+    }
     // <editor-fold defaultstate="collapsed" desc="Aufnahme Schleife">
     while (recording) {
 
@@ -181,7 +190,12 @@ void CvVideoCapture::record() {
         time(&current);
         framecount++;
 
-        capture.next();
+        try {
+            capture.next();
+        } catch (Exception& ex) {
+            DBG("%s", ex.what());
+            break;
+        }
         Mat frm = capture.getImage();
         setFrame(frm);
 
@@ -222,12 +236,35 @@ void CvVideoCapture::nextFrame() {
         capture.next();
         setFrame(capture.getImage());
     } catch (Exception& ex) {
-        cerr << "Fehler: " << ex.what() << endl;
+        cerr << "Fehler: " << ex.msg << endl;
+    }
+}
+
+void CvVideoCapture::requestNext() {
+
+    try {
+
+        if (!capture.opened()) throw Exception();
+        frame_mutex.lock();
+        capture.next();
+        frame_mutex.unlock();
+        setFrame(capture.getImage());
+
+    } catch (Exception& ex) {
+        cerr << "Fehler: " << ex.msg << endl;
     }
 }
 
 void CvVideoCapture::release() {
+    frame.release();
 
+    if (recthread != NULL) {
+        recording = false;
+        if (recthread->joinable()) {
+            recthread->join();
+        }
+
+    }
 }
 
 void CvVideoCapture::releaseCapture() {
@@ -289,4 +326,6 @@ void CvVideoCapture::joinThread() {
     recthread->join();
 }
 
-// TODO: Test mit Ansichtsfenster ->(Hat sich der Aufwand gelont?)
+bool CvVideoCapture::available() {
+    return capture.opened();
+}

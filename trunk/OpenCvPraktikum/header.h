@@ -69,8 +69,10 @@ typedef struct inode_struct Inode;
 #include "ScaleModificator.h"
 
 #include "CvVideoCapture.h"
+#include "VideoInput.h"
 #include "CvHelper.h"
 #include "View/Window.h"
+#include "Control/RecorderCtl.h"
 
 
 
