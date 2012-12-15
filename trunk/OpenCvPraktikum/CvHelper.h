@@ -117,6 +117,30 @@ public:
     
     virtual Mat& scaleImage(Mat& img,const float scale);
     
+    
+    /**
+     * Erstellt von einem beliebigen Bild ein Histgramm.
+     * Dieses wird nicht direkt als Bild erstellt, sondern als MatND zurückgegeben, mit welchem weitere
+     * Berechnungen durchgeführt werden können. Sofern ein Histogramm-Bild erzeugt werden soll,
+     * bitte makeHistImage() mit der MatND, welche hier zurückgegeben wird, aufrufen!
+     * 
+     * ACHTUNG :: Sofern ein mehrkanaliges Bild übergeben wird, wird es zu seinem Graustufenbild umgewandelt und
+     * von diesem dann das Histogramm berechnet!! :: ACHTUNG_ENDE
+     * 
+     * @param Mat* img Zeiger auf eine Mat-Instanz, von der Histogramm erstellt werden soll
+     * @return MatND Matrix, mit den jeweiligen rel. Häufigkeiten für die einzelnen Grauton-Kanäle
+     */
+    MatND makeHist(Mat *img);
+    
+    /**
+     * Erstellt ein sichtbares Histogramm-Bild von einer MatND Matrix, welche vorher von makeHist()
+     * generiert wurde. Gibt das erstelte Bild als Mat zurück, welches ein normales Bild darstellt.
+     * 
+     * @param MatND& Referenz auf MatND Instanz, welches visualisert werden soll
+     * @return Mat Histogramm-Bild als Mat-Instanz
+     */
+    Mat makeHistImage(MatND &hist);
+    
 };
 
 
