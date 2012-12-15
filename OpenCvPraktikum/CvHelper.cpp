@@ -545,6 +545,77 @@ Mat& CvHelper::scaleImage(Mat& img, const float scale) {
     return img;
 }
 
+MatND CvHelper::makeHist(Mat *leImg) {
+    
+    MatND hist;
+    
+    cv::Mat greyMat;
+    
+    Mat *img = leImg;
+    
+    if (img->channels() != 1) { // Wenn mehrkanaliges Bild vorliegt, dieses in Grautonbild umwandeln und von diesem Histogram erstellen
+        
+        cv::cvtColor(*img, greyMat, CV_BGR2GRAY);
+        DBG("Habe Img mit %d Kanälen als Grautonbild umgewandelt!",leImg->channels());
+        img = &greyMat;
+       
+    }
+    
+    int histSize[1];
+    int channels[1];
+    float hranges[2];
+    const float *ranges[1];
+    
+    histSize[0] = 256;
+    hranges[0] = 0.0;
+    hranges[1] = 255.0;
+    ranges[0] = hranges;
+    channels[0] = 0;
+    
+    calcHist(img,      // image to make hist from
+            1,          // histogram from 1 image
+            channels,   // the channel used
+            Mat(),      // no mask used
+            hist,       // the resulting histogram
+            1,          // 1D histogram
+            histSize,   // number of bins
+            ranges      // pixel value range
+            );
+    
+    return hist;
+    
+}
+
+Mat CvHelper::makeHistImage(MatND &hist) {
+    double minVal, maxVal;
+    int histSize[1];
+    int hpt;
+    
+    histSize[0] = 256;
+    minVal = 0;
+    maxVal = 0;
+    
+    minMaxLoc(hist, &minVal, &maxVal, 0, 0);
+    
+    Mat histImg (histSize[0], histSize[0], CV_8U, Scalar(255));
+    
+    hpt = static_cast<int>(0.9*histSize[0]);
+    
+    DBG("minVal = %f, maxVal =%f ", minVal, maxVal);
+    
+    for (int h = 0; h < histSize[0]; h++) {
+        float binVal = hist.at<float>(h);
+        int intensity = static_cast<int> (binVal*((float)hpt/maxVal));
+        
+        line(histImg, Point(h, histSize[0]), Point(h, histSize[0]-intensity), Scalar::all(0));
+        
+    }
+    
+    return histImg;
+    
+    
+}
+
 
 /**
  * Histogram

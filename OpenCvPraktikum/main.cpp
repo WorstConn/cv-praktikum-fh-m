@@ -14,6 +14,8 @@
 #include <map>
 #include <string>
 
+#if 0
+
 int main() {
 
     CamHandler input = CamHandler();
@@ -40,7 +42,37 @@ int main() {
     return EXIT_SUCCESS;
 
 }
+#endif
 
+#if 1
+int main() {
+    CvHelper *help = CvHelper::getInstance();
+    
+    Mat image = imread("lena.jpg");
+    
+    MatND histo =help->makeHist(&image);
+    
+    Mat histImg = help->makeHistImage(histo);
+    
+   /* for (int i = 0; i < 256; i++) {
+        cout << "Value " << i << " = " << histo.at<float>(i) << endl;
+    }*/
+    
+    namedWindow("Bild");
+    imshow("Bild", image);
+    
+    
+    namedWindow("Histogram");
+    imshow("Histogram", histImg);
+    
+    waitKey(0);
+    
+    printf("bin am ende !\n");
+    
+    return EXIT_SUCCESS;
+}
+
+#endif
 
 
 

@@ -29,13 +29,19 @@
 #ifdef __unix__
 
 #ifdef DEBUG
-#define DBG(format, ...) \
+#define DBG(format, ...) do {\
         printf("DBG: \"");\
         printf(format, ##__VA_ARGS__);\
-        printf("\" line: %d function: %s\n", __LINE__,(char*) __func__);
+        printf("\" line: %d function: %s\n", __LINE__,(char*) __func__);} while(0);
+#define DBG_EXIT(format, ...) do {\
+        DBG(format, ##__VA_ARGS__)\
+        exit(EXIT_FAILURE);} while(0);
 #else
 #define DBG(format, ...) do {} while(0);
+#define DBG_EXIT(format, ...) do {} while(0);
 #endif
+
+
 
 
 #include <dirent.h>
