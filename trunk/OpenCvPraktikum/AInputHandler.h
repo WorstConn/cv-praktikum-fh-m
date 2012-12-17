@@ -16,7 +16,11 @@ enum INPUT_FORMAT {
     rNULL, rUnknown, r480p, r720p, r1080p
 };
 
-class ACamHandler : public ImageSequenceInput {
+enum INPUT_TYPE {
+    NONE, VIDEO_FILE, CAM, IP_CAM, IMAGE_FOLDER
+};
+
+class AInputHandler : public ImageSequenceInput {
 private:
     /**
      * Versucht die Standard-Webcam zu oeffnen
@@ -27,15 +31,20 @@ private:
      */
     virtual bool openDefIpCam() = 0;
 protected:
-    const char* defaultIpCamURL;
+    String defaultIpCamURL;
+    vector<String> videoFiles;
+    set<String> imageFolders;
+    vector<String> imageFiles;
     bool connected;
-    bool ipCam;
+
+    INPUT_TYPE sourceType;
 
 public:
 
-    ACamHandler();
-    ACamHandler(const char* camURL);
-    virtual ~ACamHandler();
+    AInputHandler();
+    AInputHandler(String camURL);
+    AInputHandler(const AInputHandler& orig);
+    virtual ~AInputHandler();
     /**
      * Oeffnet die Verbindung mit der Kamera
      */
@@ -80,13 +89,17 @@ public:
      * Legt fest, ob eine IP-Cam verwendet werden soll.
      * @param val
      */
-    void setUseIpCam(bool val);
+    void setUseIpCam();
 
     /**
      * Gibt an, ob eine IP-Cam verwendet wird.
      * @return <code>true</code>, wenn versucht wird, eine IP-Cam zu verwenden. Sonst <code>false</code>
      */
     bool useIpCam();
+
+    void setInputSource(INPUT_TYPE type);
+
+    INPUT_TYPE getInputSource();
 
     /**
      * Versucht eine Andere Bildgr&ouml;&szlig;e von der Kamera anzufordern.
@@ -100,6 +113,21 @@ public:
      * @return die aktuelle <code>RESOLUTION</code>.
      */
     virtual INPUT_FORMAT currentCamInputFormat() = 0;
+
+    /**
+     * F&uuml;gt ein Video hinzu
+     * @param vid Der Pfad des Videos
+     */
+    bool addVideo(String vid);
+
+    /**
+     * F&uuml;gt einen Bilderordner hinzu
+     * @param folder Der Pfad zu einem Ordner, in dem nach Bildern (.jpg, .png, .bmp) gesucht wird 
+     * @return <code>true</code>, wenn der Order existiert und hinzugef&uuml;gt wurde
+     */
+    bool addImageFolder(String folder);
+
+
 };
 
 #endif /* CAMHANDLER_H_ */

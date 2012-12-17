@@ -110,8 +110,9 @@ void RecorderCtl::startRecording() {
         state = RECORD;
     }
     if (ctlThread != NULL) {
-        DBG("Waiting for work-thread to finish");
+        
         if (ctlThread->joinable()) {
+            DBG("Waiting for work-thread to finish");
             ctlThread->join();
         }
 

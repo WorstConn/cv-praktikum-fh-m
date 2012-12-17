@@ -9,6 +9,7 @@
 using namespace std;
 using namespace cv;
 
+
 ScaleModificator::ScaleModificator() {
 }
 
