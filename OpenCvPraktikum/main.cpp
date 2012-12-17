@@ -38,7 +38,7 @@ int main() {
     sleep(10);
     ctl.stopRecording();
     ctl.stopGrabbing();
-   
+
 
     return EXIT_SUCCESS;
 
@@ -163,6 +163,8 @@ int main(int argc, char **argv) {
 
     Mat img_1 = imread("bild1.png", CV_LOAD_IMAGE_GRAYSCALE);
     Mat img_2 = imread("bild2.png", CV_LOAD_IMAGE_GRAYSCALE);
+     Sobel(img_1, img_1, CV_8U, 1, 1, 5, 0.5, 128);
+    Sobel(img_2, img_2, CV_8U, 1, 1, 5, 0.5, 128);
     if (!img_1.data || !img_2.data) {
         std::cout << " --(!) Error reading images " << std::endl;
         return -1;
@@ -293,3 +295,4 @@ void cornerHarris_demo(int, void*) {
 //http://docs.opencv.org/doc/user_guide/ug_traincascade.html
 //find . -name '*.jpg' -exec identify -format '%i 1 0 0 %w %h' \{\} \; > info.dat
 //opencv_traincascade -data hnd -vec samples.vec -bg /media/WD-Platte/Bilder\&Fotos/Wallpaper/bg.dat -numPos 100 -numNeg 340 -numStages 20 -precalcValBufSize 1024 -precalcIdxBufSize 2048 -featureType LBP -w 200 -h 200 -minHitRate 0.999 -maxFalseAlarmRate 0.5 -mode ALL
+//http://note.sonots.com/SciSoftware/haartraining.html#ybd647df
