@@ -20,10 +20,8 @@
         <itemPath>View/Window.cpp</itemPath>
         <itemPath>View/Window.h</itemPath>
       </logicalFolder>
-      <itemPath>ACamHandler.cpp</itemPath>
-      <itemPath>ACamHandler.h</itemPath>
-      <itemPath>CamHandler.cpp</itemPath>
-      <itemPath>CamHandler.h</itemPath>
+      <itemPath>AInputHandler.cpp</itemPath>
+      <itemPath>AInputHandler.h</itemPath>
       <itemPath>CvHelper.cpp</itemPath>
       <itemPath>CvHelper.h</itemPath>
       <itemPath>CvVideoCapture.cpp</itemPath>
@@ -36,13 +34,13 @@
       <itemPath>ImageModificator.h</itemPath>
       <itemPath>ImageSequenceInput.cpp</itemPath>
       <itemPath>ImageSequenceInput.h</itemPath>
+      <itemPath>InputHandler.cpp</itemPath>
+      <itemPath>InputHandler.h</itemPath>
       <itemPath>Makefile</itemPath>
       <itemPath>MyMath.cpp</itemPath>
       <itemPath>MyMath.h</itemPath>
       <itemPath>ScaleModificator.cpp</itemPath>
       <itemPath>ScaleModificator.h</itemPath>
-      <itemPath>VideoInput.cpp</itemPath>
-      <itemPath>VideoInput.h</itemPath>
       <itemPath>header.h</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
@@ -87,7 +85,7 @@
             <Elem>DEBUG</Elem>
             <Elem>__GXX_EXPERIMENTAL_CXX0X__</Elem>
           </preprocessorList>
-          <warningLevel>2</warningLevel>
+          <warningLevel>3</warningLevel>
         </ccTool>
         <linkerTool>
           <linkerAddLib>
@@ -96,6 +94,7 @@
           <linkerLibItems>
             <linkerOptionItem>`pkg-config --libs opencv`</linkerOptionItem>
           </linkerLibItems>
+          <commandLine>-Wl,--allow-multiple-definition</commandLine>
         </linkerTool>
       </compileType>
     </conf>

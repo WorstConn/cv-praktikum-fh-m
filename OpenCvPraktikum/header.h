@@ -10,6 +10,8 @@
 
 
 #define CODEC_DEFAULT CV_FOURCC('D','I','V','X')
+#include <algorithm>
+#include <stdio.h>
 
 #include <thread>
 #include <mutex>
@@ -17,12 +19,24 @@
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
+#include "opencv2/core/core.hpp"
+#include "opencv2/features2d/features2d.hpp"
+#include "opencv2/nonfree/nonfree.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include "calib3d/calib3d.hpp"
+
 #include <opencv.hpp>
 #include <cvaux.hpp>
 #include <cv.hpp>
+
+
+
 #include <cxcore.hpp>
 #include <pthread.h>
 #include <highgui/highgui.hpp>
+#include <gpu/gpu.hpp>
+#include <gpu/gpumat.hpp>
+
 #include <opencv2/video/video.hpp>
 
 
@@ -63,19 +77,18 @@ struct inode_struct {
 typedef struct inode_struct Inode;
 
 #endif
-
-
-#include "ImageInput.h"
-#include "ImageSequenceInput.h"
-#include "ACamHandler.h"
-#include "CamHandler.h"
-
-
 #include "ImageModificator.h"
 #include "ScaleModificator.h"
 
+#include "ImageInput.h"
+#include "ImageSequenceInput.h"
+#include "AInputHandler.h"
+#include "InputHandler.h"
+
+
+
+
 #include "CvVideoCapture.h"
-#include "VideoInput.h"
 #include "CvHelper.h"
 #include "View/Window.h"
 #include "Control/RecorderCtl.h"

@@ -11,6 +11,14 @@
 using namespace std;
 using namespace cv;
 
+struct BufferPSNR
+// Optimized GPU versions
+{
+    // Data allocations are very expensive on GPU. Use a buffer to solve: allocate once reuse later.
+    gpu::GpuMat gI1, gI2, gs, t1, t2;
+};
+gpu::GpuMat buf;
+
 class CvHelper {
 private:
     CvHelper();
@@ -30,8 +38,8 @@ private:
     Mat drawString(Mat inputImg, String text, Scalar color, int posX, int posY);
 public:
     virtual ~CvHelper();
-    
-    
+
+
     static CvHelper* getInstance();
 
 
@@ -101,23 +109,29 @@ public:
 
     virtual bool zero(Rect r);
 
-    
-    virtual Mat gaussianBlur(Mat input,int size,bool copy=false);
+    /**
+     * Gau&szlig;scher Weichzeichner
+     * @param input Eingabebild
+     * @param size 
+     * @param copy
+     * @return 
+     */
+    virtual Mat gaussianBlur(Mat input, int size, bool copy = false);
 
-    virtual Mat homgenousBlur(Mat input, int size,Point anchor, bool copy=false);
-    
-    virtual Mat median_Blur(Mat input, int size, bool copy=false);
-    
+    virtual Mat homgenousBlur(Mat input, int size, Point anchor, bool copy = false);
+
+    virtual Mat median_Blur(Mat input, int size, bool copy = false);
+
     /**
      * Gibt die Id des Codecs zur&auml;ck 
      * @param codec String des Codecs z.b. "DIVX"
      * @return 
      */
     virtual int codecFromString(String codec);
-    
-    virtual Mat& scaleImage(Mat& img,const float scale);
-    
-    
+
+    virtual Mat& scaleImage(Mat& img, const float scale);
+
+
     /**
      * Erstellt von einem beliebigen Bild ein Histgramm.
      * Dieses wird nicht direkt als Bild erstellt, sondern als MatND zurückgegeben, mit welchem weitere
@@ -131,7 +145,7 @@ public:
      * @return MatND Matrix, mit den jeweiligen rel. Häufigkeiten für die einzelnen Grauton-Kanäle
      */
     MatND makeHist(Mat *img);
-    
+
     /**
      * Erstellt ein sichtbares Histogramm-Bild von einer MatND Matrix, welche vorher von makeHist()
      * generiert wurde. Gibt das erstelte Bild als Mat zurück, welches ein normales Bild darstellt.
@@ -140,7 +154,13 @@ public:
      * @return Mat Histogramm-Bild als Mat-Instanz
      */
     Mat makeHistImage(MatND &hist);
-    
+
+    double getPSNR(const Mat& I1, const Mat& I2);
+
+
+    Scalar getMSSIM(const Mat& I1, const Mat& I2);
+
+
 };
 
 

@@ -26,6 +26,10 @@ Mat CvHelper::drawString(Mat inputImg, String text, Scalar color, int posX, int 
     /**
      * Text platzieren
      */
+    if(posX<0 or posY<0){
+        posX = 0;
+        posY = 0;
+    }
     if (posX >= inputImg.cols) {
         posX = 0;
     }
@@ -33,7 +37,7 @@ Mat CvHelper::drawString(Mat inputImg, String text, Scalar color, int posX, int 
         posY = 0;
     }
 
-    putText(inputImg, text, Point(posX, posY), CV_FONT_NORMAL, 10.0, color, 2, CV_AA, false);
+    putText(inputImg, text, Point(posX, posY), CV_FONT_NORMAL, 1.0, color, 2, 0, false);
     return inputImg;
 }
 
@@ -90,14 +94,36 @@ Mat CvHelper::buildImageGrid(vector<Mat*> images, vector<String> imageTags, Scal
     grid = Mat(gridHeight, gridWidth, CV_8UC3);
 
 
-    Mat norm = (*images.at(0));
-    Mat canny8C3 = Mat(Size(images.at(2)->rows, images.at(2)->cols), CV_8UC3);
-    cvtColor((*images.at(2)), canny8C3, CV_GRAY2RGB);
-    Mat gray8C3 = Mat(Size(images.at(1)->rows, images.at(1)->cols), CV_8UC3);
-    cvtColor((*images.at(1)), gray8C3, CV_GRAY2RGB);
-    images[0] = &norm;
-    images[1] = &canny8C3;
-    images[2] = &gray8C3;
+    //    Mat norm = (*images.at(0));
+    //    Mat canny8C3 = Mat(Size(images.at(2)->rows, images.at(2)->cols), CV_8UC3);
+    //    cvtColor((*images.at(2)), canny8C3, CV_GRAY2RGB);
+    //    Mat gray8C3 = Mat(Size(images.at(1)->rows, images.at(1)->cols), CV_8UC3);
+    //    cvtColor((*images.at(1)), gray8C3, CV_GRAY2RGB);
+    //    images[0] = &norm;
+    //    images[1] = &canny8C3;
+    //    images[2] = &gray8C3;
+
+    int len = images.size();
+    Mat *curr;
+    for (int i = 0; i < len; i++) {
+        curr = new Mat(images.at(i)->size(), CV_8UC3);
+        if (images.at(i)->type() == CV_8UC3) {
+            images[i]->copyTo((*curr));
+            drawString((*curr),imageTags[i],color,images[i]->cols / 2, images[i]->rows /2);
+            images[i] = curr;
+            
+        } else if (images.at(i)->type() == CV_8UC1) {
+            cvtColor((*images.at(i)), (*curr), CV_GRAY2RGB);
+            drawString((*curr),imageTags[i],Scalar(0,0,0,0),images[i]->cols / 2, images[i]->rows /2);
+            images[i] = curr;
+            
+            
+        } else {
+            break;
+        }
+
+    }
+
 
 
 
@@ -110,6 +136,7 @@ Mat CvHelper::buildImageGrid(vector<Mat*> images, vector<String> imageTags, Scal
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < column; j++) {
             if (images.size() <= (unsigned int) ((i * j) + j)) {
+                DBG("Zu wenige Bilder");
                 break;
             }
             currImg = (*images.at((i * j) + j));
@@ -144,9 +171,9 @@ CvHelper::CvHelper() {
 CvHelper* CvHelper::getInstance() {
     if (instance == NULL) {
         instance = new CvHelper();
-        
+
     }
-    
+
     return instance;
 
 }
@@ -453,6 +480,9 @@ vector<Mat> CvHelper::swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, M
         //        tmp1 = img1_mask bitor img1;
 
         //        img1Roi = img2_mask bitand img1Roi;
+        resize(img1(face1), img1Roi, Size(face2.width, face2.height), 0, 0);
+        resize(img2(face2), img2Roi, Size(face1.width, face1.height), 0, 0);
+
 
     } else {
         /*
@@ -528,6 +558,8 @@ int CvHelper::codecFromString(String codec) {
         DBG("Falsche länge: %i", (int) codec.length());
         return -2;
     }
+
+
     return -2; //FIXME: not implemented yet
 }
 
@@ -536,84 +568,85 @@ Mat& CvHelper::scaleImage(Mat& img, const float scale) {
         DBG("Image hat keine Daten");
         return img;
     }
-   
-    Mat scaled=Mat::zeros(Size(((int)((float)img.size().width)*scale),((int)((float)img.size().height)*scale)), img.type());//Mat(Size(((int)((float)img.size().width)*scale),((int)((float)img.size().height)*scale)), img.type());
-    
-    resize(img,scaled,scaled.size(),0,0,INTER_LINEAR);
-    
-    img=scaled;
+
+    Mat scaled = Mat::zeros(Size(((int) ((float) img.size().width) * scale), ((int) ((float) img.size().height) * scale)), img.type()); //Mat(Size(((int)((float)img.size().width)*scale),((int)((float)img.size().height)*scale)), img.type());
+
+    resize(img, scaled, scaled.size(), 0, 0, INTER_LINEAR);
+
+    img = scaled;
     return img;
 }
 
 MatND CvHelper::makeHist(Mat *leImg) {
-    
+
     MatND hist;
-    
+
     cv::Mat greyMat;
-    
+
     Mat *img = leImg;
-    
+
     if (img->channels() != 1) { // Wenn mehrkanaliges Bild vorliegt, dieses in Grautonbild umwandeln und von diesem Histogram erstellen
-        
+
         cv::cvtColor(*img, greyMat, CV_BGR2GRAY);
-        DBG("Habe Img mit %d Kanälen als Grautonbild umgewandelt!",leImg->channels());
+        DBG("Habe Img mit %d Kanälen als Grautonbild umgewandelt!", leImg->channels());
         img = &greyMat;
-       
+
     }
-    
+
     int histSize[1];
     int channels[1];
     float hranges[2];
     const float *ranges[1];
-    
+
     histSize[0] = 256;
     hranges[0] = 0.0;
     hranges[1] = 255.0;
     ranges[0] = hranges;
     channels[0] = 0;
-    
-    calcHist(img,      // image to make hist from
-            1,          // histogram from 1 image
-            channels,   // the channel used
-            Mat(),      // no mask used
-            hist,       // the resulting histogram
-            1,          // 1D histogram
-            histSize,   // number of bins
-            ranges      // pixel value range
+
+    calcHist(img, // image to make hist from
+            1, // histogram from 1 image
+            channels, // the channel used
+            Mat(), // no mask used
+            hist, // the resulting histogram
+            1, // 1D histogram
+            histSize, // number of bins
+            ranges // pixel value range
             );
-    
+
     return hist;
-    
+
 }
 
 Mat CvHelper::makeHistImage(MatND &hist) {
     double minVal, maxVal;
     int histSize[1];
     int hpt;
-    
+
     histSize[0] = 256;
     minVal = 0;
     maxVal = 0;
-    
+
     minMaxLoc(hist, &minVal, &maxVal, 0, 0);
-    
-    Mat histImg (histSize[0], histSize[0], CV_8U, Scalar(255));
-    
-    hpt = static_cast<int>(0.9*histSize[0]);
-    
+
+    Mat histImg(histSize[0], histSize[0], CV_8U, Scalar(255));
+
+    hpt = static_cast<int> (0.9 * histSize[0]);
+
     DBG("minVal = %f, maxVal =%f ", minVal, maxVal);
-    
+    float binVal;
+    int intensity;
     for (int h = 0; h < histSize[0]; h++) {
-        float binVal = hist.at<float>(h);
-        int intensity = static_cast<int> (binVal*((float)hpt/maxVal));
-        
-        line(histImg, Point(h, histSize[0]), Point(h, histSize[0]-intensity), Scalar::all(0));
-        
+        binVal = hist.at<float>(h);
+        intensity = static_cast<int> (binVal * ((float) hpt / maxVal));
+
+        line(histImg, Point(h, histSize[0]), Point(h, histSize[0] - intensity), Scalar::all(0));
+
     }
-    
+
     return histImg;
-    
-    
+
+
 }
 
 

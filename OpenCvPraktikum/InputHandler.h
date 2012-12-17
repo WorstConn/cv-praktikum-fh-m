@@ -9,10 +9,10 @@
 #define NEWCAMHANDLER_H_
 #include <cv.h>
 #include <highgui.h>
-#include "ACamHandler.h"
+#include "AInputHandler.h"
 using namespace cv;
 
-class CamHandler : public ACamHandler {
+class InputHandler : public AInputHandler {
 private:
     Mat currentImage;
     VideoCapture cap;
@@ -20,12 +20,18 @@ private:
 
     virtual bool openDefIpCam();
 
+    virtual bool openVideo();
+
+    virtual bool openFolder();
+    
+    virtual void nextFromFolder();
+
     INPUT_FORMAT currentDimToInputFormat();
     Point2i formatToDimension(INPUT_FORMAT fmt);
 public:
-    CamHandler();
-    CamHandler(const char* camURL);
-    virtual ~CamHandler();
+    InputHandler();
+    InputHandler(const char* camURL);
+    virtual ~InputHandler();
 
 
     virtual bool open();
@@ -37,6 +43,8 @@ public:
     virtual Mat currentMatImage();
     virtual bool grabNext();
     virtual void dispose();
+
+
 
 
     /*

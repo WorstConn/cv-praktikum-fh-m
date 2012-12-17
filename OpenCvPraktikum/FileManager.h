@@ -9,22 +9,68 @@
 #define	FILEMANAGER_H
 
 #include "header.h"
+using namespace std;
 
 class FileManager {
 public:
-    FileManager();
-    FileManager(const FileManager& orig);
+
     virtual ~FileManager();
 
 
 
+    static FileManager* getInstance();
 
+    /**
+     * Sucht rekursiv nach Dateien, in denen 'name' im Namen vorkommt.
+     * @param name Das Suchwort.
+     * @param dir der Ordner der durchsucht werden soll.
+     */
+    void find(set<String> name, String dir);
+    /**
+     * Pr&uuml;ft, ob die Datei, mit dem angegebenen Namen existiert.
+     * @param path Der Pfad.
+     * @return <code>true</code>, wenn die Datei existiert. Sonst <code>false</code>.
+     */
+    bool checkFile(String path);
+    /**
+     * Pr&uuml;ft, ob der gegebene Ordner Bilddateien enth&auml;lt.
+     * @param path Der Pfrad des Ordners.
+     * @return die Anzahl der gefundenen Dateien, oder <code>-1</code> bei fehler.
+     */
+    int checkDir(String path);
 
-    void find(String name, String dir);
-
+    /**
+     * Gibt die Liste der zuletzt gefundenen Dateien zur&uuml;ck.
+     * @return  Die Liste der Dateinamen;
+     */
+    vector<String> getFoundList();
+    /**
+     * Gibt die Liste der zuletzt gesuchten Worte zur&uuml;ck.
+     * @return Die Liste der Suchw&ouml;rter.
+     */
+    set<String> getSearchStrings();
+    /**
+     * Gibt den letzten Suchpfad zur&uuml;ck.
+     * @return den letzten Suchpfad, oder einen leeren String,
+     */
+    String getSearchPath();
+    
+    void setSearchPath(String path);
+    
+    void setSearchStrings(set<String> strings);
+    
+    void addSearchString(String str);
+    
+    
 private:
+    vector<String> foundFiles;
+    set<String> searchStrings;
+    String searchPath;
 
-    int seekdir(vector<vector<String >> &mylist, String path, String name);
+    FileManager();
+    FileManager(const FileManager& orig);
+    static FileManager *instance;
+    int seekdir(vector<vector<String >> &mylist, String path, set<String> name);
 
 };
 
