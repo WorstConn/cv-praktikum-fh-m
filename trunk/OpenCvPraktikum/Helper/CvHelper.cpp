@@ -561,10 +561,11 @@ MatND CvHelper::makeHist(Mat *leImg) {
 
     MatND hist;
 
-    cv::Mat greyMat;
+    cv::Mat greyMat = Mat(leImg->size(), CV_8UC1);
 
-    Mat *img = leImg;
+    Mat *img = new Mat(leImg->size(), leImg->type());
 
+    leImg->copyTo((*img));
     if (img->channels() != 1) { // Wenn mehrkanaliges Bild vorliegt, dieses in Grautonbild umwandeln und von diesem Histogram erstellen
 
         cv::cvtColor(*img, greyMat, CV_BGR2GRAY);
@@ -841,7 +842,7 @@ Mat CvHelper::equalizeHistogram(Mat& img, bool convertback, bool inputIsBGR) {
         }
 
     } else {
-        equalized = img;
+        gray = img;
     }
 
     try {
@@ -912,3 +913,17 @@ Mat CvHelper::removeBackground(vector<Mat>bg, Mat img) {
 
 }
 
+Mat CvHelper::convertBlackAndWhite(Mat& in, int thld) {
+    Mat singleChannelImg;
+    if (in.type() != CV_8UC1) {
+        DBG("Convertiere zu 8UC1");
+
+        singleChannelImg = Mat(in.size(), CV_8UC1);
+        cvtColor(in, singleChannelImg, CV_BGR2GRAY);
+    } else {
+        singleChannelImg = Mat(in.size(), CV_8UC1);
+        in.copyTo(singleChannelImg);
+    }
+    threshold(singleChannelImg, singleChannelImg, thld, 255, CV_THRESH_BINARY);
+    return singleChannelImg;
+}

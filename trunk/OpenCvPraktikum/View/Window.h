@@ -21,7 +21,7 @@ public:
     bool isShowing();
     void closeWindow();
     virtual ~Window();
-    void addTrackbar(String name, int i, void (*ptr)(int pos, void* usr_dat));
+    void addTrackbar(String name, int i, TrackbarCallback cb); //FIXME: Verwendung schwierig
 
 private:
     String name;
