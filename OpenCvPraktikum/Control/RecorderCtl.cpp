@@ -16,6 +16,7 @@ RecorderCtl::RecorderCtl(String ctl) {
     wnd = new Window(name);
     state = INIT;
     ctlThread = NULL;
+    lastImgUpdate = -1;
 }
 
 RecorderCtl::RecorderCtl(const RecorderCtl& orig) {
@@ -24,6 +25,7 @@ RecorderCtl::RecorderCtl(const RecorderCtl& orig) {
     wnd = orig.wnd;
     state = orig.state;
     ctlThread = NULL;
+    lastImgUpdate = orig.lastImgUpdate;
 }
 
 RecorderCtl::~RecorderCtl() {
@@ -110,25 +112,29 @@ void RecorderCtl::startRecording() {
         state = RECORD;
     }
     if (ctlThread != NULL) {
-        
+
         if (ctlThread->joinable()) {
             DBG("Waiting for work-thread to finish");
             ctlThread->join();
         }
 
     }
-    DBG("Starte Grab");
+    DBG("Starte Aufnahmethread");
     ctlThread = new thread(&RecorderCtl::recordLoop, this);
 
 
 }
 
-void RecorderCtl::createCapture(ImageInput& in) {
+void RecorderCtl::createCapture(ImageSequenceInput& in) {
     capture = new CvVideoCapture(in);
 }
 
 void RecorderCtl::grabLoop() {
-
+    time_t curr;
+    time(&curr);
+    if (lastImgUpdate == -1 || (((long int) curr)-((long int) lastImgUpdate)) > 30) {
+        DBG("Initialisiere Zeit.");
+    }
     Mat tmp;
     if (!wnd->isShowing()) {
         wnd->showWindow();
@@ -149,6 +155,12 @@ void RecorderCtl::grabLoop() {
 
 void RecorderCtl::recordLoop() {
 
+    time_t curr;
+    time(&curr);
+    if (lastImgUpdate == -1 || (((long int) curr)-((long int) lastImgUpdate)) > 30) {
+        DBG("Initialisiere Zeit.");
+        time(&lastImgUpdate);
+    }
     Mat tmp;
     if (!wnd->isShowing()) {
 

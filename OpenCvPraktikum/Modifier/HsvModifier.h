@@ -1,0 +1,28 @@
+/* 
+ * File:   HsvModifier.h
+ * Author: Nils Frenking
+ *
+ * Created on 20. Dezember 2012, 11:56
+ */
+
+#ifndef HSVMODIFIER_H
+#define	HSVMODIFIER_H
+
+#include "../header.h"
+using namespace std;
+using namespace cv;
+
+class HsvModifier : public ImageModificator {
+public:
+    HsvModifier();
+    HsvModifier(const HsvModifier& orig);
+    virtual ~HsvModifier();
+    virtual void modify(Mat&);
+    virtual bool doesAction(); // etwas stupide...
+    float getScale();
+private:
+    CvHelper* helper;
+};
+
+#endif	/* HSVMODIFIER_H */
+
