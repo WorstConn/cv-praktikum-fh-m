@@ -139,7 +139,7 @@ bool Window::isShowing() {
 }
 //FIME: TrackBar-Prop-Objekt erstellen!!
 
-void Window::addTrackbar(String name, int max, void (*ptr)(int pos, void* usr_dat)) {
+void Window::addTrackbar(String name, int max, TrackbarCallback ptr) {
     map < pair<String, bool>, TrackbarData> ::iterator iter;
     trackbarsMutex.lock();
     for (iter = trackbars.begin(); iter != trackbars.end(); iter++) {

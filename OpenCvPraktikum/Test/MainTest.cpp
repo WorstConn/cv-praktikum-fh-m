@@ -24,11 +24,19 @@ MainTest::~MainTest() {
 
 int MainTest::testMain(vector<String> args) {// LOL
     vector<int> retVals;
-    int testsResult = 0x00;
+
     vector<ATest*>::iterator iter;
     for (iter = tests.begin(); iter != tests.end(); iter++) {
         retVals.push_back((*iter)->testMain(args));
     }
+    vector<int>::iterator it;
+    for (it = retVals.begin(); it != retVals.end(); it++) {
+        if ((*it) == EXIT_FAILURE) {
+            return EXIT_FAILURE;
+        }
+    }
+    DBG("%i Tests ohne Fehler ausgeführt.", static_cast<int>(retVals.size()));
+    return EXIT_SUCCESS;
 }
 
 void MainTest::putTest(ATest* test) {

@@ -56,7 +56,7 @@ public:
      * @param height Maximale H&ouml;he des Ergebnisbildes
      * @return Ein Bild, das aus den Eingabebildern zusammengesetzt ist
      */
-    virtual Mat buildImageGrid(vector<Mat*> images, vector<String> imageTags, Scalar color, int maxColumn, int width, int height);
+    virtual Mat buildImageGrid(vector<Mat*> images, vector<String> imageTags, Scalar color, int maxColumn, int width, int height); //FIXME: Fehler erstellen des Grids!
 
 
     /**
@@ -157,10 +157,10 @@ public:
      */
     Mat makeHistImage(MatND &hist);
 
-    double getPSNR(const Mat& I1, const Mat& I2);
-
-
-    Scalar getMSSIM(const Mat& I1, const Mat& I2);
+    //    double getPSNR(const Mat& I1, const Mat& I2);
+    //
+    //
+    //    Scalar getMSSIM(const Mat& I1, const Mat& I2);
 
     Mat applySurfDetect(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
     vector< DMatch > findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
@@ -174,7 +174,7 @@ public:
      * @param inputIsBGR Gibt an, ob das Bild den BGR Farbraum verwendet. Default ist <code>true</code>.
      * @return Ein in Helligkeit normalisiertes und in Kontrast erh&ouml;tes Bild.
      */
-    Mat equalizeHistogram(Mat& img, bool convertRGB, bool inputIsBGR = true);
+    Mat equalizeHistogram(Mat& img, bool convertback, bool inputIsBGR = true);
 
     /**
      * Vergleicht zwei Histogramme.
@@ -191,7 +191,7 @@ public:
      * @param mat eine Bildfolge
      * @return Das Akkumulierte Bild
      */
-    Mat accumulateImages(vector<Mat> mat);
+    Mat accumulateImages(vector<Mat> mat); // FIXME: Implementieren!
 
     /**
      * Enfernt den Hintergrund eines Bildes mithilfe eines Kallibrierungsbiles(Bildfolge)
@@ -199,7 +199,9 @@ public:
      * @param img Das Bild mit Objekt
      * @return Ein Bild mit geschw&auml;rztem Hintergrund.
      */
-    Mat removeBackground(vector<Mat>bg, Mat img);
+    Mat removeBackground(vector<Mat>bg, Mat img); //FIXME: Implementieren!
+
+    Mat convertBlackAndWhite(Mat& in, int threshold);
 };
 
 
