@@ -37,23 +37,25 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/View/TrackbarData.o \
 	${OBJECTDIR}/Test/ATest.o \
-	${OBJECTDIR}/CvHelper.o \
-	${OBJECTDIR}/MyMath.o \
+	${OBJECTDIR}/Helper/FileManager.o \
 	${OBJECTDIR}/Modifier/ImageModificator.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/Control/RecorderCtl.o \
 	${OBJECTDIR}/Input/AInputHandler.o \
 	${OBJECTDIR}/Modifier/HsvModifier.o \
+	${OBJECTDIR}/Test/MainTest.o \
+	${OBJECTDIR}/Test/Prak3A8.o \
 	${OBJECTDIR}/Modifier/ScaleModificator.o \
 	${OBJECTDIR}/Output/VideoOutput.o \
-	${OBJECTDIR}/FileManager.o \
 	${OBJECTDIR}/CvVideoCapture.o \
 	${OBJECTDIR}/Input/ImageSequenceInput.o \
 	${OBJECTDIR}/Output/ImageListOutput.o \
 	${OBJECTDIR}/Input/ImageInput.o \
+	${OBJECTDIR}/Helper/CvHelper.o \
 	${OBJECTDIR}/Output/Output.o \
 	${OBJECTDIR}/View/Window.o \
 	${OBJECTDIR}/Input/InputHandler.o \
+	${OBJECTDIR}/Helper/MyMath.o \
 	${OBJECTDIR}/Modifier/CompositeModificator.o
 
 
@@ -91,15 +93,10 @@ ${OBJECTDIR}/Test/ATest.o: Test/ATest.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Test/ATest.o Test/ATest.cpp
 
-${OBJECTDIR}/CvHelper.o: CvHelper.cpp 
-	${MKDIR} -p ${OBJECTDIR}
+${OBJECTDIR}/Helper/FileManager.o: Helper/FileManager.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Helper
 	${RM} $@.d
-	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/CvHelper.o CvHelper.cpp
-
-${OBJECTDIR}/MyMath.o: MyMath.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/MyMath.o MyMath.cpp
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Helper/FileManager.o Helper/FileManager.cpp
 
 ${OBJECTDIR}/Modifier/ImageModificator.o: Modifier/ImageModificator.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Modifier
@@ -126,6 +123,16 @@ ${OBJECTDIR}/Modifier/HsvModifier.o: Modifier/HsvModifier.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Modifier/HsvModifier.o Modifier/HsvModifier.cpp
 
+${OBJECTDIR}/Test/MainTest.o: Test/MainTest.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Test
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Test/MainTest.o Test/MainTest.cpp
+
+${OBJECTDIR}/Test/Prak3A8.o: Test/Prak3A8.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Test
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Test/Prak3A8.o Test/Prak3A8.cpp
+
 ${OBJECTDIR}/Modifier/ScaleModificator.o: Modifier/ScaleModificator.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Modifier
 	${RM} $@.d
@@ -135,11 +142,6 @@ ${OBJECTDIR}/Output/VideoOutput.o: Output/VideoOutput.cpp
 	${MKDIR} -p ${OBJECTDIR}/Output
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Output/VideoOutput.o Output/VideoOutput.cpp
-
-${OBJECTDIR}/FileManager.o: FileManager.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/FileManager.o FileManager.cpp
 
 ${OBJECTDIR}/CvVideoCapture.o: CvVideoCapture.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -161,6 +163,11 @@ ${OBJECTDIR}/Input/ImageInput.o: Input/ImageInput.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Input/ImageInput.o Input/ImageInput.cpp
 
+${OBJECTDIR}/Helper/CvHelper.o: Helper/CvHelper.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Helper
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Helper/CvHelper.o Helper/CvHelper.cpp
+
 ${OBJECTDIR}/Output/Output.o: Output/Output.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Output
 	${RM} $@.d
@@ -175,6 +182,11 @@ ${OBJECTDIR}/Input/InputHandler.o: Input/InputHandler.cpp
 	${MKDIR} -p ${OBJECTDIR}/Input
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Input/InputHandler.o Input/InputHandler.cpp
+
+${OBJECTDIR}/Helper/MyMath.o: Helper/MyMath.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Helper
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Helper/MyMath.o Helper/MyMath.cpp
 
 ${OBJECTDIR}/Modifier/CompositeModificator.o: Modifier/CompositeModificator.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Modifier

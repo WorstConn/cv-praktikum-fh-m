@@ -7,6 +7,8 @@
 
 #ifndef MATH_H_
 #define MATH_H_
+
+#include "../header.h"
 using namespace std;
 using namespace cv;
 

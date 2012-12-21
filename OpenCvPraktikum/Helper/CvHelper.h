@@ -7,9 +7,11 @@
 
 #ifndef CVHELPER_H_
 #define CVHELPER_H_
+#include "../header.h"
 
 using namespace std;
 using namespace cv;
+
 
 //struct BufferPSNR
 //// Optimized GPU versions

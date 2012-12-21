@@ -125,12 +125,10 @@ typedef struct inode_struct Inode;
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="             Hilfsklassen">
-/**
- * Sonstige
- */
-#include "MyMath.h"
-#include "FileManager.h"
-#include "CvHelper.h"
+
+#include "Helper/MyMath.h"
+#include "Helper/FileManager.h"
+#include "Helper/CvHelper.h"
 
 // </editor-fold>
 
@@ -188,6 +186,8 @@ typedef struct inode_struct Inode;
 // <editor-fold defaultstate="collapsed" desc="             Test">
 
 #include "Test/ATest.h"
+#include "Test/MainTest.h"
+#include "Test/Prak3A8.h"
 
 // </editor-fold>
 

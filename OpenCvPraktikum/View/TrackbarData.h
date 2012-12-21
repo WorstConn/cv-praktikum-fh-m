@@ -27,7 +27,6 @@ private:
 
 };
 
-//FIXME: GETTER / SETTER USW.
 
 #endif	/* TRACKBARDATA_H */
 
