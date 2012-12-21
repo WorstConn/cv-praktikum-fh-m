@@ -14,12 +14,38 @@
 #include <map>
 #include <string>
 
+
 #if 1
 
 using namespace std;
 using namespace cv;
 
-int main() {
+int main(int argc, char* argv[]) {
+    MainTest test = MainTest();
+    vector<String> argsVec;
+    if (argc > 1) {
+        String tmp;
+        for (int i = 1; i < argc; i++) {
+            tmp = String(argv[i]);
+            argsVec.push_back(tmp);
+        }
+    }
+    test.putTest(new Prak3A8());
+    if (test.testMain(argsVec) == EXIT_SUCCESS) {
+        DBG("Alle Tests erfolgreich");
+    }
+
+}
+
+
+#endif
+
+#if 0
+
+using namespace std;
+using namespace cv;
+
+int main(int argc, char* argv[]) {
 
     InputHandler input = InputHandler();
     input.setInputSource(INPUT_CAM);
@@ -32,7 +58,7 @@ int main() {
     //    CvVideoCapture cap(input);
     //    cap.setFramesToRecord(50000);
     //    cap.setTimeToRecord(15);
-    ImageListOutput out("/home/ertai/NetBeansProjects/OpenCvPraktikum/imgseq_out", "bg4");
+    //ImageListOutput out("/home/ertai/NetBeansProjects/OpenCvPraktikum/imgseq_out", "bg4");
     //    cap.setOutput(&out);
     //    RecorderCtl ctl = RecorderCtl("Test");
     //    ctl.setCapture(&cap);
@@ -58,7 +84,7 @@ int main() {
         frame = input.getImage();
         vector<Mat*> images;
         grid = help->equalizeHistogram(frame, true, true);
-        
+
     }
 
     return EXIT_SUCCESS;

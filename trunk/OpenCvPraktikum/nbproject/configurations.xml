@@ -17,12 +17,12 @@
         <itemPath>Control/RecorderCtl.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f6" displayName="Helper" projectFiles="true">
-        <itemPath>CvHelper.cpp</itemPath>
-        <itemPath>CvHelper.h</itemPath>
-        <itemPath>FileManager.cpp</itemPath>
-        <itemPath>FileManager.h</itemPath>
-        <itemPath>MyMath.cpp</itemPath>
-        <itemPath>MyMath.h</itemPath>
+        <itemPath>Helper/CvHelper.cpp</itemPath>
+        <itemPath>Helper/CvHelper.h</itemPath>
+        <itemPath>Helper/FileManager.cpp</itemPath>
+        <itemPath>Helper/FileManager.h</itemPath>
+        <itemPath>Helper/MyMath.cpp</itemPath>
+        <itemPath>Helper/MyMath.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f5" displayName="Input" projectFiles="true">
         <itemPath>Input/AInputHandler.cpp</itemPath>
@@ -55,6 +55,10 @@
       <logicalFolder name="f7" displayName="Test" projectFiles="true">
         <itemPath>Test/ATest.cpp</itemPath>
         <itemPath>Test/ATest.h</itemPath>
+        <itemPath>Test/MainTest.cpp</itemPath>
+        <itemPath>Test/MainTest.h</itemPath>
+        <itemPath>Test/Prak3A8.cpp</itemPath>
+        <itemPath>Test/Prak3A8.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="View" projectFiles="true">
         <itemPath>View/TrackbarData.cpp</itemPath>

@@ -5,7 +5,7 @@
  * Created on 28. November 2012, 23:28
  */
 
-#include "header.h"
+#include "../header.h"
 
 using namespace std;
 using namespace cv;

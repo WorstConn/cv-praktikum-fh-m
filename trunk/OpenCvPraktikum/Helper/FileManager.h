@@ -8,7 +8,7 @@
 #ifndef FILEMANAGER_H
 #define	FILEMANAGER_H
 
-#include "header.h"
+#include "../header.h"
 using namespace std;
 
 class FileManager {
