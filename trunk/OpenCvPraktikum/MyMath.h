@@ -54,16 +54,34 @@ public:
      */
     static bool biggerThan(Rect a, Rect b);
 
-
+    /**
+     * Distanz zwischen zwei Punkten.
+     * @param pFrom Punkt 1
+     * @param pTo Punkt 2
+     * @return die Distanz
+     */
     static float dist(Point3f pFrom, Point3f pTo);
 
+    /**
+     * Distanz zwischen zwei Punkten.
+     * @param pFrom Punkt 1
+     * @param pTo Punkt 2
+     * @return die Distanz
+     */
     static float dist(Point2i pFrom, Point2i pTo);
-
+    /**
+     * Gibt an, ob sich ein Punkt innerhalb oder ausserhalb eines Keises,<br>
+     * gegeben durch <code>center</code> und <code>radius</code>, befindet.
+     * @param center Zentrum des Kreises
+     * @param radius Radius des Kreises
+     * @param examine der Punkt, der Untersucht werden soll.
+     * @return 
+     */
     static bool isInCircle(Point2i center, int radius, Point2i examine);
 
     static Point3i RectToCircle(Rect r);
-    
-    
+
+
     static Point2i RectCenter(Rect r);
 
     static int RectRadius(Rect rect);

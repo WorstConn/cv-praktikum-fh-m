@@ -11,13 +11,13 @@
 using namespace std;
 using namespace cv;
 
-struct BufferPSNR
-// Optimized GPU versions
-{
-    // Data allocations are very expensive on GPU. Use a buffer to solve: allocate once reuse later.
-    gpu::GpuMat gI1, gI2, gs, t1, t2;
-};
-gpu::GpuMat buf;
+//struct BufferPSNR
+//// Optimized GPU versions
+//{
+//    // Data allocations are very expensive on GPU. Use a buffer to solve: allocate once reuse later.
+//    gpu::GpuMat gI1, gI2, gs, t1, t2;
+//};
+//static gpu::GpuMat buf;
 
 class CvHelper {
 private:
@@ -160,7 +160,44 @@ public:
 
     Scalar getMSSIM(const Mat& I1, const Mat& I2);
 
+    Mat applySurfDetect(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
+    vector< DMatch > findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
+    vector<KeyPoint> findKeyPoints(Mat& img, int hessian);
+    MatND makeHSHist(Mat& mat);
+    Mat makeHSHistImage(MatND &hist);
+    /**
+     * F&uuml;hrt eine Histogram Angleichung durch. Die Helligkeit wird normalisiert und der Kontrast erh&ouml;t.
+     * @param img Das Eingabebild.
+     * @param convertRGB Gibt an, ob das Ausgabebild zu RGB convertiert werden soll.
+     * @param inputIsBGR Gibt an, ob das Bild den BGR Farbraum verwendet. Default ist <code>true</code>.
+     * @return Ein in Helligkeit normalisiertes und in Kontrast erh&ouml;tes Bild.
+     */
+    Mat equalizeHistogram(Mat& img, bool convertRGB, bool inputIsBGR = true);
 
+    /**
+     * Vergleicht zwei Histogramme.
+     * @param hist1 
+     * @param hist2
+     * @param m Die Vergleichsmethode die verwendet wird. -> CV_COMP_*
+     * @return Ein <code>double</code>, das angibt, wie &auml;hnlich sich die Histogramme sind.
+     */
+    double compareHistogram(MatND& hist1, MatND& hist2, int method = CV_COMP_BHATTACHARYYA);
+
+
+    /**
+     * Akkumuliert eine Bildfolge
+     * @param mat eine Bildfolge
+     * @return Das Akkumulierte Bild
+     */
+    Mat accumulateImages(vector<Mat> mat);
+
+    /**
+     * Enfernt den Hintergrund eines Bildes mithilfe eines Kallibrierungsbiles(Bildfolge)
+     * @param bg der Hintergrund ohne Objekt
+     * @param img Das Bild mit Objekt
+     * @return Ein Bild mit geschw&auml;rztem Hintergrund.
+     */
+    Mat removeBackground(vector<Mat>bg, Mat img);
 };
 
 

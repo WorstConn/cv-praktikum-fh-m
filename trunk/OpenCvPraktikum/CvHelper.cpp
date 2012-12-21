@@ -26,14 +26,14 @@ Mat CvHelper::drawString(Mat inputImg, String text, Scalar color, int posX, int 
     /**
      * Text platzieren
      */
-    if(posX<0 or posY<0){
+    if (posX < 0 or posY < 0) {
         posX = 0;
         posY = 0;
     }
-    if (posX >= inputImg.cols) {
+    if (posX > inputImg.cols) {
         posX = 0;
     }
-    if (posY >= inputImg.rows) {
+    if (posY > inputImg.rows) {
         posY = 0;
     }
 
@@ -94,38 +94,6 @@ Mat CvHelper::buildImageGrid(vector<Mat*> images, vector<String> imageTags, Scal
     grid = Mat(gridHeight, gridWidth, CV_8UC3);
 
 
-    //    Mat norm = (*images.at(0));
-    //    Mat canny8C3 = Mat(Size(images.at(2)->rows, images.at(2)->cols), CV_8UC3);
-    //    cvtColor((*images.at(2)), canny8C3, CV_GRAY2RGB);
-    //    Mat gray8C3 = Mat(Size(images.at(1)->rows, images.at(1)->cols), CV_8UC3);
-    //    cvtColor((*images.at(1)), gray8C3, CV_GRAY2RGB);
-    //    images[0] = &norm;
-    //    images[1] = &canny8C3;
-    //    images[2] = &gray8C3;
-
-    int len = images.size();
-    Mat *curr;
-    for (int i = 0; i < len; i++) {
-        curr = new Mat(images.at(i)->size(), CV_8UC3);
-        if (images.at(i)->type() == CV_8UC3) {
-            images[i]->copyTo((*curr));
-            drawString((*curr),imageTags[i],color,images[i]->cols / 2, images[i]->rows /2);
-            images[i] = curr;
-            
-        } else if (images.at(i)->type() == CV_8UC1) {
-            cvtColor((*images.at(i)), (*curr), CV_GRAY2RGB);
-            drawString((*curr),imageTags[i],Scalar(0,0,0,0),images[i]->cols / 2, images[i]->rows /2);
-            images[i] = curr;
-            
-            
-        } else {
-            break;
-        }
-
-    }
-
-
-
 
     Rect roi;
     /*
@@ -133,30 +101,41 @@ Mat CvHelper::buildImageGrid(vector<Mat*> images, vector<String> imageTags, Scal
      */
     Mat roiImg;
     Mat currImg;
+    int pos = 0;
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < column; j++) {
-            if (images.size() <= (unsigned int) ((i * j) + j)) {
+            if (images.size() <= pos) {
                 DBG("Zu wenige Bilder");
                 break;
             }
-            currImg = (*images.at((i * j) + j));
 
-            if (currImg.type() == CV_8UC1) {
-                Mat tmp;
-                cvtColor(currImg, tmp, CV_GRAY2RGB);
-                currImg = tmp;
+            currImg = (*images.at(pos));
+
+            if (images.at(pos)->type() == CV_8UC3) {
+                images[i]->copyTo((currImg));
+
+
+
+            } else if (images.at(pos)->type() == CV_8UC1) {
+                cvtColor((*images.at(pos)), (currImg), CV_GRAY2RGB);
+
+
+
+
             }
 
             roi = Rect(j * w + j * rahmenbreite, i * h + i * rahmenbreite, w, h);
-            roiImg = Mat(Size(roi.width, roi.height), images.at((i * j) + j)->type());
+            roiImg = Mat(Size(roi.width, roi.height), images.at(pos)->type());
 
 
             resize(currImg, roiImg, Size(roi.width, roi.height), 0, 0, 0);
+            drawString(roiImg, imageTags[pos], color, 5, roi.height - 5);
+
             roiImg.copyTo(grid(roi));
 
             roiImg.release();
             currImg.release();
-
+            pos++;
         }
     }
     images.clear();
@@ -255,7 +234,7 @@ Mat CvHelper::copyToCircularROI(Mat inputImg, Rect roi, Mat roiImg) {
  */
 void CvHelper::printImageInfo(Mat image) {
     if (image.data == NULL) {
-        cout << "Keine Daten" << endl;
+        DBG("Keine Daten");
         return;
     }
     cout << "Pixel: " << image.cols << "x" << image.rows << endl;
@@ -484,6 +463,7 @@ vector<Mat> CvHelper::swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, M
         resize(img2(face2), img2Roi, Size(face1.width, face1.height), 0, 0);
 
 
+
     } else {
         /*
          * Groesse der gesichter anpassen
@@ -606,7 +586,7 @@ MatND CvHelper::makeHist(Mat *leImg) {
 
     calcHist(img, // image to make hist from
             1, // histogram from 1 image
-            channels, // the channel used
+            channels, // the channels used
             Mat(), // no mask used
             hist, // the resulting histogram
             1, // 1D histogram
@@ -648,7 +628,6 @@ Mat CvHelper::makeHistImage(MatND &hist) {
 
 
 }
-
 
 /**
  * Histogram
@@ -704,4 +683,232 @@ Mat CvHelper::makeHistImage(MatND &hist) {
 }
  */
 
+Mat CvHelper::applySurfDetect(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist) {
+    vector<KeyPoint> refImgKeyPoints = findKeyPoints(refImg, hessian);
+    vector<KeyPoint> refKeyPoints = findKeyPoints(ref, hessian);
+    if (refImgKeyPoints.size() == 0 or refKeyPoints.size() == 0) {
+        DBG("Keine Keypoints gefunden. Leeres Bild?");
+        return Mat();
+    }
+    DBG("KeyPoints gefunden, %d,%d", (int) refImgKeyPoints.size(), (int) refKeyPoints.size());
+
+    vector< DMatch > goodMatches = findSurfMatches(refImg, ref, hessian, minDist, maxDist);
+
+    //-- Draw only "good" matches
+    Mat matchesImg;
+#ifdef DEBUG
+    drawMatches(refImg, refImgKeyPoints, ref, refKeyPoints,
+            goodMatches, matchesImg, Scalar::all(-1), Scalar::all(-1),
+            vector<char>(), DrawMatchesFlags::DEFAULT bitor DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS bitor DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    DBG("Show detected matches");
+    imshow("Good Matches", matchesImg);
+#endif
+
+    return matchesImg;
+
+}
+
+vector<DMatch> CvHelper::findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist) {
+    vector<KeyPoint> refImgKeyPoints = findKeyPoints(refImg, hessian);
+    vector<KeyPoint> refKeyPoints = findKeyPoints(ref, hessian);
+    SurfDescriptorExtractor descExtractor;
+    FlannBasedMatcher matcher;
+
+    Mat desc1, desc2;
+    descExtractor.compute(refImg, refImgKeyPoints, desc1);
+    descExtractor.compute(ref, refKeyPoints, desc2);
+
+
+    vector<DMatch> matches;
+    matcher.match(desc1, desc2, matches);
+    double max_dist = maxDist;
+    double min_dist = minDist;
+
+    for (int i = 0; i < desc1.rows; i++) {
+        double dist = matches[i].distance;
+        if (dist < min_dist) min_dist = dist;
+        if (dist > max_dist) max_dist = dist;
+    }
+    DBG("-- Max dist : %f \n", max_dist);
+    DBG("-- Min dist : %f \n", min_dist);
+
+
+    vector<DMatch> goodMatches;
+    for (int i = 0; i < desc1.rows; i++) {
+        if (matches[i].distance < 2 * min_dist) {
+            goodMatches.push_back(matches[i]);
+        }
+    }
+    matches.clear();
+    return goodMatches;
+
+}
+
+vector<KeyPoint> CvHelper::findKeyPoints(Mat& img, int hessian) {
+    SurfFeatureDetector detector(hessian);
+    Mat input1 = img;
+
+    if (input1.data == NULL) {
+        DBG(" --(!) Error reading images ");
+        return vector<KeyPoint > ();
+    }
+
+
+
+    vector<KeyPoint> keyPoints;
+    detector.detect(input1, keyPoints);
+
+    return keyPoints;
+
+}
+
+MatND CvHelper::makeHSHist(Mat& mat) {
+    Mat src = mat;
+    Mat hsv;
+
+
+    cvtColor(src, hsv, CV_BGR2HSV);
+
+    // Quantize the hue to 30 levels
+    // and the saturation to 32 levels
+    int hbins = 180, sbins = 256;
+    int histSize[] = {hbins, sbins};
+    // hue varies from 0 to 179, see cvtColor
+    float hranges[] = {0, 180};
+    // saturation varies from 0 (black-gray-white) to
+    // 255 (pure spectrum color)
+    float sranges[] = {0, 256};
+    const float* ranges[] = {hranges, sranges};
+    MatND hist;
+    // we compute the histogram from the 0-th and 1-st channels
+    int channels[] = {0, 1};
+
+    calcHist(&hsv, 1, channels, Mat(), // do not use mask
+            hist, 2, histSize, ranges,
+            true, // the histogram is uniform
+            false);
+    return hist;
+}
+
+Mat CvHelper::makeHSHistImage(MatND &hist) {
+
+    double maxVal = 0;
+    minMaxLoc(hist, 0, &maxVal, 0, 0);
+
+    int scale = 5;
+    int hbins = 30, sbins = 32;
+
+    Mat histImg = Mat::zeros(sbins*scale, hbins * 5, CV_8UC3);
+
+    for (int h = 0; h < hbins; h++)
+        for (int s = 0; s < sbins; s++) {
+            float binVal = hist.at<float>(h, s);
+            int intensity = cvRound(binVal * 255 / maxVal);
+            rectangle(histImg, Point(h*scale, s * scale),
+                    Point((h + 1) * scale - 1, (s + 1) * scale - 1),
+                    Scalar::all(intensity),
+                    CV_FILLED);
+        }
+
+
+#ifdef DEBUG
+
+    imshow("H-S Histogram", histImg);
+#endif
+    return histImg;
+}
+
+/**
+ * F&uuml;hrt eine Histogram Angleichung durch. Die Helligkeit wird normalisiert und der Kontrast erh&ouml;t.
+ * @param img Das Eingabebild.
+ * @param convertRGB Gibt an, ob das Ausgabebild zu RGB convertiert werden soll.
+ * @param inputIsBGR Gibt an, ob das Bild den BGR Farbraum verwendet. Default ist <code>true</code>.
+ * @return Ein in Helligkeit normalisiertes und in Kontrast erh&ouml;tes Bild.
+ */
+Mat CvHelper::equalizeHistogram(Mat& img, bool convertback, bool inputIsBGR) {
+
+    Mat equalized = Mat::zeros(img.size(), CV_8UC1);
+    Mat gray = Mat::zeros(img.size(), CV_8UC1);
+    if (img.type() != CV_8UC1) {
+        try {
+            if (inputIsBGR) {
+                cvtColor(img, gray, CV_BGR2GRAY);
+            } else {
+                cvtColor(img, gray, CV_RGB2GRAY);
+            }
+        } catch (Exception& ex) {
+            DBG("%s", ex.what());
+        }
+
+    } else {
+        equalized = img;
+    }
+
+    try {
+        equalizeHist(gray, equalized);
+    } catch (Exception& ex) {
+        DBG("%s", ex.what());
+    }
+    Mat erg = Mat::zeros(img.size(), (convertback) ? CV_8UC3 : CV_8UC1);
+    if (convertback) {
+        cvtColor(equalized, erg, CV_GRAY2BGR);
+    } else {
+        erg = equalized;
+    }
+    return erg;
+
+}
+
+/**
+ * Vergleicht zwei Histogramme.
+ * @param hist1 
+ * @param hist2
+ * @param m Die Vergleichsmethode die verwendet wird. -> CV_COMP_*
+ * @return Ein <code>double</code>, das angibt, wie &auml;hnlich sich die Histogramme sind.
+ */
+double CvHelper::compareHistogram(MatND& hist1, MatND& hist2, int m) {
+    double erg = 0.0;
+
+    try {
+        if (m != CV_COMP_BHATTACHARYYA && m != CV_COMP_CHISQR && m != CV_COMP_CORREL && m != CV_COMP_INTERSECT) {
+            erg = compareHist(hist1, hist2, CV_COMP_BHATTACHARYYA);
+        } else {
+            erg = compareHist(hist1, hist2, m);
+        }
+    } catch (Exception& ex) {
+        DBG("%s", ex.what());
+    }
+    return erg;
+}
+
+/**
+ * Akkumuliert eine Bildfolge
+ * @param mat eine Bildfolge
+ * @return Das Akkumulierte Bild
+ */
+Mat CvHelper::accumulateImages(vector<Mat> mat) {
+    if (mat.size() < 2) {
+        DBG("Vektor der Laenge: %i mind. 2 benoetigt", static_cast<int> (mat.size()));
+        return Mat();
+    }
+    Mat erg = mat[0];
+    for (vector<Mat>::iterator iter = (mat.begin() + 1); iter != mat.end(); iter++) {
+        Mat current = (*iter);
+        accumulate(current, erg);
+
+    }
+    return erg;
+}
+
+/**
+ * Enfernt den Hintergrund eines Bildes mithilfe eines Kallibrierungsbiles(Bildfolge)
+ * @param bg der Hintergrund ohne Objekt
+ * @param img Das Bild mit Objekt
+ * @return Ein Bild mit geschw&auml;rztem Hintergrund.
+ */
+Mat CvHelper::removeBackground(vector<Mat>bg, Mat img) {
+    Mat accum = accumulateImages(bg);
+
+
+}
 

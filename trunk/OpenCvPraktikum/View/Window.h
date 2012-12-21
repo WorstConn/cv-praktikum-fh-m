@@ -11,19 +11,21 @@
 
 using namespace std;
 using namespace cv;
+
 class Window {
 public:
-    Window(String name,int width = 0, int height = 0);
+    Window(String name, int width = 0, int height = 0);
     Window(const Window& orig);
     void setCurrentImage(Mat *current);
     void showWindow();
     bool isShowing();
     void closeWindow();
     virtual ~Window();
-    
-    
+    void addTrackbar(String name, int i, void (*ptr)(int pos, void* usr_dat));
+
 private:
     String name;
+
     int width, height;
     Mat *currentImage;
     int updateIntervall;
@@ -32,7 +34,13 @@ private:
     void loop();
     int refreshDelay;
     mutex imageMutex;
-    
+    mutex trackbarsMutex;
+    time_t lastupdate;
+    map<pair<String, bool>, TrackbarData> trackbars;
+
+
+
+
 
 };
 

@@ -16,31 +16,55 @@
         <itemPath>Control/RecorderCtl.cpp</itemPath>
         <itemPath>Control/RecorderCtl.h</itemPath>
       </logicalFolder>
+      <logicalFolder name="f6" displayName="Helper" projectFiles="true">
+        <itemPath>CvHelper.cpp</itemPath>
+        <itemPath>CvHelper.h</itemPath>
+        <itemPath>FileManager.cpp</itemPath>
+        <itemPath>FileManager.h</itemPath>
+        <itemPath>MyMath.cpp</itemPath>
+        <itemPath>MyMath.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f5" displayName="Input" projectFiles="true">
+        <itemPath>Input/AInputHandler.cpp</itemPath>
+        <itemPath>Input/AInputHandler.h</itemPath>
+        <itemPath>Input/ImageInput.cpp</itemPath>
+        <itemPath>Input/ImageInput.h</itemPath>
+        <itemPath>Input/ImageSequenceInput.cpp</itemPath>
+        <itemPath>Input/ImageSequenceInput.h</itemPath>
+        <itemPath>Input/InputHandler.cpp</itemPath>
+        <itemPath>Input/InputHandler.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f4" displayName="Modifier" projectFiles="true">
+        <itemPath>Modifier/CompositeModificator.cpp</itemPath>
+        <itemPath>Modifier/CompositeModificator.h</itemPath>
+        <itemPath>Modifier/HsvModifier.cpp</itemPath>
+        <itemPath>Modifier/HsvModifier.h</itemPath>
+        <itemPath>Modifier/ImageModificator.cpp</itemPath>
+        <itemPath>Modifier/ImageModificator.h</itemPath>
+        <itemPath>Modifier/ScaleModificator.cpp</itemPath>
+        <itemPath>Modifier/ScaleModificator.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f3" displayName="Output" projectFiles="true">
+        <itemPath>Output/ImageListOutput.cpp</itemPath>
+        <itemPath>Output/ImageListOutput.h</itemPath>
+        <itemPath>Output/Output.cpp</itemPath>
+        <itemPath>Output/Output.h</itemPath>
+        <itemPath>Output/VideoOutput.cpp</itemPath>
+        <itemPath>Output/VideoOutput.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f7" displayName="Test" projectFiles="true">
+        <itemPath>Test/ATest.cpp</itemPath>
+        <itemPath>Test/ATest.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="f1" displayName="View" projectFiles="true">
+        <itemPath>View/TrackbarData.cpp</itemPath>
+        <itemPath>View/TrackbarData.h</itemPath>
         <itemPath>View/Window.cpp</itemPath>
         <itemPath>View/Window.h</itemPath>
       </logicalFolder>
-      <itemPath>AInputHandler.cpp</itemPath>
-      <itemPath>AInputHandler.h</itemPath>
-      <itemPath>CvHelper.cpp</itemPath>
-      <itemPath>CvHelper.h</itemPath>
       <itemPath>CvVideoCapture.cpp</itemPath>
       <itemPath>CvVideoCapture.h</itemPath>
-      <itemPath>FileManager.cpp</itemPath>
-      <itemPath>FileManager.h</itemPath>
-      <itemPath>ImageInput.cpp</itemPath>
-      <itemPath>ImageInput.h</itemPath>
-      <itemPath>ImageModificator.cpp</itemPath>
-      <itemPath>ImageModificator.h</itemPath>
-      <itemPath>ImageSequenceInput.cpp</itemPath>
-      <itemPath>ImageSequenceInput.h</itemPath>
-      <itemPath>InputHandler.cpp</itemPath>
-      <itemPath>InputHandler.h</itemPath>
       <itemPath>Makefile</itemPath>
-      <itemPath>MyMath.cpp</itemPath>
-      <itemPath>MyMath.h</itemPath>
-      <itemPath>ScaleModificator.cpp</itemPath>
-      <itemPath>ScaleModificator.h</itemPath>
       <itemPath>header.h</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
@@ -94,7 +118,6 @@
           <linkerLibItems>
             <linkerOptionItem>`pkg-config --libs opencv`</linkerOptionItem>
           </linkerLibItems>
-          <commandLine>-Wl,--allow-multiple-definition</commandLine>
         </linkerTool>
       </compileType>
     </conf>

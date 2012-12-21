@@ -23,18 +23,18 @@ using namespace cv;
 class CvVideoCapture {
 private:
 
-    const static int DEFAULT_FRAME_COUNT = 7200*25;
+    const static int DEFAULT_FRAME_COUNT = 7200 * 25;
     const static int DEFAULT_DURATION = 7200;
 
     /**
      * Der Video-Writer;
      */
-    VideoWriter writer;
+    Output* writer;
 
     /**
      * Webcam Capture
      */
-    ImageInput& capture;
+    ImageSequenceInput& capture;
     /**
      * Ausgabedateiname
      */
@@ -58,6 +58,8 @@ private:
      * Startzeit der Aufnahme (in Sekunden seit 1. Januar, 1970)
      */
     time_t startTime;
+
+    int frameDelay;
 
     /**
      * Fps der Ausgabedatei
@@ -104,10 +106,10 @@ private:
 
 
 public:
-    
+
     void requestNext();
 
-    CvVideoCapture(ImageInput& in);
+    CvVideoCapture(ImageSequenceInput& in);
 
     CvVideoCapture(const CvVideoCapture&);
 
@@ -136,6 +138,8 @@ public:
 
     bool isRecording();
 
+    void setOutput(Output* out);
+
     Mat getFrame();
 
     void record();
@@ -146,15 +150,14 @@ public:
 
     void release();
 
-    void setInput(ImageInput& in);
-
-    void setOutput(String out);
+    void setInput(ImageSequenceInput& in);
 
     void setTimeToRecord(int secs);
 
     void joinThread();
 
     bool available();
+
 
 
 };

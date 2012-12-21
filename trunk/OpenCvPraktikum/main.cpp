@@ -14,31 +14,52 @@
 #include <map>
 #include <string>
 
-#if 0
+#if 1
+
+using namespace std;
+using namespace cv;
 
 int main() {
 
     InputHandler input = InputHandler();
-    input.setInputSource(VIDEO_FILE);
-    input.addVideo("bla2.avi");
+    input.setInputSource(INPUT_CAM);
+    //input.addVideo("/home/ertai/Videos/VIDEO0023.mp4");
     input.open();
 
     if (input.requestFormat(r720p)) {
         DBG("Auflösung geändert");
     }
-    CvVideoCapture cap(input);
-    // cap.setFramesToRecord(500);
-    //  cap.setTimeToRecord(5);
-    cap.setOutput("bla3.avi");
-    RecorderCtl ctl = RecorderCtl("Test");
-    ctl.setCapture(&cap);
-    //ctl.startGrabInput();
-    sleep(10);
-    ctl.startRecording();
-    sleep(10);
-    ctl.stopRecording();
-    ctl.stopGrabbing();
+    //    CvVideoCapture cap(input);
+    //    cap.setFramesToRecord(50000);
+    //    cap.setTimeToRecord(15);
+    ImageListOutput out("/home/ertai/NetBeansProjects/OpenCvPraktikum/imgseq_out", "bg4");
+    //    cap.setOutput(&out);
+    //    RecorderCtl ctl = RecorderCtl("Test");
+    //    ctl.setCapture(&cap);
 
+    //    ctl.startGrabInput();
+    //    sleep(1);
+    //    ctl.startRecording();
+    //    sleep(15);
+    //    ctl.stopRecording();
+    //    ctl.stopGrabbing();
+    CvHelper* help = CvHelper::getInstance();
+    Mat grid = Mat::zeros(Size(800, 600), CV_8UC3);
+    Mat frame;
+    vector<String> tags = vector<String > ();
+    tags.push_back("Normal");
+    tags.push_back("Gauß");
+    tags.push_back("Hist.Eq.");
+    tags.push_back("Hist pre");
+    tags.push_back("Hist post");
+
+    while (true) {
+        input.next();
+        frame = input.getImage();
+        vector<Mat*> images;
+        grid = help->equalizeHistogram(frame, true, true);
+        
+    }
 
     return EXIT_SUCCESS;
 
@@ -125,7 +146,7 @@ int main() {
     tags.push_back("Histogram");
     tags.push_back("Canny");
 
-    all = help->buildImageGrid(images, tags, Scalar(0, 0, 0, 0), 3, 1280, 1024);
+    all = help->buildImageGrid(images, tags, Scalar(0, 0, 255, 0), 3, 1280, 1024);
     imshow("Bild", image);
     imshow("BinBild", binImage);
     imshow("SobelX", sobelX);
@@ -144,7 +165,7 @@ int main() {
 
 #endif
 
-#if 1
+#if 0
 
 
 
@@ -161,59 +182,45 @@ using namespace std;
 
 int main(int argc, char **argv) {
 
-    Mat img_1 = imread("bild1.png", CV_LOAD_IMAGE_GRAYSCALE);
-    Mat img_2 = imread("bild2.png", CV_LOAD_IMAGE_GRAYSCALE);
-     Sobel(img_1, img_1, CV_8U, 1, 1, 5, 0.5, 128);
-    Sobel(img_2, img_2, CV_8U, 1, 1, 5, 0.5, 128);
-    if (!img_1.data || !img_2.data) {
-        std::cout << " --(!) Error reading images " << std::endl;
-        return -1;
+    int hesse = 400;
+
+    Mat input1 = imread("bild1.png", CV_LOAD_IMAGE_GRAYSCALE);
+    InputHandler* handler = new InputHandler();
+    handler->setInputSource(INPUT_CAM);
+    handler->requestFormat(INPUT_FORMAT::r720p);
+    handler->open();
+    handler->grabNext();
+    Mat input2;
+
+    if (input1.data == NULL) {
+        DBG_EXIT(" --(!) Error reading images ");
+
     }
-    //-- Step 1: Detect the keypoints using SURF Detector
-    int minHessian = 400;
-    SurfFeatureDetector detector(minHessian);
-    std::vector<KeyPoint> keypoints_1, keypoints_2;
-    detector.detect(img_1, keypoints_1);
-    detector.detect(img_2, keypoints_2);
-    //-- Step 2: Calculate descriptors (feature vectors)
-    SurfDescriptorExtractor extractor;
-    Mat descriptors_1, descriptors_2;
-    extractor.compute(img_1, keypoints_1, descriptors_1);
-    imshow("Desc1", descriptors_1);
-    extractor.compute(img_2, keypoints_2, descriptors_2);
-    //-- Step 3: Matching descriptor vectors using FLANN matcher
-    FlannBasedMatcher matcher;
-    std::vector< DMatch > matches;
-    matcher.match(descriptors_1, descriptors_2, matches);
-    double max_dist = 0;
-    double min_dist = 200;
-    //-- Quick calculation of max and min distances between keypoints
-    for (int i = 0; i < descriptors_1.rows; i++) {
-        double dist = matches[i].distance;
-        if (dist < min_dist) min_dist = dist;
-        if (dist > max_dist) max_dist = dist;
-    }
-    printf("-- Max dist : %f \n", max_dist);
-    printf("-- Min dist : %f \n", min_dist);
-    //-- Draw only "good" matches (i.e. whose distance is less than 2*min_dist )
-    //-- PS.- radiusMatch can also be used here.
-    std::vector< DMatch > good_matches;
-    for (int i = 0; i < descriptors_1.rows; i++) {
-        if (matches[i].distance < 2 * min_dist) {
-            good_matches.push_back(matches[i]);
+
+
+
+    CvHelper* help = CvHelper::getInstance();
+
+
+    namedWindow("H-S Histogram");
+    while (true) {
+        handler->grabNext();
+        input2 = handler->getImage();
+        MatND histo = help->makeHSHist(input2);
+        help->makeHSHistImage(histo);
+        DBG("Histogram Erstellt")
+        help->applySurfDetect(input1, input2, hesse, 10, 50);
+        int c = waitKey(1);
+
+        if (c != -1) {
+            break;
         }
     }
-    //-- Draw only "good" matches
-    Mat img_matches;
-    drawMatches(img_1, keypoints_1, img_2, keypoints_2,
-            good_matches, img_matches, Scalar::all(-1), Scalar::all(-1),
-            vector<char>(), DrawMatchesFlags::DEFAULT);
-    //-- Show detected matches
-    imshow("Good Matches", img_matches);
-    for (int i = 0; i < good_matches.size(); i++) {
-        waitKey(0);
-        return 0;
-    }
+    return EXIT_SUCCESS;
+
+
+
+
 
 
 
@@ -229,13 +236,11 @@ using namespace cv;
 using namespace std;
 
 Mat src, src_gray;
-int
-thresh = 200;
-int
-max_thresh = 255;
+int thresh = 200;
+int max_thresh = 255;
 String source_window = "Source image";
 String corners_window = "Corners detected";
-/// Function header
+
 void cornerHarris_demo(int, void*);
 
 /** @function main */
@@ -291,8 +296,13 @@ void cornerHarris_demo(int, void*) {
 
 //Samples erstellen
 //opencv_createsamples -img 01.png -num 10 -bg /media/WD-Platte/Bilder\&Fotos/Wallpaper/bg.dat -vec samples.vec -maxxangle 0.6 -maxyangle 0 -maxzangle 0.3 -maxidev 100 -bgcolor 0 -bgthresh 0 -w 200 -h 200
-//find . -name '*.jpg' -exec identify -format '%i 1 0 0 %w %h' \{\} \; > info.dat
 //http://docs.opencv.org/doc/user_guide/ug_traincascade.html
 //find . -name '*.jpg' -exec identify -format '%i 1 0 0 %w %h' \{\} \; > info.dat
 //opencv_traincascade -data hnd -vec samples.vec -bg /media/WD-Platte/Bilder\&Fotos/Wallpaper/bg.dat -numPos 100 -numNeg 340 -numStages 20 -precalcValBufSize 1024 -precalcIdxBufSize 2048 -featureType LBP -w 200 -h 200 -minHitRate 0.999 -maxFalseAlarmRate 0.5 -mode ALL
 //http://note.sonots.com/SciSoftware/haartraining.html#ybd647df
+
+
+//FIXME: PRAKTIKUM!!
+//TODO: Ein paar Modifikatoren...
+//TODO: Schreiberthread-Queue für ImageListOutput
+//TODO: Die Einzelnen Mains in Unterfkt. packen, und von der cmd auswählbar machen.

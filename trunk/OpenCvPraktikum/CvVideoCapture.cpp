@@ -14,9 +14,9 @@ using namespace std;
 using namespace cv;
 //#define err(x) std::cout<<x<<std::endl;
 
-CvVideoCapture::CvVideoCapture(ImageInput& in) : capture(in) {
+CvVideoCapture::CvVideoCapture(ImageSequenceInput& in) : capture(in) {
 
-    writer = VideoWriter();
+    writer = NULL;
     startTime = 0;
     scaleFac = 0;
     recordSeconds = 0;
@@ -25,7 +25,8 @@ CvVideoCapture::CvVideoCapture(ImageInput& in) : capture(in) {
     fps = 25;
     frames_to_record = 0;
     imageMod = NULL;
-    
+    frameDelay = 0;
+
 
 }
 
@@ -42,7 +43,7 @@ CvVideoCapture::CvVideoCapture(const CvVideoCapture& other) : capture(other.capt
     frames_to_record = other.frames_to_record;
     outputname = other.outputname;
     recording = other.recording;
-   
+    frameDelay = other.frameDelay;
 
 
 }
@@ -129,6 +130,7 @@ void CvVideoCapture::record() {
         return;
 
     }
+
     if (fps == 0) {
         DBG("FPS is 0 setting to 30");
         fps = capture.inputFps();
@@ -147,22 +149,32 @@ void CvVideoCapture::record() {
     } else {
         DBG("Got framesize of input: %d %d", frameSize.width, frameSize.height);
     }
-    if (!writer.isOpened()) {
+    if (writer == NULL) {
+        DBG("Ausgabe NULL");
+        return;
+    }
+    if (!writer->isOpen()) {
         DBG("Writer is not open");
 
-        writer.open(outputname, CODEC_DEFAULT, fps, frameSize);
+        try {
+            if (writer->open()) {
+                DBG("VideoWriter is now open");
+            } else {
+                DBG("Error opening VideoWriter... end");
+                return;
+            }
 
-        if (writer.isOpened()) {
-            DBG("VideoWriter is now open");
-        } else {
-            DBG("Error opening VideoWriter... end");
+        } catch (Exception& ex) {
+            DBG("Fehler: %s\nAusgabe: %s\nFPS: %i\nSize: %i x %i", ex.what(), outputname.c_str(), fps, frameSize.width, frameSize.height);
             return;
         }
+
 
     }// </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Zeit und Framecounter Initialisierung">
     time(&startTime);
+    time_t lastupd = -1;
     time_t current;
     time(&current);
     int framecount = 0; // </editor-fold>
@@ -171,6 +183,8 @@ void CvVideoCapture::record() {
         frames_to_record = DEFAULT_FRAME_COUNT;
 
     }
+    frameDelay = (int) (1000.0f / ((float) fps));
+    DBG("Framedelay = %i", frameDelay);
     if (recordSeconds == 0) {
         recordSeconds = DEFAULT_DURATION;
     }
@@ -196,8 +210,13 @@ void CvVideoCapture::record() {
             DBG("%s", ex.what());
             break;
         }
+        if (capture.reachesEndOfInput()) {
+            DBG("Input Ende erreicht!");
+            break;
+        }
         Mat frm = capture.getImage();
         setFrame(frm);
+
 
 
         if (imageMod != NULL) {
@@ -209,14 +228,24 @@ void CvVideoCapture::record() {
             }
         }
 
-        writer.write(frm);
+        writer->write(frm);
 
+        frm.release();
+        if (lastupd == -1) {
+            time(&lastupd);
+        } else if ((((long int) current)-((long int) lastupd)) < frameDelay) {
+            DBG("Warte fuer naechstren Frame: %i msec", (int) (frameDelay - (((long int) current)-((long int) lastupd))));
+
+            this_thread::sleep_for(chrono::milliseconds(frameDelay - (((long int) current)-((long int) lastupd))));
+            time(&lastupd);
+
+        }
 
 
     }// </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Aufräumen...">
-    writer.release();
+    writer->close();
     recording = false;
     startTime = (long int) 0; // </editor-fold>
 
@@ -279,10 +308,8 @@ void CvVideoCapture::releaseCapture() {
 
 void CvVideoCapture::releaseVideoWriter() {
     if (!recording) {
-        writer.release();
+        writer->close();
 
-    } else {
-        cerr << "VideoWriter konnte nicht freigegeben werden" << endl;
     }
 }
 
@@ -302,12 +329,8 @@ void CvVideoCapture::setFrame(Mat mat) {
     frame_mutex.unlock();
 }
 
-void CvVideoCapture::setInput(ImageInput& in) {
+void CvVideoCapture::setInput(ImageSequenceInput& in) {
     capture = in;
-}
-
-void CvVideoCapture::setOutput(String out) {
-    outputname = out;
 }
 
 void CvVideoCapture::setTimeToRecord(int secs) {
@@ -328,4 +351,20 @@ void CvVideoCapture::joinThread() {
 
 bool CvVideoCapture::available() {
     return capture.opened();
+}
+
+void CvVideoCapture::setOutput(Output* out) {
+    if (writer == NULL) {
+        writer = out;
+        return;
+    }
+    if (recording) {
+        DBG("Bei der Aufnahme!");
+        DBG("Warte auf Ende der Aufnahme");
+        joinThread();
+
+        writer = out;
+        return;
+    }
+
 }

@@ -15,8 +15,6 @@ enum REC_CTL_STATE {
     INIT, GRAB, RECORD, DELETED
 };
 
-
-
 class RecorderCtl {
 public:
 
@@ -28,7 +26,7 @@ public:
     void dispose();
     void setWindow(Window *wnd);
     void setCapture(CvVideoCapture *capture);
-    void createCapture(ImageInput& in);
+    void createCapture(ImageSequenceInput& in);
     void startGrabInput();
     void startRecording();
     void stopRecording();
@@ -46,6 +44,7 @@ private:
     Window* wnd;
     CvVideoCapture* capture;
     thread* ctlThread;
+    time_t lastImgUpdate;
 
 
 };
