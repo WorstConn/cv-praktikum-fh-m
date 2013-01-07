@@ -1,6 +1,6 @@
 /* 
  * File:   Prak3A8.cpp
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  * 
  * Created on 21. Dezember 2012, 12:55
  */
@@ -8,6 +8,11 @@
 #include "../header.h"
 using namespace std;
 using namespace cv;
+
+
+void Prak3A8::testCB(int pos, void* dat){
+    
+}
 
 Prak3A8::Prak3A8() {
     threshold = 1;
@@ -28,9 +33,9 @@ int Prak3A8::testMain(vector<String> args) {
     if (input.requestFormat(r720p)) {
         DBG("Auflösung geändert");
     }
-
+    
     //ImageListOutput out("/home/ertai/NetBeansProjects/OpenCvPraktikum/imgseq_out", "bg4");
-    //Window *wnd = new Window("P3A8");
+    Window *wnd = new Window("P3A8");
     namedWindow("Gauss");
     namedWindow("Hist1");
     namedWindow("Eq");
@@ -38,6 +43,7 @@ int Prak3A8::testMain(vector<String> args) {
     namedWindow("Gauss-BW");
     namedWindow("Eq-BW");
 
+    //wnd->addTrackbar(String("Bla"),String("P3A8"),static_cast<TrackbarCallback>(&Prak3A8::testCB));
     createTrackbar(String("Gauss"), "Gauss", &threshold, 200);
     sleep(1);
     //    ctl.stopRecording();

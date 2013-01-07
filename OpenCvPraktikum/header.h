@@ -9,14 +9,7 @@
 #define HEADER_H_
 
 
-// <editor-fold defaultstate="collapsed" desc="             Defintionen">
-
-/**
- * Ein paar Defaults.
- */
-#define CODEC_DEFAULT CV_FOURCC('D','I','V','X')
-#define PREF_VIDEO_OUTPUT_FILE_EXT ".avi"
-#define PREF_IMAGE_OUTPUT_FILE_EXT ".png"
+// <editor-fold defaultstate="collapsed" desc="             Enums">
 
 /**
  * Indikator des Eingabeformats.
@@ -37,7 +30,27 @@ enum INPUT_TYPE {
  */
 enum OUTPUT_TYPE {
     OUTPUT_VIDEO, OUTPUT_FOLDER
-};
+}; // </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="             Defintionen">
+
+/**
+ * Ein paar Defaults.
+ */
+#define CODEC_DEFAULT CV_FOURCC('D','I','V','X')
+#define PREF_VIDEO_OUTPUT_FILE_EXT ".avi"
+#define PREF_IMAGE_OUTPUT_FILE_EXT ".png"
+
+
+#ifdef TRY_KINECT
+#include <libfreenect.h>
+#include <libfreenect_sync.h>
+#include <libfreenect.hpp>
+#include <cmath>
+#include <pthread.h>
+#endif
+
+
 
 
 /**
@@ -140,6 +153,7 @@ typedef struct inode_struct Inode;
 #include "Modifier/CompositeModificator.h"
 #include "Modifier/ScaleModificator.h"
 #include "Modifier/HsvModifier.h"
+#include "Modifier/BgFgSegmModificator.h"
 
 // </editor-fold>
 
@@ -176,9 +190,10 @@ typedef struct inode_struct Inode;
 /**
  * Anzeige
  */
-#include "View/TrackbarData.h"
+#include "View/AAction.h"
+#include "View/AImageAction.h"
 #include "View/Window.h"
-
+#include "View/WindowManager.h"
 #include "Control/RecorderCtl.h"
 
 // </editor-fold>
@@ -188,6 +203,7 @@ typedef struct inode_struct Inode;
 #include "Test/ATest.h"
 #include "Test/MainTest.h"
 #include "Test/Prak3A8.h"
+#include "Test/WindowManagerTest.h"
 
 // </editor-fold>
 

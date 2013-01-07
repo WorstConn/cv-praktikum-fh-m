@@ -1,6 +1,6 @@
 /* 
  * File:   Prak3A8.h
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  *
  * Created on 21. Dezember 2012, 12:55
  */
@@ -23,12 +23,13 @@ public:
      * @return <code>EXIT_SUCCESS</code> wenn der Test ohne Fehler beendet werden konnte. Sonst <code>EXIT_FAILURE</code>.
      */
     virtual int testMain(vector<String> args);
-   
+    void testCB(int pos, void* dat);
 private:
     int threshold;
-    
+
 
 };
+typedef void (Prak3A8::*tb_callback)(int, void*);
 
 #endif	/* PRAK3A8_H */
 

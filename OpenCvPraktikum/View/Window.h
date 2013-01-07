@@ -12,6 +12,8 @@
 using namespace std;
 using namespace cv;
 
+
+
 class Window {
 public:
     Window(String name, int width = 0, int height = 0);
@@ -21,7 +23,8 @@ public:
     bool isShowing();
     void closeWindow();
     virtual ~Window();
-    void addTrackbar(String name, int i, TrackbarCallback cb); //FIXME: Verwendung schwierig
+    String getName();
+    void addTrackbar(String name, int i, TrackbarCallback cb);
 
 private:
     String name;
@@ -36,7 +39,7 @@ private:
     mutex imageMutex;
     mutex trackbarsMutex;
     time_t lastupdate;
-    map<pair<String, bool>, TrackbarData> trackbars;
+   
 
 
 

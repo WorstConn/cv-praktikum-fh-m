@@ -407,7 +407,11 @@ bool InputHandler::openFolder() {
         imageFiles = man->getFoundList();
         DBG("Setze Quelle auf IMAGE_FOLDER");
         sourceType = INPUT_FOLDER;
-        return !imageFiles.empty();
+        if (!imageFiles.empty()) {
+            currentImage = imread(imageFiles[0]);
+            imageFiles.erase(imageFiles.begin());
+        } else return true;
+        return !currentImage.empty();
     }
 
 
@@ -416,7 +420,7 @@ bool InputHandler::openFolder() {
 void InputHandler::nextFromFolder() {
     if (imageFiles.empty()) {
         DBG("Keine Bilder");
-        reachesEnd=true;
+        reachesEnd = true;
         return;
     }
     String img = imageFiles[0];
