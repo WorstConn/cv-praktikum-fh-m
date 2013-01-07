@@ -20,7 +20,6 @@ WindowManagerTest::WindowManagerTest(const WindowManagerTest& orig) : AImageActi
 WindowManagerTest::~WindowManagerTest() {
 }
 
-
 int WindowManagerTest::testMain(vector<String> args) {
     InputHandler handler = InputHandler();
     handler.addImageFolder("/home/ertai/Bilder");
@@ -39,7 +38,7 @@ int WindowManagerTest::testMain(vector<String> args) {
     wnd->showWindow();
     manager->putTrackbarCallback(this, "Test1");
     wnd->setCurrentImage(&img);
-    
+
 
     waitKey(0);
 
@@ -48,7 +47,20 @@ int WindowManagerTest::testMain(vector<String> args) {
 }
 
 void WindowManagerTest::action(int pos, void* data) {
-    cout << "Nix" << endl;
-    cvtColor((*img),(*img),CV_BGR2GRAY);
-    
+    Mat* tmpGray = new Mat(img->size(), CV_8UC1);
+    Mat* tmpBGR = new Mat(img->size(), img->type());
+    cvtColor((*img), (*tmpGray), CV_BGR2GRAY);
+    if (pos < getMin()) {
+        pos = getMin();
+    }
+
+    Canny((*tmpGray), (*tmpGray), pos * 2, pos * 2 * 3);
+    cvtColor((*tmpGray), (*tmpBGR), CV_GRAY2BGR);
+    Window* w = manager->getWindow("Test1");
+    w->setCurrentImage(tmpBGR);
+    tmpGray->release();
+    tmpGray=NULL;
+    tmpBGR->release();
+    tmpBGR=NULL;
+
 }
