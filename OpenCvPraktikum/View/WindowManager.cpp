@@ -71,3 +71,27 @@ Window* WindowManager::createWindow(String name, int w, int h) {
     windows.push_back(wnd);
     return wnd;
 }
+
+Window* WindowManager::getWindow(String name) {
+    Window* erg = NULL;
+    vector<Window*>::const_iterator iter;
+    for (iter = windows.begin(); iter != windows.end(); iter++) {
+        if ((*iter)->getName().find(name) != String::npos) {
+            erg = (*iter);
+            break;
+        }
+    }
+    return erg;
+}
+
+AAction* WindowManager::getAction(String desc) {
+    AAction* erg = NULL;
+    vector<AAction*>::const_iterator iter;
+    for (iter = callbacks.begin(); iter != callbacks.end(); iter++) {
+        if ((*iter)->getActionDesc().find(desc) != String::npos) {
+            erg = (*iter);
+            break;
+        }
+    }
+    return erg;
+}

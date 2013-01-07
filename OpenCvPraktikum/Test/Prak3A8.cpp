@@ -35,7 +35,7 @@ int Prak3A8::testMain(vector<String> args) {
     }
     
     //ImageListOutput out("/home/ertai/NetBeansProjects/OpenCvPraktikum/imgseq_out", "bg4");
-    Window *wnd = new Window("P3A8");
+    
     namedWindow("Gauss");
     namedWindow("Hist1");
     namedWindow("Eq");
