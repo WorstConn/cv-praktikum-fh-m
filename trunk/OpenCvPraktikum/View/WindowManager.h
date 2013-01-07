@@ -19,6 +19,8 @@ public:
     static void putTrackbarCallback(AAction* action, String wndName);
     static WindowManager* getInstance();
     static void callBackFkt(int p, void* data);
+    Window* getWindow(String name);
+    AAction* getAction(String desc);
     Window* createWindow(String name, int w = 0, int h = 0);
 private:
     static WindowManager* instance;

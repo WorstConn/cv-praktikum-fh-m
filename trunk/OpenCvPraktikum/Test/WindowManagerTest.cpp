@@ -14,7 +14,7 @@ WindowManagerTest::WindowManagerTest() : AImageAction("TestAction", "Test1", 100
     manager = WindowManager::getInstance();
 }
 
-WindowManagerTest::WindowManagerTest(const WindowManagerTest& orig) : AImageAction(orig), ATest(orig) {
+WindowManagerTest::WindowManagerTest(const WindowManagerTest& orig) : AImageAction(orig) {
 }
 
 WindowManagerTest::~WindowManagerTest() {
@@ -43,9 +43,12 @@ int WindowManagerTest::testMain(vector<String> args) {
 
     waitKey(0);
 
+    return EXIT_SUCCESS;
 
 }
 
 void WindowManagerTest::action(int pos, void* data) {
     cout << "Nix" << endl;
+    cvtColor((*img),(*img),CV_BGR2GRAY);
+    
 }

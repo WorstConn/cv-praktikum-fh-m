@@ -104,7 +104,7 @@ Mat CvHelper::buildImageGrid(vector<Mat*> images, vector<String> imageTags, Scal
     int pos = 0;
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < column; j++) {
-            if (images.size() <= pos) {
+            if (((int) images.size()) <= pos) {
                 DBG("Zu wenige Bilder");
                 break;
             }
@@ -898,6 +898,7 @@ Mat CvHelper::accumulateImages(vector<Mat> mat) {
         accumulate(current, erg);
 
     }
+
     return erg;
 }
 
@@ -909,8 +910,9 @@ Mat CvHelper::accumulateImages(vector<Mat> mat) {
  */
 Mat CvHelper::removeBackground(vector<Mat>bg, Mat img) {
     Mat accum = accumulateImages(bg);
-
-
+    MatND mask;
+    absdiff(accum, img, mask);
+    return mask;
 }
 
 Mat CvHelper::convertBlackAndWhite(Mat& in, int thld) {
