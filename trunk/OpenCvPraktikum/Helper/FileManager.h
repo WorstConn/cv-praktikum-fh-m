@@ -22,7 +22,7 @@ public:
 
     /**
      * Sucht rekursiv nach Dateien, in denen 'name' im Namen vorkommt.
-     * @param name Das Suchwort.
+     * @param name Die Suchworte.
      * @param dir der Ordner der durchsucht werden soll.
      */
     void find(set<String> name, String dir);

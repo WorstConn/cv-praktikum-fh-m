@@ -1,6 +1,6 @@
 /* 
  * File:   VideoOutput.cpp
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  * 
  * Created on 19. Dezember 2012, 23:32
  */

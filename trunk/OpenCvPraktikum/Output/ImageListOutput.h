@@ -1,6 +1,6 @@
 /* 
  * File:   ImageListOutput.h
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  *
  * Created on 20. Dezember 2012, 00:57
  */

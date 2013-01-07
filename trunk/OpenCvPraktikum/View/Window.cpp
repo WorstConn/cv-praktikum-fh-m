@@ -87,25 +87,9 @@ void Window::closeWindow() {
 void Window::loop() {
     DBG("Betrete loop")
     time_t current;
-    map < pair<String, bool>, TrackbarData> ::iterator iter;
+
     while (show) {
-        trackbarsMutex.lock();
 
-
-        for (iter = trackbars.begin(); iter != trackbars.end(); iter++) {
-            TrackbarData dat = (*iter).second;
-            if (!(*iter).first.second) {
-                createTrackbar((*iter).first.first/* Name der Trackbar */, name /* Fenstername */, 0 /* int ptr Position*/, dat.getMaxVal() /* Maximalwert*/, dat.getCallback() /* Callback */, (void*) (*iter).first.first.c_str()/*Benutzerdaten. Name der Trackbar*/);
-                trackbars.erase(iter);
-                pair<String, bool> id = pair<String, bool> (dat.getName(), true);
-                pair < pair<String, bool>, TrackbarData> info = pair < pair<String, bool>, TrackbarData > (id, dat);
-                if (!trackbars.insert(info).second) {
-                    DBG("Trackbar konnte nicht wieder hinzugefuegt werden.");
-                }
-            }
-        }
-
-        trackbarsMutex.unlock();
         imageMutex.lock();
 
         if (currentImage != NULL) {
@@ -140,24 +124,9 @@ bool Window::isShowing() {
 //FIME: TrackBar-Prop-Objekt erstellen!!
 
 void Window::addTrackbar(String name, int max, TrackbarCallback ptr) {
-    map < pair<String, bool>, TrackbarData> ::iterator iter;
-    trackbarsMutex.lock();
-    for (iter = trackbars.begin(); iter != trackbars.end(); iter++) {
-        if ((*iter).first.first.compare(name) == 0) {
-            DBG("Trackbar mit diesem Namen bereits vorhanden.");
-            return;
-        }
 
-    }
-    pair<String, bool> id = pair<String, bool> (name, false);
-    pair < pair<String, bool>, TrackbarData> info = pair < pair<String, bool>, TrackbarData > (id, TrackbarData(name, max, ptr));
-    if (!trackbars.insert(info).second) {
-        DBG("Trackbar konnte nicht hinzugefuegt werden.");
-    }
-    try {
-        trackbarsMutex.unlock();
-    } catch (Exception& ex) {
-        DBG("Konnte Lock nicht loesen.\nFehler: %s", ex.what());
-    }
 }
 
+String Window::getName() {
+    return name;
+}

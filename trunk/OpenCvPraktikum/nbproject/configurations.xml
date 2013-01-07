@@ -35,6 +35,8 @@
         <itemPath>Input/InputHandler.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f4" displayName="Modifier" projectFiles="true">
+        <itemPath>Modifier/BgFgSegmModificator.cpp</itemPath>
+        <itemPath>Modifier/BgFgSegmModificator.h</itemPath>
         <itemPath>Modifier/CompositeModificator.cpp</itemPath>
         <itemPath>Modifier/CompositeModificator.h</itemPath>
         <itemPath>Modifier/HsvModifier.cpp</itemPath>
@@ -59,12 +61,18 @@
         <itemPath>Test/MainTest.h</itemPath>
         <itemPath>Test/Prak3A8.cpp</itemPath>
         <itemPath>Test/Prak3A8.h</itemPath>
+        <itemPath>Test/WindowManagerTest.cpp</itemPath>
+        <itemPath>Test/WindowManagerTest.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="View" projectFiles="true">
-        <itemPath>View/TrackbarData.cpp</itemPath>
-        <itemPath>View/TrackbarData.h</itemPath>
+        <itemPath>View/AAction.cpp</itemPath>
+        <itemPath>View/AAction.h</itemPath>
+        <itemPath>View/AImageAction.cpp</itemPath>
+        <itemPath>View/AImageAction.h</itemPath>
         <itemPath>View/Window.cpp</itemPath>
         <itemPath>View/Window.h</itemPath>
+        <itemPath>View/WindowManager.cpp</itemPath>
+        <itemPath>View/WindowManager.h</itemPath>
       </logicalFolder>
       <itemPath>CvVideoCapture.cpp</itemPath>
       <itemPath>CvVideoCapture.h</itemPath>
@@ -107,20 +115,32 @@
           <incDir>
             <pElem>/usr/local/include/opencv</pElem>
             <pElem>/usr/local/include/opencv2</pElem>
+            <pElem>/usr/local/include/libfreenect</pElem>
+            <pElem>/usr/include/GL</pElem>
+            <pElem>/usr/include/libusb-1.0</pElem>
+            <pElem>/usr/include/X11</pElem>
           </incDir>
-          <commandLine>-std=gnu++0x</commandLine>
+          <commandLine>-std=gnu++0x -fPIC</commandLine>
           <preprocessorList>
             <Elem>DEBUG</Elem>
+            <Elem>TRY_KINECT</Elem>
             <Elem>__GXX_EXPERIMENTAL_CXX0X__</Elem>
           </preprocessorList>
-          <warningLevel>3</warningLevel>
+          <warningLevel>2</warningLevel>
         </ccTool>
         <linkerTool>
           <linkerAddLib>
             <pElem>/usr/local/lib</pElem>
+            <pElem>/usr/lib</pElem>
+            <pElem>/usr/lib/fakenect</pElem>
+            <pElem>/usr/lib/X11</pElem>
           </linkerAddLib>
           <linkerLibItems>
             <linkerOptionItem>`pkg-config --libs opencv`</linkerOptionItem>
+            <linkerOptionItem>`pkg-config --libs libfreenect`</linkerOptionItem>
+            <linkerOptionItem>`pkg-config --libs gl`</linkerOptionItem>
+            <linkerOptionItem>`pkg-config --libs glu`</linkerOptionItem>
+            <linkerOptionItem>`pkg-config --libs x11`</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
