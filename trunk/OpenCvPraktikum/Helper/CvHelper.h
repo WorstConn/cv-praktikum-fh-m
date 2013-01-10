@@ -191,7 +191,7 @@ public:
      * @param mat eine Bildfolge
      * @return Das Akkumulierte Bild
      */
-    Mat accumulateImages(vector<Mat> mat); // FIXME: Implementieren!
+    Mat accumulateImages(vector<Mat> mat); 
 
     /**
      * Enfernt den Hintergrund eines Bildes mithilfe eines Kallibrierungsbiles(Bildfolge)
@@ -202,7 +202,10 @@ public:
     Mat removeBackground(vector<Mat>bg, Mat img); //FIXME: Implementieren!
 
     Mat convertBlackAndWhite(Mat& in, int threshold);
-};
+    
+    //FIXME: BACKPROJEKTION:
+    //calcBackProject( &hs, 1, 2, hist, backproj, &ranges, 1, true );
+};  // Bilder anhand der Histogramme vergleichen: compareHist()
 
 
 

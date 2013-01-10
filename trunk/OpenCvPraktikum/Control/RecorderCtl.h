@@ -24,7 +24,7 @@ public:
 
     bool refreshWindowImage(Mat img);
     void dispose();
-    void setWindow(Window *wnd);
+    void setWindow(CvWindow *wnd);
     void setCapture(CvVideoCapture *capture);
     void createCapture(ImageSequenceInput& in);
     void startGrabInput();
@@ -32,7 +32,7 @@ public:
     void stopRecording();
     void stopGrabbing();
     CvVideoCapture* getCapture();
-    Window* getWindow();
+    CvWindow* getWindow();
 
 
 
@@ -41,7 +41,7 @@ public:
 private:
     REC_CTL_STATE state;
     String name;
-    Window* wnd;
+    CvWindow* wnd;
     CvVideoCapture* capture;
     thread* ctlThread;
     time_t lastImgUpdate;

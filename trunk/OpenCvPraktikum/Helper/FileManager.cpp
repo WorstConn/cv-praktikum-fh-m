@@ -112,7 +112,7 @@ int FileManager::seekdir(vector<vector<String >> &mylist, String path, set<Strin
             for (iter = name.begin(); iter != name.end(); iter++) {
                 String lower = "";
                 transform(iter->begin(), iter->end(), lower.begin(), ::tolower);
-                if (String(d->d_name).find((*iter)) != string::npos) {
+                if (String(d->d_name).find((*iter)) != String::npos) {
                     String fname = path + "/" + String(d->d_name);
 
                     lst.push_back(fname);

@@ -34,7 +34,7 @@ int WindowManagerTest::testMain(vector<String> args) {
 
     Mat img = handler.getImage();
     updateImage(&img);
-    Window* wnd = manager->createWindow("Test1");
+    CvWindow* wnd = manager->createWindow("Test1");
     wnd->showWindow();
     manager->putTrackbarCallback(this, "Test1");
     wnd->setCurrentImage(&img);
@@ -56,11 +56,12 @@ void WindowManagerTest::action(int pos, void* data) {
 
     Canny((*tmpGray), (*tmpGray), pos * 2, pos * 2 * 3);
     cvtColor((*tmpGray), (*tmpBGR), CV_GRAY2BGR);
-    Window* w = manager->getWindow("Test1");
+    CvWindow* w = manager->getWindow("Test1");
     w->setCurrentImage(tmpBGR);
     tmpGray->release();
     tmpGray=NULL;
     tmpBGR->release();
     tmpBGR=NULL;
+   
 
 }

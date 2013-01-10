@@ -87,6 +87,14 @@ public:
     static Point2i RectCenter(Rect r);
 
     static int RectRadius(Rect rect);
+    
+    /**
+     * Errechnet jene Steigung, welche eine Gerade h&auml;tte, die man zwischen <code>p1</code> und <code>p2</code> aufspannt.
+     * @param p1 Punkt 1
+     * @param p2 Punkt 2
+     * @return den Winkel in Grad
+     */
+    static float calcPitch(Point p1,Point p2);
 
 };
 

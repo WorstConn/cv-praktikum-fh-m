@@ -8,28 +8,20 @@
 #include "../header.h"
 
 ImageModificator::ImageModificator() {
-
+    helper = CvHelper::getInstance();
 
 }
 
-ImageModificator::ImageModificator(const ImageModificator&) {
-
+ImageModificator::ImageModificator(const ImageModificator& orig) {
+    helper = orig.helper;
 
 }
 
 ImageModificator::~ImageModificator() {
-
+    delete helper;
 }
 
 
-
-bool ImageModificator::doesAction() {
-    return false;
-}
-
-float ImageModificator::getScale() {
-    return 1.0f;
-}
 
 
 

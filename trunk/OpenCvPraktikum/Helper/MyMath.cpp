@@ -85,7 +85,7 @@ bool MyMath::inRange(unsigned int val, unsigned int ref, unsigned int percent) {
     float p = ((float) percent) / 100.0;
     float max = ((float) ref)*(1 + p);
     float min = ((float) ref)*(1 + p);
-    if (((unsigned int)cvRound(min)) > val or ((unsigned int)cvRound(max)) < val) {
+    if (((unsigned int) cvRound(min)) > val or ((unsigned int) cvRound(max)) < val) {
         return false;
     }
     return true;
@@ -116,20 +116,20 @@ float MyMath::dist(Point3f pFrom, Point3f pTo) {
 
 float MyMath::dist(Point2i pFrom, Point2i pTo) {
     Point2f diff;
-    
+
     diff.x = (float) (pTo.x - pFrom.x);
     diff.y = (float) (pTo.y - pFrom.y);
 
-    
-    float dst=sqrt((diff.x * diff.x)+(diff.y * diff.y));
-    
+
+    float dst = sqrt((diff.x * diff.x)+(diff.y * diff.y));
+
     return dst;
 
 }
 
 bool MyMath::isInCircle(Point2i center, int radius, Point2i examine) {
-    if (dist(examine, center) > ((float)radius)) {
-        
+    if (dist(examine, center) > ((float) radius)) {
+
         return false;
 
     } else {
@@ -145,16 +145,31 @@ Point3i MyMath::RectToCircle(Rect rect) {
     return erg;
 }
 
-Point2i MyMath::RectCenter(Rect rect){
+Point2i MyMath::RectCenter(Rect rect) {
     Point2i erg;
     erg.x = cvRound((rect.width * 0.5));
     erg.y = cvRound((rect.height * 0.5));
-    
+
     return erg;
 }
 
-int MyMath::RectRadius(Rect rect){
+int MyMath::RectRadius(Rect rect) {
     int erg;
     erg = cvRound((rect.width + rect.height)*0.25);
     return erg;
+}
+
+/**
+ * Errechnet jene Steigung, welche eine Gerade h&auml;tte, die man zwischen <code>p1</code> und <code>p2</code> aufspannt.
+ * @param p1 Punkt 1
+ * @param p2 Punkt 2
+ * @return den Winkel in Grad
+ */
+float MyMath::calcPitch(Point p1, Point p2) {
+    if (p1.x > p2.x) {
+        return calcPitch(p2, p1);
+    }
+    float pitch = (((float) p2.x)-((float) p1.x)) / (((float) p2.y)-((float) p1.y));
+    return pitch;
+
 }

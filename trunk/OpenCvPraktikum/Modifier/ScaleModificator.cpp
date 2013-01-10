@@ -9,30 +9,22 @@
 using namespace std;
 using namespace cv;
 
-
 ScaleModificator::ScaleModificator() {
 }
 
-ScaleModificator::ScaleModificator(const ScaleModificator& orig) {
+ScaleModificator::ScaleModificator(const ScaleModificator& orig) : ImageModificator(orig) {
 }
 
 ScaleModificator::~ScaleModificator() {
 }
 
-
-
 void ScaleModificator::modify(cv::Mat& mat) {
     CvHelper *helper = CvHelper::getInstance();
     mat = helper->scaleImage((mat), 2.0);
-    
+
 }
 
-bool ScaleModificator::doesAction() {
-
-    return true;
-}
-
-float ScaleModificator::getScale(){
+float ScaleModificator::getScale() {
     return 2.0f;
 }
 

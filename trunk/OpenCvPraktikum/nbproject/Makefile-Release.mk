@@ -36,14 +36,17 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/Test/ATest.o \
+	${OBJECTDIR}/View/CvWindow.o \
 	${OBJECTDIR}/Helper/FileManager.o \
 	${OBJECTDIR}/Modifier/ImageModificator.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/Control/RecorderCtl.o \
+	${OBJECTDIR}/View/ModificatorAction.o \
 	${OBJECTDIR}/Test/WindowManagerTest.o \
 	${OBJECTDIR}/Input/AInputHandler.o \
 	${OBJECTDIR}/Modifier/HsvModifier.o \
 	${OBJECTDIR}/Test/MainTest.o \
+	${OBJECTDIR}/Modifier/ModificatorComponent.o \
 	${OBJECTDIR}/Test/Prak3A8.o \
 	${OBJECTDIR}/View/WindowManager.o \
 	${OBJECTDIR}/Modifier/ScaleModificator.o \
@@ -55,7 +58,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/Helper/CvHelper.o \
 	${OBJECTDIR}/Output/Output.o \
 	${OBJECTDIR}/View/AAction.o \
-	${OBJECTDIR}/View/Window.o \
 	${OBJECTDIR}/Input/InputHandler.o \
 	${OBJECTDIR}/View/AImageAction.o \
 	${OBJECTDIR}/Helper/MyMath.o \
@@ -92,6 +94,11 @@ ${OBJECTDIR}/Test/ATest.o: Test/ATest.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Test/ATest.o Test/ATest.cpp
 
+${OBJECTDIR}/View/CvWindow.o: View/CvWindow.cpp 
+	${MKDIR} -p ${OBJECTDIR}/View
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/View/CvWindow.o View/CvWindow.cpp
+
 ${OBJECTDIR}/Helper/FileManager.o: Helper/FileManager.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Helper
 	${RM} $@.d
@@ -112,6 +119,11 @@ ${OBJECTDIR}/Control/RecorderCtl.o: Control/RecorderCtl.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Control/RecorderCtl.o Control/RecorderCtl.cpp
 
+${OBJECTDIR}/View/ModificatorAction.o: View/ModificatorAction.cpp 
+	${MKDIR} -p ${OBJECTDIR}/View
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/View/ModificatorAction.o View/ModificatorAction.cpp
+
 ${OBJECTDIR}/Test/WindowManagerTest.o: Test/WindowManagerTest.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Test
 	${RM} $@.d
@@ -131,6 +143,11 @@ ${OBJECTDIR}/Test/MainTest.o: Test/MainTest.cpp
 	${MKDIR} -p ${OBJECTDIR}/Test
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Test/MainTest.o Test/MainTest.cpp
+
+${OBJECTDIR}/Modifier/ModificatorComponent.o: Modifier/ModificatorComponent.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Modifier
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Modifier/ModificatorComponent.o Modifier/ModificatorComponent.cpp
 
 ${OBJECTDIR}/Test/Prak3A8.o: Test/Prak3A8.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Test
@@ -186,11 +203,6 @@ ${OBJECTDIR}/View/AAction.o: View/AAction.cpp
 	${MKDIR} -p ${OBJECTDIR}/View
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/View/AAction.o View/AAction.cpp
-
-${OBJECTDIR}/View/Window.o: View/Window.cpp 
-	${MKDIR} -p ${OBJECTDIR}/View
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/View/Window.o View/Window.cpp
 
 ${OBJECTDIR}/Input/InputHandler.o: Input/InputHandler.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Input

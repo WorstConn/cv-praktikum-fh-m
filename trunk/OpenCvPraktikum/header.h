@@ -150,6 +150,7 @@ typedef struct inode_struct Inode;
  * Die Modifikatoren
  */
 #include "Modifier/ImageModificator.h"
+#include "Modifier/ModificatorComponent.h"
 #include "Modifier/CompositeModificator.h"
 #include "Modifier/ScaleModificator.h"
 #include "Modifier/HsvModifier.h"
@@ -192,7 +193,8 @@ typedef struct inode_struct Inode;
  */
 #include "View/AAction.h"
 #include "View/AImageAction.h"
-#include "View/Window.h"
+#include "View/ModificatorAction.h"
+#include "View/CvWindow.h"
 #include "View/WindowManager.h"
 #include "Control/RecorderCtl.h"
 
