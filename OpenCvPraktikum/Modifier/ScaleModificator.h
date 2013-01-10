@@ -18,9 +18,8 @@ public:
     ScaleModificator();
     ScaleModificator(const ScaleModificator& orig);
     virtual ~ScaleModificator();
-    void modify(Mat&);
-    float getScale();
-    bool doesAction();
+    virtual void modify(Mat&);
+    virtual float getScale();
 private:
 
 };

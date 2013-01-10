@@ -1,5 +1,5 @@
 /* 
- * File:   Window.h
+ * File:   CvWindow.h
  * Author: julian
  *
  * Created on 10. Dezember 2012, 15:50
@@ -14,15 +14,15 @@ using namespace cv;
 
 
 
-class Window {
+class CvWindow {
 public:
-    Window(String name, int width = 0, int height = 0);
-    Window(const Window& orig);
+    CvWindow(String name, int width = 0, int height = 0);
+    CvWindow(const CvWindow& orig);
     void setCurrentImage(Mat *current);
     void showWindow();
     bool isShowing();
     void closeWindow();
-    virtual ~Window();
+    virtual ~CvWindow();
     String getName();
     void addTrackbar(String name, int i, TrackbarCallback cb);
 

@@ -14,7 +14,7 @@ HsvModifier::HsvModifier() {
     helper = CvHelper::getInstance();
 }
 
-HsvModifier::HsvModifier(const HsvModifier& orig) {
+HsvModifier::HsvModifier(const HsvModifier& orig) : ImageModificator(orig){
     helper = orig.helper;
 }
 
@@ -24,9 +24,7 @@ HsvModifier::~HsvModifier() {
     }
 }
 
-bool HsvModifier::doesAction() {
-    return true;
-}
+
 
 float HsvModifier::getScale() {
     return 1.0f;

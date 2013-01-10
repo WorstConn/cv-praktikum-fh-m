@@ -425,6 +425,7 @@ void InputHandler::nextFromFolder() {
     }
     String img = imageFiles[0];
     currentImage = imread(img);
+    
     if (imageFiles.size() > 1) {
         vector<String>::iterator iter = imageFiles.begin();
         imageFiles.erase(iter);

@@ -18,10 +18,8 @@ public:
     HsvModifier(const HsvModifier& orig);
     virtual ~HsvModifier();
     virtual void modify(Mat&);
-    virtual bool doesAction(); // etwas stupide...
-    float getScale();
-private:
-    CvHelper* helper;
+    virtual float getScale();
+
 };
 
 #endif	/* HSVMODIFIER_H */

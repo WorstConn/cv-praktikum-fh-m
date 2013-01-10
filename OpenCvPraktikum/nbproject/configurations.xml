@@ -43,6 +43,8 @@
         <itemPath>Modifier/HsvModifier.h</itemPath>
         <itemPath>Modifier/ImageModificator.cpp</itemPath>
         <itemPath>Modifier/ImageModificator.h</itemPath>
+        <itemPath>Modifier/ModificatorComponent.cpp</itemPath>
+        <itemPath>Modifier/ModificatorComponent.h</itemPath>
         <itemPath>Modifier/ScaleModificator.cpp</itemPath>
         <itemPath>Modifier/ScaleModificator.h</itemPath>
       </logicalFolder>
@@ -69,8 +71,10 @@
         <itemPath>View/AAction.h</itemPath>
         <itemPath>View/AImageAction.cpp</itemPath>
         <itemPath>View/AImageAction.h</itemPath>
-        <itemPath>View/Window.cpp</itemPath>
-        <itemPath>View/Window.h</itemPath>
+        <itemPath>View/CvWindow.cpp</itemPath>
+        <itemPath>View/CvWindow.h</itemPath>
+        <itemPath>View/ModificatorAction.cpp</itemPath>
+        <itemPath>View/ModificatorAction.h</itemPath>
         <itemPath>View/WindowManager.cpp</itemPath>
         <itemPath>View/WindowManager.h</itemPath>
       </logicalFolder>
@@ -115,15 +119,10 @@
           <incDir>
             <pElem>/usr/local/include/opencv</pElem>
             <pElem>/usr/local/include/opencv2</pElem>
-            <pElem>/usr/local/include/libfreenect</pElem>
-            <pElem>/usr/include/GL</pElem>
-            <pElem>/usr/include/libusb-1.0</pElem>
-            <pElem>/usr/include/X11</pElem>
           </incDir>
-          <commandLine>-std=gnu++0x -fPIC</commandLine>
+          <commandLine>-std=gnu++0x</commandLine>
           <preprocessorList>
             <Elem>DEBUG</Elem>
-            <Elem>TRY_KINECT</Elem>
             <Elem>__GXX_EXPERIMENTAL_CXX0X__</Elem>
           </preprocessorList>
           <warningLevel>2</warningLevel>
@@ -131,16 +130,9 @@
         <linkerTool>
           <linkerAddLib>
             <pElem>/usr/local/lib</pElem>
-            <pElem>/usr/lib</pElem>
-            <pElem>/usr/lib/fakenect</pElem>
-            <pElem>/usr/lib/X11</pElem>
           </linkerAddLib>
           <linkerLibItems>
             <linkerOptionItem>`pkg-config --libs opencv`</linkerOptionItem>
-            <linkerOptionItem>`pkg-config --libs libfreenect`</linkerOptionItem>
-            <linkerOptionItem>`pkg-config --libs gl`</linkerOptionItem>
-            <linkerOptionItem>`pkg-config --libs glu`</linkerOptionItem>
-            <linkerOptionItem>`pkg-config --libs x11`</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>

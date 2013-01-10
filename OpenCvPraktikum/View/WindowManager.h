@@ -13,20 +13,26 @@ using namespace cv;
 
 class WindowManager {
 public:
-    WindowManager();
+    
     WindowManager(const WindowManager& orig);
     virtual ~WindowManager();
     static void putTrackbarCallback(AAction* action, String wndName);
     static WindowManager* getInstance();
     static void callBackFkt(int p, void* data);
-    Window* getWindow(String name);
+    CvWindow* getWindow(String name);
     AAction* getAction(String desc);
-    Window* createWindow(String name, int w = 0, int h = 0);
-private:
-    static WindowManager* instance;
-    static vector<Window*> windows;
-    static vector<AAction*> callbacks;
+    CvWindow* createWindow(String name, int w = 0, int h = 0);
+    void showWindow(String name);
+    void updateWindowImage(String name, Mat* mat);
+    void closeWindow(String name);
     
+    virtual void relesase();
+private:
+    WindowManager();
+    static WindowManager* instance;
+    static vector<CvWindow*> windows;
+    static vector<AAction*> callbacks;
+    static mutex* wndMutex;
 
 
 };

@@ -788,6 +788,7 @@ MatND CvHelper::makeHSHist(Mat& mat) {
             hist, 2, histSize, ranges,
             true, // the histogram is uniform
             false);
+     normalize( hist, hist, 0, 255, NORM_MINMAX, -1, Mat() );
     return hist;
 }
 
@@ -887,16 +888,22 @@ double CvHelper::compareHistogram(MatND& hist1, MatND& hist2, int m) {
  * @param mat eine Bildfolge
  * @return Das Akkumulierte Bild
  */
-Mat CvHelper::accumulateImages(vector<Mat> mat) {
-    if (mat.size() < 2) {
-        DBG("Vektor der Laenge: %i mind. 2 benoetigt", static_cast<int> (mat.size()));
+Mat CvHelper::accumulateImages(vector<Mat> mats) {
+    if (mats.size() < 2) {
+        DBG("Vektor der Laenge: %i mind. 2 benoetigt", static_cast<int> (mats.size()));
         return Mat();
     }
-    Mat erg = mat[0];
-    for (vector<Mat>::iterator iter = (mat.begin() + 1); iter != mat.end(); iter++) {
-        Mat current = (*iter);
-        accumulate(current, erg);
 
+    Mat erg = Mat::zeros(mats[0].size(), CV_64FC3);
+    mats[0].copyTo(erg);
+    
+    for (int i = 1; i < (int) mats.size(); i++) {
+        Mat current = mats[i];
+       
+        //accumulate(current, erg);
+        add(erg,current,erg);
+        erg/=2;
+        
     }
 
     return erg;

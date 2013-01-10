@@ -27,7 +27,6 @@ public:
     BgFgSegmModificator(const BgFgSegmModificator& orig);
     virtual ~BgFgSegmModificator();
         virtual void modify(Mat&);
-    virtual bool doesAction(); // etwas stupide...
     virtual float getScale();
 private:
     /**

@@ -14,6 +14,208 @@
 #include <map>
 #include <string>
 
+
+
+// <editor-fold defaultstate="collapsed" desc="BgfgSegmentierung">
+#if /* BgfgSegmentierung */1
+
+#include <X11/Xlib.h>
+using namespace cv;
+using namespace std;
+
+
+
+Mat bgimage;
+Mat testImage;
+
+int main(int, char** argv) {
+    /**
+     * Falls nicht gerufen... 
+     *  [xcb] Unknown request in queue while dequeuing
+     *  [xcb] Most likely this is a multi-threaded client and XInitThreads has not been called
+     *  [xcb] Aborting, sorry about that.
+     */
+    XInitThreads();
+
+    InputHandler handler = InputHandler();
+    CvHelper* helper = CvHelper::getInstance();
+    handler.setInputSource(INPUT_FOLDER);
+    handler.addImageFolder("/home/ertai/Videos/Bg1");
+
+    vector<Mat> bg = vector<Mat > ();
+    if (!handler.open()) {
+        cout << "Konnte Eingabe nicht öffnen. " << endl << "Ordner: /home/ertai/Videos/Bg1" << endl;
+        return EXIT_FAILURE;
+    }
+    int i = 0;
+    Mat single;
+    while (!handler.reachesEndOfInput()) {
+
+        handler.next();
+        Mat current = handler.getImage();
+        if (single.empty()) {
+            DBG("Setzte einzelnes Sample");
+            single = current;
+        }
+        Mat conv = Mat::zeros(current.rows, current.cols, CV_32FC3);
+        current.copyTo(conv);
+        bg.push_back(conv);
+        current.release();
+        conv.release();
+        i++;
+    }
+
+    DBG("%d Hintergründe gefunden.", i);
+    bgimage = helper->accumulateImages(bg);
+    bg.clear();
+    Mat testImage = imread("/home/ertai/Videos/POS/pos1-0138.jpg");
+    MatND eq = helper->makeHSHist(testImage);
+
+    WindowManager* manager = WindowManager::getInstance();
+    manager->createWindow("BgAccum");
+
+    manager->updateWindowImage("BgAccum", &bgimage);
+    manager->showWindow("BgAccum");
+
+    manager->createWindow("TestImg");
+    manager->updateWindowImage("TestImg", &testImage);
+    manager->showWindow("TestImg");
+
+    Mat testImgF64 = Mat(testImage.size(), CV_64FC3);
+    testImage.copyTo(testImgF64);
+    Mat singleF64 = Mat(single.size(), CV_64FC3);
+    single.copyTo(singleF64);
+    Mat absd = Mat::zeros(testImgF64.size(), CV_64FC3);
+    absdiff(singleF64, bgimage, absd);
+
+    manager->createWindow("Absdiff");
+    manager->updateWindowImage("Absdiff", &absd);
+    manager->showWindow("Absdiff");
+
+    Mat sdiff = Mat::zeros(singleF64.size(), CV_64FC3);
+    absdiff(testImgF64, singleF64, sdiff);
+
+    manager->createWindow("Sdiff");
+    manager->updateWindowImage("Sdiff", &sdiff);
+    manager->showWindow("Sdiff");
+
+    Mat sdiffGray = Mat(sdiff.size(), CV_64FC1);
+    cvtColor(sdiff, sdiffGray, CV_BGR2GRAY);
+
+    Mat erg;
+
+    Canny(sdiffGray, erg, 45.0f, 3.0f * 45.0f);
+
+    Mat kernel = Mat::ones(3, 3, CV_8U);
+    dilate(erg, erg, kernel, Point(-1, -1), 2);
+    erode(erg, erg, kernel, Point(-1, -1), 2);
+
+    vector<vector<Point> > contours0;
+    vector<Vec4i> hierarchy;
+    findContours(erg, contours0, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_TC89_L1, Point(0, 0));
+    int accuracy = 4;
+    /// Approximate Poygone to the found contour to repare holes
+    bool closed = true;
+    vector < vector<Point> > cont = vector < vector <Point> > (contours0.size());
+    if (accuracy < 2) {
+        accuracy = 2;
+    }
+    for (unsigned k = 0; k < contours0.size(); k++) {
+        approxPolyDP(contours0[k], cont[k], accuracy, closed);
+    }
+
+
+
+
+
+    vector<Point> contour;
+
+    for (vector < vector<Point> >::const_iterator root = cont.begin(); root != cont.end(); root++) {
+        vector<Point> current = (*root);
+        for (vector<Point>::const_iterator contX = current.begin(); contX != current.end(); contX++) {
+            contour.push_back((*contX));
+        }
+    }
+
+    DBG("Got: %i contourpoints.", (int) contour.size());
+
+    // Add last point to beginning & first point to end
+    contour.insert(contour.begin(), cont[0].back());
+    contour.insert(contour.end(), cont[0].front());
+
+    vector<Point> triangleNodes;
+    Point maxX, minX;
+    Point maxY, minY;
+    for (vector<Point>::const_iterator it = contour.begin(); it != contour.end(); it++) {
+        Point pb = *it; //before
+        Point p = *(it + 1); //current
+        Point pn = *(it + 2); //next
+
+        DBG("Steigung zwischen letztem und nächsten Punkt: %f", MyMath::calcPitch(pb, pn));
+        if (p.x <= erg.size().width && p.x > 0) {
+            if (maxX.x == 0 || p.x > maxX.x) {
+                maxX = p;
+            }
+            if (minX.x == 0 || p.x < minX.x) {
+                minX = p;
+            }
+            if (minY.y == 0 || p.y < minY.y) {
+                minY = p;
+            }
+            if (maxY.y == 0 || p.y > maxY.y) {
+                maxY = p;
+            }
+        }
+
+
+    }
+
+    DBG("Extema: (%i/%i),(%i/%i),(%i/%i),(%i/%i)", minX.x, minX.y, maxX.x, maxX.y, minY.x, minY.y, maxY.x, maxY.y);
+
+
+    Mat ergC3 = Mat(erg.size(), CV_64FC3);
+    cvtColor(erg, ergC3, CV_GRAY2BGR);
+    circle(ergC3, minX, 20, Scalar(255, 0, 0), -1);
+    circle(ergC3, maxX, 20, Scalar(0, 255, 0), -1);
+    circle(ergC3, minY, 20, Scalar(0, 0, 255), -1);
+    circle(ergC3, maxY, 3, Scalar(255, 255, 0), -1);
+    Point x1, x2, x3, x4;
+    x1 = Point(minX.x, minY.y);
+    x2 = Point(maxX.x, minY.y);
+    x3 = Point(minX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : (minY.y + MyMath::abs(minX.y - minY.y)*3));
+    x4 = Point(maxX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : minY.y + MyMath::abs(minX.y - minY.y)*3);
+    circle(ergC3, x1, 20, Scalar(255, 0, 0), -1);
+    circle(ergC3, x2, 20, Scalar(0, 255, 0), -1);
+    circle(ergC3, x3, 20, Scalar(0, 0, 255), -1);
+    circle(ergC3, x4, 20, Scalar(255, 255, 0), -1);
+    manager->createWindow("HandDetect");
+    manager->updateWindowImage("HandDetect", &ergC3);
+    manager->showWindow("HandDetect");
+
+
+
+    waitKey(0);
+
+    manager->relesase();
+    single.release();
+    sdiff.release();
+    absd.release();
+    bgimage.release();
+    testImage.release();
+    testImgF64.release();
+
+
+    return (0);
+    //FIXME: .dat mit positiven Samples erstellen -> mehr samples
+    //FIXME: BgFgSegmentierung fertig implementieren...
+}
+
+
+
+#endif
+// </editor-fold>
+
+
 // <editor-fold defaultstate="collapsed" desc="cornerDetector_Demo">
 #if /*cornerDetector_Demo*/0
 
@@ -468,6 +670,7 @@ void readme() {
 
 // <editor-fold defaultstate="collapsed" desc="Kinect">
 #if /*Kinect*/0
+#ifdef TRY_KINECT
 using namespace cv;
 using namespace std;
 using namespace Freenect;
@@ -775,7 +978,7 @@ void *gl_threadfunc(void *arg) {
 }
 
 int main(int argc, char **argv) {
-    device = &freenect.createDevice<MyFreenectDevice>(0);
+    device = &freenect.createDevice<MyFreenectDevice > (0);
     device->startVideo();
     device->startDepth();
     gl_threadfunc(NULL);
@@ -783,6 +986,8 @@ int main(int argc, char **argv) {
     device->stopDepth();
     return 0;
 }
+#endif
+
 #endif
 // </editor-fold>
 
@@ -904,8 +1109,8 @@ int main() {
 #endif
 // </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="Test-Routines">
-#if /*Test-Routinen*/1
+// <editor-fold defaultstate="collapsed" desc="Test-Routinen">
+#if /*Test-Routinen*/0
 
 using namespace std;
 using namespace cv;

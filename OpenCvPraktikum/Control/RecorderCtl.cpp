@@ -13,7 +13,7 @@ using namespace cv;
 RecorderCtl::RecorderCtl(String ctl) {
     name = (ctl.empty()) ? "Default" : ctl;
     capture = NULL;
-    wnd = new Window(name);
+    wnd = new CvWindow(name);
     state = INIT;
     ctlThread = NULL;
     lastImgUpdate = -1;
@@ -61,7 +61,7 @@ void RecorderCtl::dispose() {
 
 }
 
-void RecorderCtl::setWindow(Window *wnd) {
+void RecorderCtl::setWindow(CvWindow *wnd) {
     this->wnd = wnd;
 }
 
@@ -69,7 +69,7 @@ void RecorderCtl::setCapture(CvVideoCapture *capture) {
     this->capture = capture;
 }
 
-Window* RecorderCtl::getWindow() {
+CvWindow* RecorderCtl::getWindow() {
     return wnd;
 }
 

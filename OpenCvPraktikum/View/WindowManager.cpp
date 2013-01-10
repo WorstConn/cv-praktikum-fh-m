@@ -14,7 +14,7 @@ using namespace cv;
 WindowManager* WindowManager::instance = NULL;
 vector<AAction*> WindowManager::callbacks = vector<AAction*>();
 
-vector<Window*> WindowManager::windows = vector<Window*>();
+vector<CvWindow*> WindowManager::windows = vector<CvWindow*>();
 
 WindowManager::WindowManager() {
 }
@@ -66,15 +66,15 @@ void WindowManager::putTrackbarCallback(AAction* action, String wndName) {
 
 }
 
-Window* WindowManager::createWindow(String name, int w, int h) {
-    Window* wnd = new Window(name, w, h);
+CvWindow* WindowManager::createWindow(String name, int w, int h) {
+    CvWindow* wnd = new CvWindow(name, w, h);
     windows.push_back(wnd);
     return wnd;
 }
 
-Window* WindowManager::getWindow(String name) {
-    Window* erg = NULL;
-    vector<Window*>::const_iterator iter;
+CvWindow* WindowManager::getWindow(String name) {
+    CvWindow* erg = NULL;
+    vector<CvWindow*>::const_iterator iter;
     for (iter = windows.begin(); iter != windows.end(); iter++) {
         if ((*iter)->getName().find(name) != String::npos) {
             erg = (*iter);
@@ -94,4 +94,66 @@ AAction* WindowManager::getAction(String desc) {
         }
     }
     return erg;
+}
+
+void WindowManager::relesase() {
+    while (!callbacks.empty()) {
+        AAction* cb = callbacks[0];
+        callbacks.erase(callbacks.begin());
+        if (cb != NULL) {
+
+            cb = NULL;
+        }
+    }
+    while (!windows.empty()) {
+        CvWindow* wnd = windows[0];
+        windows.erase(windows.begin());
+        if (wnd != NULL) {
+            if (wnd->isShowing()) {
+                wnd->closeWindow();
+            }
+
+            delete wnd;
+        }
+    }
+}
+
+void WindowManager::showWindow(String name) {
+    
+    int len = windows.size();
+    for (int i = 0; i < len; i++) {
+        if (windows[i]->getName().find(name) == 0) {
+            if (!windows[i]->isShowing()) {
+                DBG("Fenster anzeigen");
+                windows[i]->showWindow();
+                break;
+            }
+        }
+    }
+}
+
+void WindowManager::updateWindowImage(String name, Mat* mat) {
+    int len = windows.size();
+    for (int i = 0; i < len; i++) {
+        if (windows[i]->getName().find(name) == 0) {
+            DBG("Fensterbild gesetzt");
+            windows[i]->setCurrentImage(mat);
+            break;
+
+        }
+    }
+}
+
+void WindowManager::closeWindow(String name) {
+    int len = windows.size();
+    for (int i = 0; i < len; i++) {
+        if (windows[i]->getName().find(name) == 0) {
+            if (windows[i]->isShowing()) {
+                windows[i]->closeWindow();
+                break;
+            } else {
+                break;
+            }
+        }
+    }
 }

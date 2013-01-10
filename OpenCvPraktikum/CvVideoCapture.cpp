@@ -92,11 +92,6 @@ void CvVideoCapture::setImageModifikator(ImageModificator *mod) {
     if (!recording) {
         if (mod == NULL) throw Exception();
         imageMod = mod;
-#ifdef DEBUG
-        if (!imageMod->doesAction()) {
-            DBG("Gesetzter Modifikator ist ein Dummie");
-        }
-#endif
     } else {
         cerr << "Modifikator kann nur geaendert werden, wenn keine Aufnahme getstartet wurde." << endl;
     }
@@ -137,7 +132,7 @@ void CvVideoCapture::record() {
     }
 
     Size frameSize = Size(capture.inputWidth(), capture.inputHeight());
-    if (imageMod != NULL && imageMod->doesAction()) {
+    if (imageMod != NULL) {
         if (imageMod->getScale() != 1.0f) {
             DBG("Modifier skaliert den Frame um %f", imageMod->getScale());
             frameSize.height = static_cast<int> (((float) frameSize.height) * imageMod->getScale());
@@ -220,12 +215,12 @@ void CvVideoCapture::record() {
 
 
         if (imageMod != NULL) {
-            if (imageMod->doesAction()) {
 
-                //frm=getFrame();  // Falls es zu 'Concurrent modification error' kommt...
 
-                imageMod->modify(frm);
-            }
+            //frm=getFrame();  // Falls es zu 'Concurrent modification error' kommt...
+
+            imageMod->modify(frm);
+
         }
 
         writer->write(frm);

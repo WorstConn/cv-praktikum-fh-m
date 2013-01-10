@@ -1,13 +1,13 @@
 /* 
- * File:   Window.cpp
- * Author: julian
+ * File:   CvWindow.cpp
+ * Author: Julian Cordes, Nils Frenking
  * 
  * Created on 10. Dezember 2012, 15:50
  */
 
 #include "../header.h"
 
-Window::Window(String name, int width, int height) {
+CvWindow::CvWindow(String name, int width, int height) {
 
     this->currentImage = NULL;
     if (width < 0) {
@@ -28,7 +28,7 @@ Window::Window(String name, int width, int height) {
 
 }
 
-Window::Window(const Window& orig) {
+CvWindow::CvWindow(const CvWindow& orig) {
     this->currentImage = orig.currentImage;
     this->height = orig.height;
     this->width = orig.width;
@@ -40,11 +40,11 @@ Window::Window(const Window& orig) {
 
 }
 
-Window::~Window() {
+CvWindow::~CvWindow() {
     destroyAllWindows();
 }
 
-void Window::setCurrentImage(Mat *current) {
+void CvWindow::setCurrentImage(Mat *current) {
     if (current == NULL) {
         DBG("current Image of Window is null!");
         return;
@@ -60,7 +60,7 @@ void Window::setCurrentImage(Mat *current) {
 
 }
 
-void Window::showWindow() {
+void CvWindow::showWindow() {
 
 
     if (this->name.empty()) {
@@ -70,10 +70,10 @@ void Window::showWindow() {
     namedWindow(this->name, CV_GUI_EXPANDED);
     show = true;
 
-    refreshThread = new thread(&Window::loop, this);
+    refreshThread = new thread(&CvWindow::loop, this);
 }
 
-void Window::closeWindow() {
+void CvWindow::closeWindow() {
     if (show) {
         show = false;
         DBG("Warte auf Refreshthread");
@@ -84,7 +84,7 @@ void Window::closeWindow() {
     }
 }
 
-void Window::loop() {
+void CvWindow::loop() {
     DBG("Betrete loop")
     time_t current;
 
@@ -118,15 +118,15 @@ void Window::loop() {
     DBG("Verlasse loop");
 }
 
-bool Window::isShowing() {
+bool CvWindow::isShowing() {
     return show;
 }
 //FIME: TrackBar-Prop-Objekt erstellen!!
 
-void Window::addTrackbar(String name, int max, TrackbarCallback ptr) {
+void CvWindow::addTrackbar(String name, int max, TrackbarCallback ptr) {
 
 }
 
-String Window::getName() {
+String CvWindow::getName() {
     return name;
 }
