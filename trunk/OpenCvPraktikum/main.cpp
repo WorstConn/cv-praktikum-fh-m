@@ -42,12 +42,12 @@ int main(int, char** argv) {
     handler.setInputSource(INPUT_FOLDER);
     handler.addImageFolder("/home/ertai/Videos/Bg1");
 
-    vector<Mat> bg = vector<Mat > ();
+    
     if (!handler.open()) {
         cout << "Konnte Eingabe nicht öffnen. " << endl << "Ordner: /home/ertai/Videos/Bg1" << endl;
         return EXIT_FAILURE;
     }
-    int i = 0;
+    
     Mat single;
     while (!handler.reachesEndOfInput()) {
 
@@ -56,26 +56,18 @@ int main(int, char** argv) {
         if (single.empty()) {
             DBG("Setzte einzelnes Sample");
             single = current;
+            break;
         }
-        Mat conv = Mat::zeros(current.rows, current.cols, CV_32FC3);
-        current.copyTo(conv);
-        bg.push_back(conv);
-        current.release();
-        conv.release();
-        i++;
+
     }
 
-    DBG("%d Hintergründe gefunden.", i);
-    bgimage = helper->accumulateImages(bg);
-    bg.clear();
+
+
     Mat testImage = imread("/home/ertai/Videos/POS/pos1-0138.jpg");
-    MatND eq = helper->makeHSHist(testImage);
+
 
     WindowManager* manager = WindowManager::getInstance();
-    manager->createWindow("BgAccum");
 
-    manager->updateWindowImage("BgAccum", &bgimage);
-    manager->showWindow("BgAccum");
 
     manager->createWindow("TestImg");
     manager->updateWindowImage("TestImg", &testImage);
@@ -85,12 +77,7 @@ int main(int, char** argv) {
     testImage.copyTo(testImgF64);
     Mat singleF64 = Mat(single.size(), CV_64FC3);
     single.copyTo(singleF64);
-    Mat absd = Mat::zeros(testImgF64.size(), CV_64FC3);
-    absdiff(singleF64, bgimage, absd);
 
-    manager->createWindow("Absdiff");
-    manager->updateWindowImage("Absdiff", &absd);
-    manager->showWindow("Absdiff");
 
     Mat sdiff = Mat::zeros(singleF64.size(), CV_64FC3);
     absdiff(testImgF64, singleF64, sdiff);
@@ -175,10 +162,7 @@ int main(int, char** argv) {
 
     Mat ergC3 = Mat(erg.size(), CV_64FC3);
     cvtColor(erg, ergC3, CV_GRAY2BGR);
-    circle(ergC3, minX, 20, Scalar(255, 0, 0), -1);
-    circle(ergC3, maxX, 20, Scalar(0, 255, 0), -1);
-    circle(ergC3, minY, 20, Scalar(0, 0, 255), -1);
-    circle(ergC3, maxY, 3, Scalar(255, 255, 0), -1);
+    
     Point x1, x2, x3, x4;
     x1 = Point(minX.x, minY.y);
     x2 = Point(maxX.x, minY.y);
@@ -199,7 +183,6 @@ int main(int, char** argv) {
     manager->relesase();
     single.release();
     sdiff.release();
-    absd.release();
     bgimage.release();
     testImage.release();
     testImgF64.release();
@@ -208,6 +191,8 @@ int main(int, char** argv) {
     return (0);
     //FIXME: .dat mit positiven Samples erstellen -> mehr samples
     //FIXME: BgFgSegmentierung fertig implementieren...
+    //FIXME: Vorgefertigter Test zur erstellung eines Bilderordners (Ein-/Aus-gabe Test).
+    
 }
 
 
