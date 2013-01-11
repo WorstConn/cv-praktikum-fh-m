@@ -185,7 +185,7 @@ void CvVideoCapture::record() {
     }
     // <editor-fold defaultstate="collapsed" desc="Aufnahme Schleife">
     while (recording) {
-
+DBG("Test");
 
         if (frames_to_record != 0 and frames_to_record < framecount) {
             break;

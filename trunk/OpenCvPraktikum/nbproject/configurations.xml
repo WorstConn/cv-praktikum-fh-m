@@ -17,12 +17,20 @@
         <itemPath>Control/RecorderCtl.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f6" displayName="Helper" projectFiles="true">
+        <itemPath>Helper/CreationBehavior.cpp</itemPath>
+        <itemPath>Helper/CreationBehavior.h</itemPath>
         <itemPath>Helper/CvHelper.cpp</itemPath>
         <itemPath>Helper/CvHelper.h</itemPath>
         <itemPath>Helper/FileManager.cpp</itemPath>
         <itemPath>Helper/FileManager.h</itemPath>
         <itemPath>Helper/MyMath.cpp</itemPath>
         <itemPath>Helper/MyMath.h</itemPath>
+        <itemPath>Helper/NegativeSample.cpp</itemPath>
+        <itemPath>Helper/NegativeSample.h</itemPath>
+        <itemPath>Helper/PositiveSample.cpp</itemPath>
+        <itemPath>Helper/PositiveSample.h</itemPath>
+        <itemPath>Helper/SampleCreator.cpp</itemPath>
+        <itemPath>Helper/SampleCreator.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f5" displayName="Input" projectFiles="true">
         <itemPath>Input/AInputHandler.cpp</itemPath>
@@ -59,10 +67,16 @@
       <logicalFolder name="f7" displayName="Test" projectFiles="true">
         <itemPath>Test/ATest.cpp</itemPath>
         <itemPath>Test/ATest.h</itemPath>
+        <itemPath>Test/CreateNegativeSamplesTest.cpp</itemPath>
+        <itemPath>Test/CreateNegativeSamplesTest.h</itemPath>
+        <itemPath>Test/CreatePositiveSamplesTest.cpp</itemPath>
+        <itemPath>Test/CreatePositiveSamplesTest.h</itemPath>
         <itemPath>Test/MainTest.cpp</itemPath>
         <itemPath>Test/MainTest.h</itemPath>
         <itemPath>Test/Prak3A8.cpp</itemPath>
         <itemPath>Test/Prak3A8.h</itemPath>
+        <itemPath>Test/VideoInputToImageSequenceOutputTest.cpp</itemPath>
+        <itemPath>Test/VideoInputToImageSequenceOutputTest.h</itemPath>
         <itemPath>Test/WindowManagerTest.cpp</itemPath>
         <itemPath>Test/WindowManagerTest.h</itemPath>
       </logicalFolder>

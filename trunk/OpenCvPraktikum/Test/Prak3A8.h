@@ -24,6 +24,7 @@ public:
      */
     virtual int testMain(vector<String> args);
     void testCB(int pos, void* dat);
+    virtual void printUsage();
 private:
     int threshold;
 

@@ -61,6 +61,12 @@ public:
     
     void addSearchString(String str);
     
+    void clearAll();
+    
+    static String getParentPath(String path);
+    
+    static String getFileName(String path);
+        
     
 private:
     vector<String> foundFiles;
