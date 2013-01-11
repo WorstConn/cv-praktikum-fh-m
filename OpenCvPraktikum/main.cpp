@@ -229,9 +229,6 @@ int main(int, char** argv) {
 
 
     return (0);
-    //FIXME: .dat mit positiven Samples erstellen -> mehr samples
-    //FIXME: BgFgSegmentierung fertig implementieren...
-    //FIXME: Vorgefertigter Test zur erstellung eines Bilderordners (Ein-/Aus-gabe Test).
 
 }
 
