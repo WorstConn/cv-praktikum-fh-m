@@ -233,3 +233,40 @@ void FileManager::setSearchStrings(set<String> strings) {
 void FileManager::addSearchString(String str) {
     searchStrings.insert(str);
 }
+
+String FileManager::getParentPath(String path) {
+    if (path.empty()) {
+        DBG("Pfad ist ungueltig %s", path.c_str());
+    }
+    String parent = path.substr(0, path.find_last_of(PATH_SEPARATOR));
+    parent += PATH_SEPARATOR;
+    return parent;
+}
+
+String FileManager::getFileName(String path) {
+    if (path.empty()) {
+        DBG("Pfad ist ungueltig %s", path.c_str());
+    }
+    int pos = path.find_last_of(PATH_SEPARATOR) + 1;
+    int n = path.length() - pos;
+    String parent = path.substr(pos, n);
+    pos = parent.find_last_of(".");
+    parent = parent.substr(0, pos);
+
+
+    return parent;
+
+}
+
+void FileManager::clearAll() {
+    searchStrings = set<String > ();
+    if (!searchStrings.empty()) {
+        DBG("Suchstrings nicht leer nach neuer erstellung...");
+    }
+    foundFiles = vector<String > ();
+    if (!foundFiles.empty()) {
+        DBG("Gefundene Dateien nicht leer nach neuer erstellung...");
+    }
+    searchPath = String("");
+
+}

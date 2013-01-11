@@ -59,9 +59,13 @@ void WindowManagerTest::action(int pos, void* data) {
     CvWindow* w = manager->getWindow("Test1");
     w->setCurrentImage(tmpBGR);
     tmpGray->release();
-    tmpGray=NULL;
+    tmpGray = NULL;
     tmpBGR->release();
-    tmpBGR=NULL;
-   
+    tmpBGR = NULL;
 
+
+}
+
+void WindowManagerTest::printUsage() {
+    cout << "No Arguments supported" << endl;
 }

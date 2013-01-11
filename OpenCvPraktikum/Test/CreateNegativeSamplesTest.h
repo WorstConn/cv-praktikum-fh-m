@@ -1,36 +1,32 @@
 /* 
- * File:   MainTest.h
- * Author: Julian Cordes, Nils Frenking
+ * File:   CreateNegativeSamplesTest.h
+ * Author: Nils Frenking
  *
- * Created on 21. Dezember 2012, 12:07
+ * Created on 10. Januar 2013, 22:30
  */
 
-#ifndef MAINTEST_H
-#define	MAINTEST_H
-
+#ifndef CREATENEGATIVESAMPLESTEST_H
+#define	CREATENEGATIVESAMPLESTEST_H
 #include "../header.h"
-
 using namespace std;
 using namespace cv;
 
-class MainTest : public ATest {
+class CreateNegativeSamplesTest : public ATest{
 public:
-    MainTest();
-    MainTest(const MainTest& orig);
-    virtual ~MainTest();
-
-    /**
+    CreateNegativeSamplesTest();
+    CreateNegativeSamplesTest(const CreateNegativeSamplesTest& orig);
+    virtual ~CreateNegativeSamplesTest();
+        /**
      * F&uuml;hrt einen Test durch.
      * @param args F&uuml;r den Test notwendige Agumente (Dateien, Flags, uva. ...)
      * @return <code>EXIT_SUCCESS</code> wenn der Test ohne Fehler beendet werden konnte. Sonst <code>EXIT_FAILURE</code>.
      */
     virtual int testMain(vector<String> args);
-    virtual void putTest(ATest* test);
-    
+
     virtual void printUsage();
 private:
-    vector<ATest*> tests;
+
 };
 
-#endif	/* MAINTEST_H */
+#endif	/* CREATENEGATIVESAMPLESTEST_H */
 

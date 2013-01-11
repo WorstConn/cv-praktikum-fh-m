@@ -20,6 +20,7 @@ public:
     virtual ~WindowManagerTest();
     virtual void action(int pos, void* data);
     virtual int testMain(vector<String> args);
+    virtual void printUsage();
 private:
     WindowManager *manager;
     Mat *currentFrame;

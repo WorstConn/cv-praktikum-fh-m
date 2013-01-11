@@ -15,7 +15,15 @@ public:
     ImageSequenceInput();
     ImageSequenceInput(const ImageSequenceInput& orig);
     virtual ~ImageSequenceInput();
-    virtual bool reachesEndOfInput()=0;
+    virtual bool reachesEndOfInput() = 0;
+//    virtual Mat getImage() = 0;
+//    virtual void next() = 0;
+//    virtual void releaseAll() = 0;
+//    virtual bool opened() = 0;
+//    virtual int inputHeight() = 0;
+//    virtual int inputWidth() = 0;
+//    virtual int inputFps() = 0;
+//    virtual bool shouldConvertToRGB() = 0;
 protected:
     bool reachesEnd;
 private:

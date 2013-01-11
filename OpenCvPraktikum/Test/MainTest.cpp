@@ -45,4 +45,6 @@ void MainTest::putTest(ATest* test) {
 }
 
 
-
+void MainTest::printUsage() {
+    cout << "No Arguments supported" << endl;
+}

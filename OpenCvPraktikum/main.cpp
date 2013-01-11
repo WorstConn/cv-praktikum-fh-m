@@ -15,9 +15,49 @@
 #include <string>
 
 
+#if /*Einfacher (beliebiger Test)*/1
+
+int main(int, char** argv) {
+    ATest* test = new CreatePositiveSamplesTest();
+    if (test->testMain(vector<String > ()) == EXIT_SUCCESS) {
+        cout << "Test erfolgreich! :-)" << endl;
+        return EXIT_SUCCESS;
+    } else {
+        cout << "Test fehlgeschlagen! :-(" << endl;
+        return EXIT_FAILURE;
+    }
+
+
+}
+#endif
+#if /* Video zu Bildsequenz */0
+using namespace cv;
+using namespace std;
+
+int main(int, char** argv) {
+    InputHandler handler = InputHandler();
+    handler.setInputSource(INPUT_VIDEO);
+    handler.addVideo("/home/ertai/Videos/VIDEO0024.mp4");
+    if (!handler.open()) {
+        DBG("Konnte Eingabe nicht öffnen");
+        return EXIT_FAILURE;
+    }
+    CvVideoCapture* cap = new CvVideoCapture(handler);
+    Output* out = new ImageListOutput("/home/ertai/Videos/Negs2", "neg2-", ".png");
+
+    cap->setOutput(out);
+    cap->setTimeToRecord(150);
+    cap->setRecordingTime(150000);
+    cap->start();
+
+    cap->joinThread();
+    return EXIT_SUCCESS;
+}
+#endif
+
 
 // <editor-fold defaultstate="collapsed" desc="BgfgSegmentierung">
-#if /* BgfgSegmentierung */1
+#if /* BgfgSegmentierung */0
 
 #include <X11/Xlib.h>
 using namespace cv;
@@ -42,12 +82,12 @@ int main(int, char** argv) {
     handler.setInputSource(INPUT_FOLDER);
     handler.addImageFolder("/home/ertai/Videos/Bg1");
 
-    
+
     if (!handler.open()) {
         cout << "Konnte Eingabe nicht öffnen. " << endl << "Ordner: /home/ertai/Videos/Bg1" << endl;
         return EXIT_FAILURE;
     }
-    
+
     Mat single;
     while (!handler.reachesEndOfInput()) {
 
@@ -162,7 +202,7 @@ int main(int, char** argv) {
 
     Mat ergC3 = Mat(erg.size(), CV_64FC3);
     cvtColor(erg, ergC3, CV_GRAY2BGR);
-    
+
     Point x1, x2, x3, x4;
     x1 = Point(minX.x, minY.y);
     x2 = Point(maxX.x, minY.y);
@@ -192,7 +232,7 @@ int main(int, char** argv) {
     //FIXME: .dat mit positiven Samples erstellen -> mehr samples
     //FIXME: BgFgSegmentierung fertig implementieren...
     //FIXME: Vorgefertigter Test zur erstellung eines Bilderordners (Ein-/Aus-gabe Test).
-    
+
 }
 
 

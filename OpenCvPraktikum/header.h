@@ -79,10 +79,12 @@ enum OUTPUT_TYPE {
 #include <stdio.h>
 #include <thread>
 #include <mutex>
+#include <cstring>
 #include <string>
 #include <stdlib.h>
 #include <time.h>
 #include <iostream>
+#include <fstream>
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="             OpenCV Header">
@@ -142,6 +144,10 @@ typedef struct inode_struct Inode;
 #include "Helper/MyMath.h"
 #include "Helper/FileManager.h"
 #include "Helper/CvHelper.h"
+#include "Helper/CreationBehavior.h"
+#include "Helper/NegativeSample.h"
+#include "Helper/PositiveSample.h"
+#include "Helper/SampleCreator.h"
 
 // </editor-fold>
 
@@ -203,9 +209,13 @@ typedef struct inode_struct Inode;
 // <editor-fold defaultstate="collapsed" desc="             Test">
 
 #include "Test/ATest.h"
-#include "Test/MainTest.h"
+#include "Test/VideoInputToImageSequenceOutputTest.h"
+#include "Test/CreateNegativeSamplesTest.h"
+#include "Test/CreatePositiveSamplesTest.h"
 #include "Test/Prak3A8.h"
 #include "Test/WindowManagerTest.h"
+#include "Test/MainTest.h"
+
 
 // </editor-fold>
 

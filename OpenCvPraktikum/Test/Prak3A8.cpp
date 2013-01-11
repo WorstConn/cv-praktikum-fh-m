@@ -9,9 +9,8 @@
 using namespace std;
 using namespace cv;
 
+void Prak3A8::testCB(int pos, void* dat) {
 
-void Prak3A8::testCB(int pos, void* dat){
-    
 }
 
 Prak3A8::Prak3A8() {
@@ -33,9 +32,9 @@ int Prak3A8::testMain(vector<String> args) {
     if (input.requestFormat(r720p)) {
         DBG("Auflösung geändert");
     }
-    
+
     //ImageListOutput out("/home/ertai/NetBeansProjects/OpenCvPraktikum/imgseq_out", "bg4");
-    
+
     namedWindow("Gauss");
     namedWindow("Hist1");
     namedWindow("Eq");
@@ -135,5 +134,8 @@ int Prak3A8::testMain(vector<String> args) {
     return EXIT_SUCCESS;
 }
 
+void Prak3A8::printUsage() {
+    cout << "No Arguments supported" << endl;
+}
 
 

@@ -129,11 +129,6 @@ bool InputHandler::close() {
 }
 
 bool InputHandler::releaseCurrentImage() {
-    if (currentImage.data == NULL) {
-        return true;
-    }
-    currentImage.release();
-
     return true;
 }
 
@@ -208,8 +203,12 @@ bool InputHandler::grabNext() {
             break;
         default:
             releaseCurrentImage();
-            cap >> currentImage;
+            cap.grab();
             if (currentImage.empty()) {
+                currentImage = Mat::zeros(Size(1280, 720), CV_8UC3);
+            }
+            if (!cap.read(currentImage)) {
+                DBG("Kein Bild bekommen.");
                 connected = false;
                 reachesEnd = true;
                 return false;
@@ -377,7 +376,7 @@ bool InputHandler::openVideo() {
     }
     cap = VideoCapture(videoFiles[0]);
     videoFiles.erase(videoFiles.begin());
-    DBG("Setze Quelle auf IMAGE_FOLDER");
+    DBG("Setze Quelle auf INPUT_VIDEO");
     sourceType = INPUT_VIDEO;
     return cap.isOpened();
 }
@@ -425,7 +424,7 @@ void InputHandler::nextFromFolder() {
     }
     String img = imageFiles[0];
     currentImage = imread(img);
-    
+
     if (imageFiles.size() > 1) {
         vector<String>::iterator iter = imageFiles.begin();
         imageFiles.erase(iter);
