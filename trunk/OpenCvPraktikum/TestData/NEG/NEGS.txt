@@ -1,0 +1,1 @@
+In diesem Ordner können die Bilder abgelegt werden, die NICHT das zu erkennende Objekt beinhalten.

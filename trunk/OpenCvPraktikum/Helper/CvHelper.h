@@ -191,7 +191,7 @@ public:
      * @param mat eine Bildfolge
      * @return Das Akkumulierte Bild
      */
-    Mat accumulateImages(vector<Mat> mat); 
+    Mat accumulateImages(vector<Mat> mat);
 
     /**
      * Enfernt den Hintergrund eines Bildes mithilfe eines Kallibrierungsbiles(Bildfolge)
@@ -202,10 +202,49 @@ public:
     Mat removeBackground(vector<Mat>bg, Mat img); //FIXME: Implementieren!
 
     Mat convertBlackAndWhite(Mat& in, int threshold);
+
+    /**
+     * Erstellt eine Lokale-H&auml;figkeitsverteilung einer Punktmenge, bezogen auf X oder Y Werte.
+     * @param points Eine Menge von Punkten
+     * @param imageWidth Weite des Bildes auf dem die Punkte der Menge angesiedelt sind.
+     * @param imageHeight H&ouml;he des Bildes auf dem die Punkte der Menge angesiedelt sind.
+     * @param histogramBins 'B&auml;nder' des Histograms.<br> Muss Teiler von <code>imageWidth</code> sein, falls <code>direction == DIRECTION_X</code> 
+     *                       oder Teiler von <code>imageHeight</code>, falls <code>direction == DIRECTION_Y</code>.
+     * @param direction Betrachtungsrichtung. Falls <code>direction == DIRECTION_X</code> werden nur die X-Werte der Punkte in das Histogram einflie&szlig;en.
+     * @return Einen Vektor von Vektoren von Punkten. F&uuml;r jedes Band existiert ein Vektor von Punkten, seine L&auml;nge gibt Aufschluss &uuml;ber die Anzahl der Punkte in diesem (&Ouml;rtlichen)-Bereich.
+     */
+    vector<vector<Point> > createPositionHistogram(vector<Point> points, int imageWidth, int imageHeight, int histogramBins, POSITION_HISTOGRAM_DIRECTION direction = DIRECTION_X);
+
+    /**
+     * Entfernt isolierte Punkte aus einem Punktehistogram.
+     * @param hist Das Histogram.
+     * @param isolationBins Anazahl der B&auml;nder, die in einer Umgebung eines Punktes leer sein m&uuml;ssen, damit der Punkt als isoliert angesehen wird.
+     * @return Das Punktehistogram, in dem isolierte Punkte entfernt wurden
+     */
+    vector<vector<Point> > removeIsolatedPoints(vector<vector<Point> > hist, int isolationBins); // FIXME: Implementieren.
+
+    /**
+     * Filtert ein Punktehistogram. 
+     * @param hist Das Punktehistogram.
+     * @param fromBin Alle Punkte, die &ouml;rtlich vor diesem Band angesiedelt sind, werden entfernt.
+     * @param toBin Alle Punkte, die &ouml;rtlich nach diesem Band angesiedelt sind, werden entfernt.
+     * @return Ein Punktehistogram, in dem nur noch die B&auml;nder zweichen <code>fromBin</code> und <code>toBin</code> belegt sind.
+     */
+    vector<vector<Point> > filterPositionHistogramRange(vector<vector<Point> > hist, int fromBin, int toBin); //FIXME:  Implementieren.
+    
+    
+    /**
+     * Erstellt aus einem Punktehistogram (Vektor von Vektoren von Punkten) wieder eine Punktmenge (Vektor von Punkten).
+     * @param hist Das Punktehistogram.
+     * @return Einen Vector von Punkten.
+     */
+    vector<Point> retransformPositionHistogram(vector<vector<Point> > hist); //FIXME:  Implementieren.
+    
+    //FIXME: Evtl. eine eigene Datenklasse für Punkthistogramme, falls mehr informationen Gespeichert werden sollen (z.B.: Die Maße des Quellbildes o.ä)
     
     //FIXME: BACKPROJEKTION:
     //calcBackProject( &hs, 1, 2, hist, backproj, &ranges, 1, true );
-};  // Bilder anhand der Histogramme vergleichen: compareHist()
+}; // Bilder anhand der Histogramme vergleichen: compareHist()
 
 
 

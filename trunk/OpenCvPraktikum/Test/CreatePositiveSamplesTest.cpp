@@ -29,8 +29,8 @@ int CreatePositiveSamplesTest::testMain(vector<String> args) {
     SampleCreator* creator = SampleCreator::getInstance();
     PositiveSample posSamp = PositiveSample();
     creator->setCreationMethod(&posSamp);
-    creator->addInputDir("/home/ertai/Videos/POS1", "/home/ertai/Videos/Bg1/pos1-0274.jpg");
-    creator->setOutputPath("/home/ertai/Videos/POS1_DBG_ERG/pos1.dat");
+    creator->addInputDir("TestData/POS", "TestData/BG/bg1.jpg");
+    creator->setOutputPath("TestData/Result/positives.dat");
     if (creator->createSampleFile()) {
         DBG("Erstellung erfolgreich");
     }
@@ -38,6 +38,9 @@ int CreatePositiveSamplesTest::testMain(vector<String> args) {
 
     return EXIT_SUCCESS;
 }
+
+
+
 
 void CreatePositiveSamplesTest::printUsage() {
     cout << "No Arguments supported" << endl;

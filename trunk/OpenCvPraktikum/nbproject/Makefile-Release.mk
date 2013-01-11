@@ -40,8 +40,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/Helper/SampleCreator.o \
 	${OBJECTDIR}/Helper/FileManager.o \
 	${OBJECTDIR}/Modifier/ImageModificator.o \
-	${OBJECTDIR}/Helper/NegativeSample.o \
 	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/Helper/NegativeSample.o \
 	${OBJECTDIR}/Test/CreateNegativeSamplesTest.o \
 	${OBJECTDIR}/Control/RecorderCtl.o \
 	${OBJECTDIR}/Test/CreatePositiveSamplesTest.o \
@@ -121,15 +121,15 @@ ${OBJECTDIR}/Modifier/ImageModificator.o: Modifier/ImageModificator.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Modifier/ImageModificator.o Modifier/ImageModificator.cpp
 
-${OBJECTDIR}/Helper/NegativeSample.o: Helper/NegativeSample.cpp 
-	${MKDIR} -p ${OBJECTDIR}/Helper
-	${RM} $@.d
-	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Helper/NegativeSample.o Helper/NegativeSample.cpp
-
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+
+${OBJECTDIR}/Helper/NegativeSample.o: Helper/NegativeSample.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Helper
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Helper/NegativeSample.o Helper/NegativeSample.cpp
 
 ${OBJECTDIR}/Test/CreateNegativeSamplesTest.o: Test/CreateNegativeSamplesTest.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Test
