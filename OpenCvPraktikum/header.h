@@ -25,6 +25,10 @@ enum INPUT_TYPE {
     INPUT_NONE, INPUT_VIDEO, INPUT_CAM, INPUT_IP_CAM, INPUT_FOLDER
 };
 
+enum POSITION_HISTOGRAM_DIRECTION {
+    DIRECTION_X, DIRECTION_Y
+};
+
 /**
  * Indikator des Ausgabetyps.
  */

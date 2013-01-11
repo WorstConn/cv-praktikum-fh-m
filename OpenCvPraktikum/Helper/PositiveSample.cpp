@@ -12,12 +12,14 @@ using namespace cv;
 
 PositiveSample::PositiveSample() {
     drawMarkedSamples = FALSE;
+    rng(12345);
 }
 
 PositiveSample::PositiveSample(const PositiveSample& orig) {
     currentBackgroundPath = orig.currentBackgroundPath;
     drawMarkedSamples = orig.drawMarkedSamples;
     currentOutputPath = orig.currentOutputPath;
+    rng = orig.rng;
 }
 
 PositiveSample::~PositiveSample() {
@@ -68,11 +70,13 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
 
     diffGray = Mat(diff.size(), CV_64FC1);
     cvtColor(diff, diffGray, CV_BGR2GRAY); // </editor-fold>
+    threshold(diffGray, diffGray, 55, 255, CV_THRESH_BINARY);
 
     // <editor-fold defaultstate="collapsed" desc="Erstellung des Cannybildes">
     Canny(diffGray, cannyImage, 45.0f, 3.0f * 45.0f);
     dilate(cannyImage, cannyImage, kernel, Point(-1, -1), 2);
     erode(cannyImage, cannyImage, kernel, Point(-1, -1), 2); // </editor-fold>
+
 
     // <editor-fold defaultstate="collapsed" desc="Finden der Kontouren und Approximation durch Polygone">
     findContours(cannyImage, contours0, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_TC89_L1, Point(0, 0));
@@ -86,6 +90,9 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     for (unsigned k = 0; k < contours0.size(); k++) {
         approxPolyDP(contours0[k], cont[k], accuracy, closed);
     }
+
+
+
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Gefundene Kontourpunkte in einem Vektor zusammenfassen - Setzt voraus, dass nur das gesuchte Objekt im differenzbild zu sehen ist.">
@@ -97,29 +104,75 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
         }
     }// </editor-fold>
 
+
+#if DEBUG
+    vector<vector<Point> >hull(1);
+
+    convexHull(Mat(contour), hull[0], false);
+
+
+    Mat drawing = img.clone();//Mat::zeros(cannyImage.size(), CV_8UC3);
+    vector<vector<Point> >cont_conv_test(1);
+    cont[0] = contour;
+    Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+    drawContours(drawing, cont, 0, color, 1, 8, vector<Vec4i > (), 0, Point());
+    drawContours(drawing, hull, 0, color, 1, 8, vector<Vec4i > (), 0, Point());
+    //    int count = 3;
+    //    for (vector<Point>::iterator iter = hull[0].begin(); iter != hull[0].end(); iter++) {
+    //        circle(drawing, (*iter), count++, color, -1);
+    //    }
+    float fcounter = 3.0f;
+    color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+    for (vector<Point>::iterator iter = contour.begin(); iter != contour.end(); iter++) {
+        circle(drawing, (*iter), (int) fcounter, color, -1);
+        fcounter += 0.1;
+    }
+
+    /// Show in a window
+
+    imshow("Hull demo", drawing);
+
+    waitKey(100);
+#endif
+
     // DBG("Got: %i contourpoints.", (int) contour.size());
 
     // <editor-fold defaultstate="collapsed" desc="Bestimmen des Rechtecks, welches das gefundene Objekt beinhaltet.">
     Point maxX, minX;
     Point maxY, minY;
+    int imageWidth = cannyImage.size().width;
     for (vector<Point>::const_iterator it = contour.begin(); it != contour.end(); it++) {
         Point pb = *it; //before
         Point p = *(it + 1); //current
         Point pn = *(it + 2); //next
 
         //DBG("Steigung zwischen letztem und nächsten Punkt: %f", MyMath::calcPitch(pb, pn));
-        if (p.x <= cannyImage.size().width && p.x > 0) {
+
+        if (p.x <= imageWidth && p.x > 0) {
+
+
             if (maxX.x == 0 || p.x > maxX.x) {
-                maxX = p;
+                if (pb.x < p.x && pn.x < p.x) {
+                    maxX = p;
+                }
             }
             if (minX.x == 0 || p.x < minX.x) {
-                minX = p;
+                if (pb.x > p.x && pn.x > p.x) {
+                    minX = p;
+                }
+
             }
             if (minY.y == 0 || p.y < minY.y) {
-                minY = p;
+                if (pb.y > p.y && pn.y > p.y) {
+                    minY = p;
+                }
+
             }
             if (maxY.y == 0 || p.y > maxY.y) {
-                maxY = p;
+                if (pb.y < p.y && pn.y < p.y) {
+                    maxY = p;
+                }
+
             }
         }
 
@@ -142,8 +195,6 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     Point offset;
     int width, height;
     offset = x1;
-    width = MyMath::abs(x2.x - x1.x);
-    height = MyMath::abs(x4.y - x1.y);
 
     // <editor-fold defaultstate="collapsed" desc="Zeichnen der Gefundenen punkte, zur Pruefung.">
     line(inputImage, x1, x2, Scalar(255, 0, 0), 6);
@@ -155,6 +206,8 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     circle(inputImage, x3, 20, Scalar(0, 0, 255), -1);
     circle(inputImage, x4, 20, Scalar(255, 255, 0), -1);
     // </editor-fold>
+    width = MyMath::abs(x2.x - x1.x);
+    height = MyMath::abs(x4.y - x1.y);
     String erg;
     erg = imgPath + " ";
     if (pos > 0) {
@@ -181,6 +234,12 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     ergC3.release();
     contours0.clear();
     hierarchy.clear();
+    width = MyMath::abs(x2.x - x1.x);
+    height = MyMath::abs(x4.y - x1.y);
+    if (height <= 0 || ((float) width) >= (((float) height)*3.0f)) {
+        DBG("Vermutlich nicht erfolgreiche Erkennung. Weite %i und Hoehe %i des Erkannten Rechtecks", width, height);
+        erg = "Error: " + imgPath;
+    }
     return erg;
 
 }
@@ -211,10 +270,16 @@ void PositiveSample::createImageInfo(vector<vector<String> > input, String outpu
     outputStream.open(output.c_str(), _Ios_Openmode::_S_out);
     currentOutputPath = output;
     CV_Assert(outputStream.is_open());
+#if DEBUG
+    DBG("Erstelle Fenster");
+    namedWindow("Hull demo", CV_WINDOW_AUTOSIZE);
+#endif
     for (vector<vector<String> >::iterator root = input.begin(); root != input.end(); root++) {
         currentBackgroundPath = backgroundImagePath[samplesPosition];
         for (vector<String>::iterator files = (*root).begin(); files != (*root).end(); files++) {
+
             currentImage = imread((*files));
+
             outputStream << createImageInfo(currentImage, (*files), imagesCounter);
             if (((files + 1)) != (*root).end()) {
                 outputStream << endl;
@@ -225,5 +290,8 @@ void PositiveSample::createImageInfo(vector<vector<String> > input, String outpu
     }
     outputStream.close();
     currentImage.release();
+
+
+
 }
 

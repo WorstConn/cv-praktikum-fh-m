@@ -44,10 +44,15 @@ public:
      *          
      */
     virtual void createImageInfo(vector<vector<String> > input, String output, vector<String> backgroundImagePath, bool createMarkedOutputFiles = false);
+    
+    
+    
 private:
     String currentBackgroundPath;
     bool drawMarkedSamples;
     String currentOutputPath;
+    RNG rng;
+
 
 };
 

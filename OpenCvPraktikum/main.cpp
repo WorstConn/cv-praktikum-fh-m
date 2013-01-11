@@ -237,7 +237,6 @@ int main(int, char** argv) {
 #endif
 // </editor-fold>
 
-
 // <editor-fold defaultstate="collapsed" desc="cornerDetector_Demo">
 #if /*cornerDetector_Demo*/0
 

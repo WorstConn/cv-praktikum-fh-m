@@ -788,7 +788,7 @@ MatND CvHelper::makeHSHist(Mat& mat) {
             hist, 2, histSize, ranges,
             true, // the histogram is uniform
             false);
-     normalize( hist, hist, 0, 255, NORM_MINMAX, -1, Mat() );
+    normalize(hist, hist, 0, 255, NORM_MINMAX, -1, Mat());
     return hist;
 }
 
@@ -896,14 +896,14 @@ Mat CvHelper::accumulateImages(vector<Mat> mats) {
 
     Mat erg = Mat::zeros(mats[0].size(), CV_64FC3);
     mats[0].copyTo(erg);
-    
+
     for (int i = 1; i < (int) mats.size(); i++) {
         Mat current = mats[i];
-       
+
         //accumulate(current, erg);
-        add(erg,current,erg);
-        erg/=2;
-        
+        add(erg, current, erg);
+        erg /= 2;
+
     }
 
     return erg;
@@ -935,4 +935,89 @@ Mat CvHelper::convertBlackAndWhite(Mat& in, int thld) {
     }
     threshold(singleChannelImg, singleChannelImg, thld, 255, CV_THRESH_BINARY);
     return singleChannelImg;
+}
+
+/**
+ * Erstellt eine Lokale-H&auml;figkeitsverteilung einer Punktmenge, bezogen auf X oder Y Werte.
+ * @param points Eine Menge von Punkten
+ * @param imageWidth Weite des Bildes auf dem die Punkte der Menge angesiedelt sind.
+ * @param imageHeight H&ouml;he des Bildes auf dem die Punkte der Menge angesiedelt sind.
+ * @param histogramBins 'B&auml;nder' des Histograms.<br> Muss Teiler von <code>imageWidth</code> sein, falls <code>direction == DIRECTION_X</code> 
+ *                       oder Teiler von <code>imageHeight</code>, falls <code>direction == DIRECTION_Y</code>.
+ * @param direction Betrachtungsrichtung. Falls <code>direction == DIRECTION_X</code> werden nur die X-Werte der Punkte in das Histogram einflie&szlig;en.
+ * @return Einen Vektor von Vektoren von Punkten. F&uuml;r jedes Band existiert ein Vektor von Punkten, seine L&auml;nge gibt Aufschluss &uuml;ber die Anzahl der Punkte in diesem (&Ouml;rtlichen)-Bereich.
+ */
+vector<vector<Point >> CvHelper::createPositionHistogram(vector<Point> points, int imageWidth, int imageHeight, int histogramBins, POSITION_HISTOGRAM_DIRECTION direction) {
+    if (points.empty()) {
+        DBG("Keine Punkte angegeben.");
+        return vector < vector < Point >> ();
+    }
+
+    if (imageHeight <= 0 || imageWidth <= 0) {
+        DBG("Ungueltige Bildmasse: %i x %i.", imageWidth, imageHeight);
+        return vector < vector < Point >> ();
+    }
+
+    int binWidth;
+    switch (direction) {
+        case DIRECTION_X:
+            if (imageHeight % histogramBins != 0) {
+                DBG("Bildhoehe muss vielfaches von %i sein, ist %i. Eventuelle Skalierung muss vor dieser Operation erfolgen.", histogramBins, imageHeight);
+                return vector < vector < Point >> ();
+            } else {
+                binWidth = imageHeight / histogramBins;
+            }
+        case DIRECTION_Y:
+            if (imageWidth % histogramBins != 0) {
+                DBG("BildWeite muss vielfaches von %i sein, ist %i. Eventuelle Skalierung muss vor dieser Operation erfolgen.", histogramBins, imageWidth);
+                return vector < vector < Point >> ();
+            } else {
+                binWidth = imageWidth / histogramBins;
+            }
+    };
+
+    if (binWidth <= 0) {
+        DBG("Konnte Weite der Bins nicht ermitteln!");
+    }
+    int currentMin, currentMax;
+    currentMin = 0;
+    currentMax = binWidth;
+    vector< vector<Point> > hist = vector< vector<Point> >(histogramBins);
+
+    for (int i = 0; i < histogramBins; i++) {
+        hist[i] = vector<Point > ();
+        for (vector<Point>::iterator iterate = points.begin(); iterate != points.end(); iterate++) {
+            switch (direction) {
+                case DIRECTION_X:
+                    if ((*iterate).x >= currentMin && (*iterate).x < currentMax) {
+                        hist[i].push_back((*iterate));
+                    }
+
+                    continue;
+                case DIRECTION_Y:
+                    if ((*iterate).y >= currentMin && (*iterate).y < currentMax) {
+                        hist[i].push_back((*iterate));
+                    }
+                    continue;
+            };
+
+        }
+
+        currentMin = currentMax;
+        currentMax += binWidth;
+        switch (direction) {
+            case DIRECTION_X:
+                if (currentMax > imageWidth) {
+                    DBG("Weite hat Bildbegrenzungen ueberschritten. Ergebnis evtl. unvollstaendig");
+                    return hist;
+                }
+            case DIRECTION_Y:
+                if (currentMax > imageHeight) {
+                    DBG("Hoehe hat Bildbegrenzungen ueberschritten. Ergebnis evtl. unvollstaendig");
+                }
+                return hist;
+        };
+
+    }
+    return hist;
 }

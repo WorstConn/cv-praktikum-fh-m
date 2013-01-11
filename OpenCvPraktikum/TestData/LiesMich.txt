@@ -1,0 +1,2 @@
+Die enthaltenen Testbilder dienen lediglich der fehlerfreien 'OutOfTheBox'-Ausführung der CreateSamples-Tests.
+Für praktische Zwecke sollten natürlich wesentlich mehr Bilder verarbeitet werden.
