@@ -1021,3 +1021,70 @@ vector<vector<Point >> CvHelper::createPositionHistogram(vector<Point> points, i
     }
     return hist;
 }
+
+/**
+ * Entfernt isolierte Punkte aus einem Punktehistogram.
+ * @param hist Das Histogram.
+ * @param isolationBins Anazahl der B&auml;nder, die in einer Umgebung eines Punktes leer sein m&uuml;ssen, damit der Punkt als isoliert angesehen wird.
+ * @return Das Punktehistogram, in dem isolierte Punkte entfernt wurden
+ */
+vector<vector<Point> > CvHelper::removeIsolatedPoints(vector<vector<Point> > hist, int isolationBins) {
+    if (isolationBins <= 0) {
+        DBG("Ein wert von <=0 ist in diesem Kontext nicht sinnvoll.");
+        return vector < vector<Point> > ();
+    }
+    if (isolationBins >= (int) hist.size()) {
+        DBG("Ein wert von <=0 ist in diesem Kontext nicht sinnvoll.");
+        return vector < vector<Point> > ();
+    }
+
+    vector<bool> isolatedLeft = vector<bool>(isolationBins);
+    vector<bool> isolatedRight = vector<bool>(isolationBins);
+    initVector(isolatedLeft,true);
+    initVector(isolatedRight, true);
+    for (vector<vector<Point> >::iterator root = hist.begin(); root != hist.end(); root++) {
+        vector<Point> tmp = (*root);
+        for (int left = 1; left < isolationBins and (root - left) != hist.begin(); left++) {
+            /*Pruefe alle Bins links von root, bis zu einem Abstand von isolationBins*/
+            if (root == hist.begin()) {
+                continue;
+            }
+            if ((*(root - left))) {
+
+            }
+        }
+        for (int right = 1; right < isolationBins and (root + right) != hist.end(); right++) {
+            /*Pruefe alle Bins rechts von root, bis zu einem Abstand von isolationBins*/
+
+        }
+        
+        //FIXME: Weitermachen!!
+    }
+}
+
+/**
+ * Filtert ein Punktehistogram. 
+ * @param hist Das Punktehistogram.
+ * @param fromBin Alle Punkte, die &ouml;rtlich vor diesem Band angesiedelt sind, werden entfernt.
+ * @param toBin Alle Punkte, die &ouml;rtlich nach diesem Band angesiedelt sind, werden entfernt.
+ * @return Ein Punktehistogram, in dem nur noch die B&auml;nder zweichen <code>fromBin</code> und <code>toBin</code> belegt sind.
+ */
+vector<vector<Point> > CvHelper::filterPositionHistogramRange(vector<vector<Point> > hist, int fromBin, int toBin) {
+
+}
+
+/**
+ * Erstellt aus einem Punktehistogram (Vektor von Vektoren von Punkten) wieder eine Punktmenge (Vektor von Punkten).
+ * @param hist Das Punktehistogram.
+ * @return Einen Vector von Punkten.
+ */
+vector<Point> CvHelper::retransformPositionHistogram(vector<vector<Point> > hist) {
+
+}
+
+vector<bool> CvHelper::initVector(vector<bool> vec, bool initValue) {
+    for (int i = 0; i < (int) vec.size(); i++) {
+        vec[i]=initValue;
+    }
+    return vec;
+}
