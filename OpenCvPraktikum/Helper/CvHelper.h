@@ -38,6 +38,7 @@ private:
      * @return das Eingabebild mit enthaltenem Text
      */
     Mat drawString(Mat inputImg, String text, Scalar color, int posX, int posY);
+    vector<bool> initVector(vector<bool> vec, bool initValue);
 public:
     virtual ~CvHelper();
 
@@ -231,17 +232,17 @@ public:
      * @return Ein Punktehistogram, in dem nur noch die B&auml;nder zweichen <code>fromBin</code> und <code>toBin</code> belegt sind.
      */
     vector<vector<Point> > filterPositionHistogramRange(vector<vector<Point> > hist, int fromBin, int toBin); //FIXME:  Implementieren.
-    
-    
+
+
     /**
      * Erstellt aus einem Punktehistogram (Vektor von Vektoren von Punkten) wieder eine Punktmenge (Vektor von Punkten).
      * @param hist Das Punktehistogram.
      * @return Einen Vector von Punkten.
      */
     vector<Point> retransformPositionHistogram(vector<vector<Point> > hist); //FIXME:  Implementieren.
-    
+
     //FIXME: Evtl. eine eigene Datenklasse für Punkthistogramme, falls mehr informationen Gespeichert werden sollen (z.B.: Die Maße des Quellbildes o.ä)
-    
+
     //FIXME: BACKPROJEKTION:
     //calcBackProject( &hs, 1, 2, hist, backproj, &ranges, 1, true );
 }; // Bilder anhand der Histogramme vergleichen: compareHist()
