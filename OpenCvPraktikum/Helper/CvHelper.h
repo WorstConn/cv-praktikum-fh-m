@@ -241,11 +241,16 @@ public:
      */
     vector<Point> retransformPositionHistogram(vector<vector<Point> > hist); //FIXME:  Implementieren.
 
+    
+    double checkEquality(const Mat& I1,const Mat& I2);
     //FIXME: Evtl. eine eigene Datenklasse für Punkthistogramme, falls mehr informationen Gespeichert werden sollen (z.B.: Die Maße des Quellbildes o.ä)
 
+    Scalar checkStructuralEquality(const Mat& i1, const Mat& i2);
+    
     //FIXME: BACKPROJEKTION:
     //calcBackProject( &hs, 1, 2, hist, backproj, &ranges, 1, true );
 }; // Bilder anhand der Histogramme vergleichen: compareHist()
+
 
 
 
