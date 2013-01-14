@@ -538,9 +538,10 @@ int CvHelper::codecFromString(String codec) {
         DBG("Falsche länge: %i", (int) codec.length());
         return -2;
     }
+    //FIXME: not well implemented yet.
+    return CODEC_DEFAULT;
 
 
-    return -2; //FIXME: not implemented yet
 }
 
 Mat& CvHelper::scaleImage(Mat& img, const float scale) {
@@ -1037,29 +1038,28 @@ vector<vector<Point> > CvHelper::removeIsolatedPoints(vector<vector<Point> > his
         DBG("Ein wert von <=0 ist in diesem Kontext nicht sinnvoll.");
         return vector < vector<Point> > ();
     }
-
+    vector<vector<Point> > erg = vector<vector<Point> >(hist);
     vector<bool> isolatedLeft = vector<bool>(isolationBins);
     vector<bool> isolatedRight = vector<bool>(isolationBins);
-    initVector(isolatedLeft,true);
+    initVector(isolatedLeft, true);
     initVector(isolatedRight, true);
     for (vector<vector<Point> >::iterator root = hist.begin(); root != hist.end(); root++) {
         vector<Point> tmp = (*root);
         for (int left = 1; left < isolationBins and (root - left) != hist.begin(); left++) {
             /*Pruefe alle Bins links von root, bis zu einem Abstand von isolationBins*/
-            if (root == hist.begin()) {
-                continue;
+            if (root <= hist.begin()) {
+                break;
             }
-            if ((*(root - left))) {
 
-            }
         }
         for (int right = 1; right < isolationBins and (root + right) != hist.end(); right++) {
             /*Pruefe alle Bins rechts von root, bis zu einem Abstand von isolationBins*/
 
         }
-        
-        //FIXME: Weitermachen!!
+
+        //FIXME: Implementieren!!
     }
+    return erg;
 }
 
 /**
@@ -1070,7 +1070,10 @@ vector<vector<Point> > CvHelper::removeIsolatedPoints(vector<vector<Point> > his
  * @return Ein Punktehistogram, in dem nur noch die B&auml;nder zweichen <code>fromBin</code> und <code>toBin</code> belegt sind.
  */
 vector<vector<Point> > CvHelper::filterPositionHistogramRange(vector<vector<Point> > hist, int fromBin, int toBin) {
-
+    if(toBin<fromBin){
+        return filterPositionHistogramRange(hist,toBin,fromBin);
+    }
+    return hist;//FIXME:Implementieren
 }
 
 /**
@@ -1079,12 +1082,94 @@ vector<vector<Point> > CvHelper::filterPositionHistogramRange(vector<vector<Poin
  * @return Einen Vector von Punkten.
  */
 vector<Point> CvHelper::retransformPositionHistogram(vector<vector<Point> > hist) {
-
+    vector<Point> erg = vector<Point > ();
+    for (vector<vector<Point> >::iterator root = hist.begin(); root != hist.end(); root++) {
+        for (vector<Point>::iterator iter = (*root).begin(); iter != (*root).end(); iter++) {
+            Point p = (*iter);
+            erg.push_back(p);
+        }
+    }
+    return erg;
 }
 
 vector<bool> CvHelper::initVector(vector<bool> vec, bool initValue) {
     for (int i = 0; i < (int) vec.size(); i++) {
-        vec[i]=initValue;
+        vec[i] = initValue;
     }
     return vec;
 }
+
+/**
+ * Pr&uuml;ft auf Gleichheit.
+ */
+double CvHelper::checkEquality(const Mat& I1, const Mat& I2) {
+    Mat s1;
+    absdiff(I1, I2, s1);
+    s1.convertTo(s1, CV_32F);
+    s1 = s1.mul(s1);
+    Scalar s = sum(s1);
+    // sum elements per channel
+    double sse = s.val[0] + s.val[1] + s.val[2]; // sum channels
+    if (sse <=
+            1e-10) // for small values return zero
+        return 0;
+    else {
+        double mse = sse / (double) (I1.channels() * I1.total());
+        double psnr = 10.0 * log10((255 * 255) / mse);
+        return psnr;
+    }
+
+
+}
+
+
+/**
+ * Pr&uuml;ft auf strukrurelle Gleichheit (relativ Langsam).
+ */
+Scalar CvHelper::checkStructuralEquality(const Mat& in1, const Mat& in2) {
+    const double C1 = 6.5025, C2 = 58.5225;
+
+    int d = CV_32F;
+    Mat img1, img2;
+    in1.convertTo(img1, d);
+
+    in2.convertTo(img2, d);
+    Mat img2_2 = img2.mul(img2);
+
+    Mat img1_2 = img1.mul(img1);
+    // I1^2
+    Mat img1_img2 = img1.mul(img2);
+
+    Mat mu1, mu2;
+
+    GaussianBlur(img1, mu1, Size(11, 11), 1.5);
+    GaussianBlur(img2, mu2, Size(11, 11), 1.5);
+
+    Mat mu1_2 = mu1.mul(mu1);
+    Mat mu2_2 = mu2.mul(mu2);
+    Mat mu1_mu2 = mu1.mul(mu2);
+    Mat sigma1_2, sigma2_2, sigma12;
+
+    GaussianBlur(img1_2, sigma1_2, Size(11, 11), 1.5);
+    sigma1_2 -= mu1_2;
+
+    GaussianBlur(img2_2, sigma2_2, Size(11, 11), 1.5);
+    sigma2_2 -= mu2_2;
+
+    GaussianBlur(img1_img2, sigma12, Size(11, 11), 1.5);
+    sigma12 -= mu1_mu2;
+
+    Mat t1, t2, t3;
+    t1 = 2 * mu1_mu2 + C1;
+    t2 = 2 * sigma12 + C2;
+    t3 = t1.mul(t2);
+    
+    t1 = mu1_2 + mu2_2 + C1;
+    t2 = sigma1_2 + sigma2_2 + C2;
+    t1 = t1.mul(t2);
+    Mat ssim_map;
+    divide(t3, t1, ssim_map);
+    Scalar mssim = mean(ssim_map);
+    return mssim;
+}
+

@@ -39,11 +39,15 @@ PositiveSample::~PositiveSample() {
  */
 String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     CV_Assert(!currentBackgroundPath.empty());
-
+    DBG("Aktuelles Bild: %s anfang", imgPath.c_str());
+    if(img.empty()){
+        DBG("Kein Bild!");
+        return "ERROR";
+    }
     // <editor-fold defaultstate="collapsed" desc="Deklarationen">
     Mat kernel = Mat::ones(3, 3, CV_8U);
     Mat inputImage = img;
-    Mat backgroundImage = imread(currentBackgroundPath);
+    Mat backgroundImage = imread(currentBackgroundPath); //FIXME: nur einmal einlesen...
     Mat cannyImage;
     Mat inputImgF64;
     Mat bgF64;
@@ -60,15 +64,20 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     inputImage.copyTo(inputImgF64);
     bgF64 = Mat(backgroundImage.size(), CV_64FC3);
     backgroundImage.copyTo(bgF64);
+
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Erstellung eines 1- und 3- Kanaligen Differenzbildes">
     diff = Mat::zeros(bgF64.size(), CV_64FC3);
     absdiff(inputImgF64, bgF64, diff);
-
+    DBG("Konversion");
 
 
     diffGray = Mat(diff.size(), CV_64FC1);
+    if (diffGray.size().width != diff.size().width || diffGray.size().height != diff.size().height) {
+        DBG("Erstellen des Ergebnisbildes fuer die Differenz fehlgeschlagen. ");
+
+    }
     cvtColor(diff, diffGray, CV_BGR2GRAY); // </editor-fold>
     threshold(diffGray, diffGray, 55, 255, CV_THRESH_BINARY);
 
@@ -111,7 +120,7 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     convexHull(Mat(contour), hull[0], false);
 
 
-    Mat drawing = img.clone();//Mat::zeros(cannyImage.size(), CV_8UC3);
+    Mat drawing = img.clone(); //Mat::zeros(cannyImage.size(), CV_8UC3);
     vector<vector<Point> >cont_conv_test(1);
     cont[0] = contour;
     Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
@@ -130,12 +139,11 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
 
     /// Show in a window
 
-    imshow("Hull demo", drawing);
+    imshow("Sample-Creation", drawing);
 
     waitKey(100);
 #endif
 
-    // DBG("Got: %i contourpoints.", (int) contour.size());
 
     // <editor-fold defaultstate="collapsed" desc="Bestimmen des Rechtecks, welches das gefundene Objekt beinhaltet.">
     Point maxX, minX;
@@ -188,7 +196,7 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     Point x1, x2, x3, x4;
     x1 = Point(minX.x, minY.y);
     x2 = Point(maxX.x, minY.y);
-    x4 = Point(minX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : (minY.y + MyMath::abs(minX.y - minY.y)*3));
+    x4 = Point(minX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : (minY.y + MyMath::abs(minX.y - minY.y)*3));  //FIXME: Bessere formel benoetigt
     x3 = Point(maxX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : minY.y + MyMath::abs(minX.y - minY.y)*3);
     // </editor-fold>
 
@@ -201,11 +209,8 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     line(inputImage, x2, x3, Scalar(0, 255, 0), 6);
     line(inputImage, x3, x4, Scalar(0, 0, 255), 6);
     line(inputImage, x4, x1, Scalar(255, 255, 0), 6);
-    circle(inputImage, x1, 20, Scalar(255, 0, 0), -1);
-    circle(inputImage, x2, 20, Scalar(0, 255, 0), -1);
-    circle(inputImage, x3, 20, Scalar(0, 0, 255), -1);
-    circle(inputImage, x4, 20, Scalar(255, 255, 0), -1);
     // </editor-fold>
+
     width = MyMath::abs(x2.x - x1.x);
     height = MyMath::abs(x4.y - x1.y);
     String erg;
@@ -214,15 +219,23 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
         erg += iToStr(pos) + " ";
     }
     erg += iToStr(offset.x) + " " + iToStr(offset.y) + " " + iToStr(width) + " " + iToStr(height);
+    width = MyMath::abs(x2.x - x1.x);
+    height = MyMath::abs(x4.y - x1.y);
+    if (height <= 0 or width <= 0 or ((float) width) >= (((float) height)*3.0f)) {
+        DBG("Vermutlich nicht erfolgreiche Erkennung. Weite %i und Hoehe %i des Erkannten Rechtecks", width, height);
+        erg = "Error: " + imgPath;
+    } else {
 
-
-    if (drawMarkedSamples) {
-        imwrite(FileManager::getParentPath(currentOutputPath) + "Sample-" + FileManager::getFileName(imgPath) + "-" + iToStr(pos) + ".png", inputImage);
-        //DBG("Markiertes Bild nach %s geschrieben.", String(FileManager::getParentPath(currentOutputPath) + "Sample-" + iToStr(pos) + ".png").c_str());
+        if (drawMarkedSamples) {
+            imwrite(FileManager::getParentPath(currentOutputPath) + "Sample-" + FileManager::getFileName(imgPath) + "-" + iToStr(pos) + ".png", inputImage);
+            //DBG("Markiertes Bild nach %s geschrieben.", String(FileManager::getParentPath(currentOutputPath) + "Sample-" + iToStr(pos) + ".png").c_str());
+        }
     }
 
 
 
+
+    DBG("Aktuelles Bild: %s fertig", imgPath.c_str());
     kernel.release();
     inputImage.release();
     backgroundImage.release();
@@ -234,12 +247,6 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     ergC3.release();
     contours0.clear();
     hierarchy.clear();
-    width = MyMath::abs(x2.x - x1.x);
-    height = MyMath::abs(x4.y - x1.y);
-    if (height <= 0 || ((float) width) >= (((float) height)*3.0f)) {
-        DBG("Vermutlich nicht erfolgreiche Erkennung. Weite %i und Hoehe %i des Erkannten Rechtecks", width, height);
-        erg = "Error: " + imgPath;
-    }
     return erg;
 
 }
@@ -290,8 +297,6 @@ void PositiveSample::createImageInfo(vector<vector<String> > input, String outpu
     }
     outputStream.close();
     currentImage.release();
-
-
 
 }
 

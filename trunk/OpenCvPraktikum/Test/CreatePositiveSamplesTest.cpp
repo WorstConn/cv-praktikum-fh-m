@@ -10,6 +10,7 @@ using namespace std;
 using namespace cv;
 
 CreatePositiveSamplesTest::CreatePositiveSamplesTest() {
+
 }
 
 CreatePositiveSamplesTest::CreatePositiveSamplesTest(const CreatePositiveSamplesTest& orig) {
@@ -29,8 +30,9 @@ int CreatePositiveSamplesTest::testMain(vector<String> args) {
     SampleCreator* creator = SampleCreator::getInstance();
     PositiveSample posSamp = PositiveSample();
     creator->setCreationMethod(&posSamp);
-    creator->addInputDir("TestData/POS", "TestData/BG/bg1.jpg");
-    creator->setOutputPath("TestData/Result/positives.dat");
+    creator->addInputDir("/home/ertai/Videos/POS1", "/home/ertai/Videos/Bg1/bg1-4.jpg");
+    creator->addInputDir("/home/ertai/Videos/POS2", "/home/ertai/Videos/BG2/bg2-30.jpg");
+    creator->setOutputPath("/home/ertai/Videos/POS1_DBG_ERG/positives.dat");
     if (creator->createSampleFile()) {
         DBG("Erstellung erfolgreich");
     }
@@ -38,9 +40,6 @@ int CreatePositiveSamplesTest::testMain(vector<String> args) {
 
     return EXIT_SUCCESS;
 }
-
-
-
 
 void CreatePositiveSamplesTest::printUsage() {
     cout << "No Arguments supported" << endl;
