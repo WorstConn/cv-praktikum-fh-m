@@ -11,8 +11,8 @@ using namespace std;
 using namespace cv;
 
 PositiveSample::PositiveSample() {
-    drawMarkedSamples = FALSE;
-    rng(12345);
+    drawMarkedSamples = false;
+    rng(1234576);
 }
 
 PositiveSample::PositiveSample(const PositiveSample& orig) {
@@ -39,8 +39,7 @@ PositiveSample::~PositiveSample() {
  */
 String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     CV_Assert(!currentBackgroundPath.empty());
-    DBG("Aktuelles Bild: %s anfang", imgPath.c_str());
-    if(img.empty()){
+    if (img.empty()) {
         DBG("Kein Bild!");
         return "ERROR";
     }
@@ -70,7 +69,7 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     // <editor-fold defaultstate="collapsed" desc="Erstellung eines 1- und 3- Kanaligen Differenzbildes">
     diff = Mat::zeros(bgF64.size(), CV_64FC3);
     absdiff(inputImgF64, bgF64, diff);
-    DBG("Konversion");
+
 
 
     diffGray = Mat(diff.size(), CV_64FC1);
@@ -79,7 +78,7 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
 
     }
     cvtColor(diff, diffGray, CV_BGR2GRAY); // </editor-fold>
-    threshold(diffGray, diffGray, 55, 255, CV_THRESH_BINARY);
+    threshold(diffGray, diffGray, 52, 255, CV_THRESH_BINARY);
 
     // <editor-fold defaultstate="collapsed" desc="Erstellung des Cannybildes">
     Canny(diffGray, cannyImage, 45.0f, 3.0f * 45.0f);
@@ -134,6 +133,7 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
     for (vector<Point>::iterator iter = contour.begin(); iter != contour.end(); iter++) {
         circle(drawing, (*iter), (int) fcounter, color, -1);
+        circle(inputImage, (*iter), (int) fcounter, color, -1);
         fcounter += 0.1;
     }
 
@@ -141,10 +141,14 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
 
     imshow("Sample-Creation", drawing);
 
-    waitKey(100);
+    waitKey(50);
 #endif
-
-
+    
+    vector<vector<Point> > hist = vector<vector<Point> >();
+    CvHelper* helper = CvHelper::getInstance();
+    hist = helper->createPositionHistogram(contour, img.size().width, img.size().height, 40, DIRECTION_X);
+    hist = helper->removeIsolatedPoints(hist, 2);
+    contour = helper->retransformPositionHistogram(hist);
     // <editor-fold defaultstate="collapsed" desc="Bestimmen des Rechtecks, welches das gefundene Objekt beinhaltet.">
     Point maxX, minX;
     Point maxY, minY;
@@ -196,7 +200,7 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     Point x1, x2, x3, x4;
     x1 = Point(minX.x, minY.y);
     x2 = Point(maxX.x, minY.y);
-    x4 = Point(minX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : (minY.y + MyMath::abs(minX.y - minY.y)*3));  //FIXME: Bessere formel benoetigt
+    x4 = Point(minX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : (minY.y + MyMath::abs(minX.y - minY.y)*3)); //FIXME: Bessere formel benoetigt
     x3 = Point(maxX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : minY.y + MyMath::abs(minX.y - minY.y)*3);
     // </editor-fold>
 
@@ -235,7 +239,7 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
 
 
 
-    DBG("Aktuelles Bild: %s fertig", imgPath.c_str());
+  
     kernel.release();
     inputImage.release();
     backgroundImage.release();
@@ -264,12 +268,17 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
  * @param createMarkedOutputFiles Falls <code>TRUE</code>, wird bei der Operation eine Kopie jedes Eingabebildes erstellt, auf der erkannte Objekte mit einem Rechteck eingefasst sind.
  *          
  */
-void PositiveSample::createImageInfo(vector<vector<String> > input, String output, vector<String> backgroundImagePath, bool createMarkedOutputFiles) {
+void PositiveSample::createImageInfo(CvArrayOfStringArrays input, String output, CvStringArray backgroundImagePath, bool createMarkedOutputFiles) {
     if (input.size() != backgroundImagePath.size()) {
         DBG("Falsche Grösse der Eingabe-Arrays: ist %i, soll %i", (int) backgroundImagePath.size(), (int) input.size());
     }
 
+    /* Wenn wir uns im Debugmodus befinden, Zeichne doch bitte die markierten Bilder zur Pruefung*/
+#if DEBUG
+    drawMarkedSamples = true;
+#else
     drawMarkedSamples = createMarkedOutputFiles;
+#endif
     int samplesPosition = 0;
     int imagesCounter = 1;
     Mat currentImage;
@@ -279,11 +288,11 @@ void PositiveSample::createImageInfo(vector<vector<String> > input, String outpu
     CV_Assert(outputStream.is_open());
 #if DEBUG
     DBG("Erstelle Fenster");
-    namedWindow("Hull demo", CV_WINDOW_AUTOSIZE);
+    namedWindow("Sample-Creation", CV_WINDOW_AUTOSIZE);
 #endif
-    for (vector<vector<String> >::iterator root = input.begin(); root != input.end(); root++) {
+    for (CvArrayOfStringArrays::iterator root = input.begin(); root != input.end(); root++) {
         currentBackgroundPath = backgroundImagePath[samplesPosition];
-        for (vector<String>::iterator files = (*root).begin(); files != (*root).end(); files++) {
+        for (CvStringArray::iterator files = (*root).begin(); files != (*root).end(); files++) {
 
             currentImage = imread((*files));
 

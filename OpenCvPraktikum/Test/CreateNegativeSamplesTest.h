@@ -21,7 +21,7 @@ public:
      * @param args F&uuml;r den Test notwendige Agumente (Dateien, Flags, uva. ...)
      * @return <code>EXIT_SUCCESS</code> wenn der Test ohne Fehler beendet werden konnte. Sonst <code>EXIT_FAILURE</code>.
      */
-    virtual int testMain(vector<String> args);
+    virtual int testMain(CvStringArray args);
 
     virtual void printUsage();
 private:

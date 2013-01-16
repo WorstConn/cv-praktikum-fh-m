@@ -25,7 +25,7 @@ public:
      * @param name Die Suchworte.
      * @param dir der Ordner der durchsucht werden soll.
      */
-    void find(set<String> name, String dir);
+    void find(CvStringSet name, String dir);
     /**
      * Pr&uuml;ft, ob die Datei, mit dem angegebenen Namen existiert.
      * @param path Der Pfad.
@@ -43,12 +43,12 @@ public:
      * Gibt die Liste der zuletzt gefundenen Dateien zur&uuml;ck.
      * @return  Die Liste der Dateinamen;
      */
-    vector<String> getFoundList();
+    CvStringArray getFoundList();
     /**
      * Gibt die Liste der zuletzt gesuchten Worte zur&uuml;ck.
      * @return Die Liste der Suchw&ouml;rter.
      */
-    set<String> getSearchStrings();
+    CvStringSet getSearchStrings();
     /**
      * Gibt den letzten Suchpfad zur&uuml;ck.
      * @return den letzten Suchpfad, oder einen leeren String,
@@ -57,7 +57,7 @@ public:
     
     void setSearchPath(String path);
     
-    void setSearchStrings(set<String> strings);
+    void setSearchStrings(CvStringSet strings);
     
     void addSearchString(String str);
     
@@ -69,14 +69,14 @@ public:
         
     
 private:
-    vector<String> foundFiles;
-    set<String> searchStrings;
+    CvStringArray foundFiles;
+    CvStringSet searchStrings;
     String searchPath;
 
     FileManager();
     FileManager(const FileManager& orig);
     static FileManager *instance;
-    int seekdir(vector<vector<String >> &mylist, String path, set<String> name);
+    int seekdir(CvArrayOfStringArrays &mylist, String path, CvStringSet name);
 
 };
 

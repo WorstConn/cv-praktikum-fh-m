@@ -26,7 +26,7 @@ hrt einen Test durch.
 r den Test notwendige Agumente(Dateien, Flags, uva. ...)
  * @return <code>EXIT_SUCCESS< / code> wenn der Test ohne Fehler beendet werden konnte. Sonst <code>EXIT_FAILURE< / code>.
  */
-int CreatePositiveSamplesTest::testMain(vector<String> args) {
+int CreatePositiveSamplesTest::testMain(CvStringArray args) {
     SampleCreator* creator = SampleCreator::getInstance();
     PositiveSample posSamp = PositiveSample();
     creator->setCreationMethod(&posSamp);

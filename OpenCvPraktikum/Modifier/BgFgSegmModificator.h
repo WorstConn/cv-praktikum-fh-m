@@ -22,7 +22,7 @@ public:
      * Erstellt einen Subtraktor auf Basis eines Vektors von Pfaden zu Bildern, die den Hintergrund darstellen.
      * @param bgImages Vektor von Pfaden zu Bildern, die zu einer Hintergrundmaske Akkumuliert werden.
      */
-    BgFgSegmModificator(vector<String> bgImages);
+    BgFgSegmModificator(CvStringArray bgImages);
     
     BgFgSegmModificator(const BgFgSegmModificator& orig);
     virtual ~BgFgSegmModificator();

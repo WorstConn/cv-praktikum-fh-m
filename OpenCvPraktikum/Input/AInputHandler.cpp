@@ -11,18 +11,18 @@ AInputHandler::AInputHandler() {
     connected = false;
     defaultIpCamURL = "http://192.168.2.28:8080/videofeed";
     sourceType = INPUT_NONE;
-    imageFolders = set<String > ();
-    videoFiles = vector<String > ();
-    imageFiles = vector<String > ();
+    imageFolders = CvStringSet();
+    videoFiles = CvStringArray();
+    imageFiles = CvStringArray();
 }
 
 AInputHandler::AInputHandler(String camURL) {
     connected = false;
     defaultIpCamURL = camURL;
     sourceType = INPUT_NONE;
-    imageFolders = set<String > ();
-    videoFiles = vector<String > ();
-    imageFiles = vector<String > ();
+    imageFolders = CvStringSet();
+    videoFiles = CvStringArray();
+    imageFiles = CvStringArray();
 
 }
 

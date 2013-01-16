@@ -93,7 +93,7 @@ int main(int, char** argv) {
 
 int main(int, char** argv) {
     ATest* test = new CreatePositiveSamplesTest();
-    if (test->testMain(vector<String > ()) == EXIT_SUCCESS) {
+    if (test->testMain(CvStringArray()) == EXIT_SUCCESS) {
         cout << "Test erfolgreich! :-)" << endl;
         return EXIT_SUCCESS;
     } else {
@@ -1215,7 +1215,7 @@ using namespace cv;
 
 int main(int argc, char* argv[]) {
     MainTest test = MainTest();
-    vector<String> argsVec;
+    CvStringArray argsVec;
     if (argc > 1) {
         String tmp;
         for (int i = 1; i < argc; i++) {
@@ -1267,7 +1267,7 @@ int main(int argc, char* argv[]) {
     CvHelper* help = CvHelper::getInstance();
     Mat grid = Mat::zeros(Size(800, 600), CV_8UC3);
     Mat frame;
-    vector<String> tags = vector<String > ();
+    CvStringArray tags = CvStringArray ();
     tags.push_back("Normal");
     tags.push_back("Gauß");
     tags.push_back("Hist.Eq.");
@@ -1361,7 +1361,7 @@ int main() {
     images.push_back(&sobelY);
     images.push_back(&histImg);
     images.push_back(&cannyImageInv);
-    vector<String> tags = vector<String > ();
+    CvStringArray tags = CvStringArray ();
     tags.push_back("Bild");
     tags.push_back("BinBild");
     tags.push_back("SobelX");

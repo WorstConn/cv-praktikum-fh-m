@@ -112,6 +112,14 @@ enum OUTPUT_TYPE {
 
 // </editor-fold>
 
+typedef std::vector<std::vector<cv::Point> > PointHistogram;
+typedef std::vector<cv::Point> PointArray;
+typedef std::vector<bool> BooleanArray;
+typedef std::vector<cv::String> CvStringArray;
+typedef std::set<cv::String> CvStringSet;
+typedef std::vector<cv::Mat> CvImageArray;
+typedef std::vector<CvStringArray> CvArrayOfStringArrays;
+
 // <editor-fold defaultstate="collapsed" desc="             OS spezifische Includes">
 /**OS spezifische Includes*/
 #ifdef __unix__
