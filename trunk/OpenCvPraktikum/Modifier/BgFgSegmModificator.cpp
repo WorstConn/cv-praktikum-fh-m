@@ -7,7 +7,7 @@
 
 #include "../header.h"
 
-BgFgSegmModificator::BgFgSegmModificator(vector<String> bgImages) {
+BgFgSegmModificator::BgFgSegmModificator(CvStringArray bgImages) {
 }
 
 BgFgSegmModificator::BgFgSegmModificator(const BgFgSegmModificator& orig) : ImageModificator(orig){

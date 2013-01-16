@@ -385,7 +385,7 @@ bool InputHandler::openFolder() {
     if (!imageFiles.empty()) {
         DBG("Verwende bestehende Dateiliste");
         connected = true;
-        vector<String>::iterator iter = imageFiles.begin();
+        CvStringArray::iterator iter = imageFiles.begin();
         String filename = (*iter);
 
         currentImage = imread(filename);
@@ -395,7 +395,7 @@ bool InputHandler::openFolder() {
         return true;
     } else {
         DBG("Erstelle neue Dateiliste");
-        set<String> searchStrings = set<String > ();
+        CvStringSet searchStrings = CvStringSet();
         searchStrings.insert("jpg");
         searchStrings.insert("jpeg");
         searchStrings.insert("png");
@@ -426,7 +426,7 @@ void InputHandler::nextFromFolder() {
     currentImage = imread(img);
 
     if (imageFiles.size() > 1) {
-        vector<String>::iterator iter = imageFiles.begin();
+        CvStringArray::iterator iter = imageFiles.begin();
         imageFiles.erase(iter);
     } else {
         reachesEnd = true;

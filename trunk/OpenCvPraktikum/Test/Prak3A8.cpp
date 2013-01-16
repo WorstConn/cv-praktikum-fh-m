@@ -23,7 +23,7 @@ Prak3A8::Prak3A8(const Prak3A8& orig) {
 Prak3A8::~Prak3A8() {
 }
 
-int Prak3A8::testMain(vector<String> args) {
+int Prak3A8::testMain(CvStringArray args) {
     InputHandler input = InputHandler();
     input.setInputSource(INPUT_CAM);
     //input.addVideo("/home/ertai/Videos/VIDEO0023.mp4");
@@ -54,7 +54,7 @@ int Prak3A8::testMain(vector<String> args) {
     Mat gauss, hist1, hist2, histEq, histEqBW, gaussBW;
     MatND histo1;
     MatND histo2;
-    vector<String> tags = vector<String > ();
+    CvStringArray tags = CvStringArray ();
 
 
 

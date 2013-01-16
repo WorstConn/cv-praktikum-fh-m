@@ -58,7 +58,7 @@ String NegativeSample::createImageInfo(Mat& img, String imgPath, int pos) {
  * @param createMarkedOutputFiles Falls <code>TRUE</code>, wird bei der Operation eine Kopie jedes Eingabebildes erstellt, auf der erkannte Objekte mit einem Rechteck eingefasst sind.
  *          
  */
-void NegativeSample::createImageInfo(vector<vector<String> > input, String output, vector<String> backgroundImagePath, bool createMarkedOutputFiles) {
+void NegativeSample::createImageInfo(CvArrayOfStringArrays input, String output, CvStringArray backgroundImagePath, bool createMarkedOutputFiles) {
     CV_Assert(!input.empty());
     CV_Assert(!output.empty());
     if (!backgroundImagePath.empty()) {
@@ -72,8 +72,8 @@ void NegativeSample::createImageInfo(vector<vector<String> > input, String outpu
     Mat current = Mat::zeros(20, 20, CV_8UC3);
     outputStream.open(output.c_str(), _Ios_Openmode::_S_out);
     CV_Assert(outputStream.is_open());
-    for (vector<vector<String> >::iterator root = input.begin(); root != input.end(); root++) {
-        for (vector<String>::iterator files = (*root).begin(); files != (*root).end(); files++) {
+    for (CvArrayOfStringArrays::iterator root = input.begin(); root != input.end(); root++) {
+        for (CvStringArray::iterator files = (*root).begin(); files != (*root).end(); files++) {
 
             outputStream << createImageInfo(current, (*files), counter);
             if (((files + 1)) != (*root).end()) {

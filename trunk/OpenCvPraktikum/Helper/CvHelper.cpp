@@ -51,7 +51,7 @@ Mat CvHelper::drawString(Mat inputImg, String text, Scalar color, int posX, int 
  * @param height Maximale H&ouml;he des Ergebnisbildes
  * @return Ein Bild, das aus den Eingabebildern zusammengesetzt ist
  */
-Mat CvHelper::buildImageGrid(vector<Mat*> images, vector<String> imageTags, Scalar color, int maxColumn, int width, int height) {
+Mat CvHelper::buildImageGrid(vector<Mat*> images, CvStringArray imageTags, Scalar color, int maxColumn, int width, int height) {
 
     int rahmenbreite = 5; //Abstand zwischen den Bildern
     Mat grid = Mat(width, height, CV_8UC3);
@@ -438,11 +438,11 @@ vector<Rect> CvHelper::detectAll(Mat& img, CascadeClassifier& cascade) {
  * @param face2 die zu kopierende Region von Bild 2
  * @return einen Vector, der die Bilder mit den vertauschten Regionen enth&auml;lt, oder leer ist, falls ein Fehler aufgetreten ist.
  */
-vector<Mat> CvHelper::swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, Mat img2_mask, Rect face2) {
+CvImageArray CvHelper::swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, Mat img2_mask, Rect face2) {
 
     if (img1.data == NULL || img2.data == NULL) {
         cout << "Keine Bilder zum vertauschen angegeben" << endl;
-        return vector<Mat > ();
+        return CvImageArray();
     }
     Mat img1Roi = Mat(Size(face2.width, face2.height), CV_8UC3);
     Mat img2Roi = Mat(Size(face1.width, face1.height), CV_8UC3);
@@ -451,7 +451,7 @@ vector<Mat> CvHelper::swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, M
 
     if (img1_mask.data != NULL && img2_mask.data != NULL) {
         cerr << "Sorry, nocht nicht implementiert..." << endl << "Bitte so lange nocht swapFaces ohne Maskenbilder aufrufen" << endl;
-        return vector<Mat > ();
+        return CvImageArray();
         /*
          * Masken leider noch nicht beruecksichtigt         
          */
@@ -481,12 +481,12 @@ vector<Mat> CvHelper::swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, M
 
         if (img2.data == NULL or img1.data == NULL) {
 
-            return vector<Mat > ();
+            return CvImageArray();
 
         }
 
     }
-    vector<Mat> erg = vector<Mat > ();
+    CvImageArray erg = CvImageArray();
     erg.push_back(img1);
     erg.push_back(img2);
     return erg;
@@ -889,7 +889,7 @@ double CvHelper::compareHistogram(MatND& hist1, MatND& hist2, int m) {
  * @param mat eine Bildfolge
  * @return Das Akkumulierte Bild
  */
-Mat CvHelper::accumulateImages(vector<Mat> mats) {
+Mat CvHelper::accumulateImages(CvImageArray mats) {
     if (mats.size() < 2) {
         DBG("Vektor der Laenge: %i mind. 2 benoetigt", static_cast<int> (mats.size()));
         return Mat();
@@ -916,7 +916,7 @@ Mat CvHelper::accumulateImages(vector<Mat> mats) {
  * @param img Das Bild mit Objekt
  * @return Ein Bild mit geschw&auml;rztem Hintergrund.
  */
-Mat CvHelper::removeBackground(vector<Mat>bg, Mat img) {
+Mat CvHelper::removeBackground(CvImageArray bg, Mat img) {
     Mat accum = accumulateImages(bg);
     MatND mask;
     absdiff(accum, img, mask);
@@ -948,7 +948,7 @@ Mat CvHelper::convertBlackAndWhite(Mat& in, int thld) {
  * @param direction Betrachtungsrichtung. Falls <code>direction == DIRECTION_X</code> werden nur die X-Werte der Punkte in das Histogram einflie&szlig;en.
  * @return Einen Vektor von Vektoren von Punkten. F&uuml;r jedes Band existiert ein Vektor von Punkten, seine L&auml;nge gibt Aufschluss &uuml;ber die Anzahl der Punkte in diesem (&Ouml;rtlichen)-Bereich.
  */
-vector<vector<Point >> CvHelper::createPositionHistogram(vector<Point> points, int imageWidth, int imageHeight, int histogramBins, POSITION_HISTOGRAM_DIRECTION direction) {
+PointHistogram CvHelper::createPositionHistogram(vector<Point> points, int imageWidth, int imageHeight, int histogramBins, POSITION_HISTOGRAM_DIRECTION direction) {
     if (points.empty()) {
         DBG("Keine Punkte angegeben.");
         return vector < vector < Point >> ();
@@ -983,43 +983,49 @@ vector<vector<Point >> CvHelper::createPositionHistogram(vector<Point> points, i
     int currentMin, currentMax;
     currentMin = 0;
     currentMax = binWidth;
-    vector< vector<Point> > hist = vector< vector<Point> >(histogramBins);
+    PointHistogram hist = PointHistogram(histogramBins);
 
     for (int i = 0; i < histogramBins; i++) {
         hist[i] = vector<Point > ();
-        for (vector<Point>::iterator iterate = points.begin(); iterate != points.end(); iterate++) {
+        for (vector<Point>::iterator iterate = points.begin(); iterate != (points.end() - 1); iterate++) {
             switch (direction) {
                 case DIRECTION_X:
                     if ((*iterate).x >= currentMin && (*iterate).x < currentMax) {
                         hist[i].push_back((*iterate));
                     }
 
-                    continue;
+                    break;
                 case DIRECTION_Y:
                     if ((*iterate).y >= currentMin && (*iterate).y < currentMax) {
                         hist[i].push_back((*iterate));
                     }
-                    continue;
+                    break;
+                default:
+                    break;
             };
 
         }
 
-        currentMin = currentMax;
-        currentMax += binWidth;
+
         switch (direction) {
             case DIRECTION_X:
                 if (currentMax > imageWidth) {
-                    DBG("Weite hat Bildbegrenzungen ueberschritten. Ergebnis evtl. unvollstaendig");
-                    return hist;
+                    DBG("Weite %i hat Bildbegrenzungen %i ueberschritten. Ergebnis evtl. unvollstaendig", currentMax, imageWidth);
+
                 }
+                break;
             case DIRECTION_Y:
                 if (currentMax > imageHeight) {
-                    DBG("Hoehe hat Bildbegrenzungen ueberschritten. Ergebnis evtl. unvollstaendig");
+                    DBG("Hoehe %i hat Bildbegrenzungen %i ueberschritten. Ergebnis evtl. unvollstaendig", currentMax, imageHeight);
                 }
-                return hist;
+                break;
         };
+        currentMin = currentMax;
+        currentMax += binWidth;
 
     }
+
+
     return hist;
 }
 
@@ -1029,7 +1035,7 @@ vector<vector<Point >> CvHelper::createPositionHistogram(vector<Point> points, i
  * @param isolationBins Anazahl der B&auml;nder, die in einer Umgebung eines Punktes leer sein m&uuml;ssen, damit der Punkt als isoliert angesehen wird.
  * @return Das Punktehistogram, in dem isolierte Punkte entfernt wurden
  */
-vector<vector<Point> > CvHelper::removeIsolatedPoints(vector<vector<Point> > hist, int isolationBins) {
+PointHistogram CvHelper::removeIsolatedPoints(PointHistogram hist, int isolationBins) {
     if (isolationBins <= 0) {
         DBG("Ein wert von <=0 ist in diesem Kontext nicht sinnvoll.");
         return vector < vector<Point> > ();
@@ -1038,26 +1044,42 @@ vector<vector<Point> > CvHelper::removeIsolatedPoints(vector<vector<Point> > his
         DBG("Ein wert von <=0 ist in diesem Kontext nicht sinnvoll.");
         return vector < vector<Point> > ();
     }
-    vector<vector<Point> > erg = vector<vector<Point> >(hist);
-    vector<bool> isolatedLeft = vector<bool>(isolationBins);
-    vector<bool> isolatedRight = vector<bool>(isolationBins);
-    initVector(isolatedLeft, true);
-    initVector(isolatedRight, true);
-    for (vector<vector<Point> >::iterator root = hist.begin(); root != hist.end(); root++) {
-        vector<Point> tmp = (*root);
-        for (int left = 1; left < isolationBins and (root - left) != hist.begin(); left++) {
+
+
+    PointHistogram erg = PointHistogram(hist.size());
+    BooleanArray isolatedLeft = BooleanArray(isolationBins);
+    BooleanArray isolatedRight = BooleanArray(isolationBins);
+    for (int i = 0; i < (int) hist.size(); i++) {
+        initVector(isolatedLeft, true);
+        initVector(isolatedRight, true);
+        for (int left = 1; left <= isolationBins and (i - left) >= 0; left++) {
             /*Pruefe alle Bins links von root, bis zu einem Abstand von isolationBins*/
-            if (root <= hist.begin()) {
+            if (hist[i - left].size() > 0) {
+                isolatedLeft[left - 1] = false;
                 break;
             }
-
         }
-        for (int right = 1; right < isolationBins and (root + right) != hist.end(); right++) {
+        for (int right = 1; right <= isolationBins and (i + right) <= (int) hist.size(); right++) {
             /*Pruefe alle Bins rechts von root, bis zu einem Abstand von isolationBins*/
-
+            if (hist[i + right].size() > 0) {
+                isolatedRight[right - 1] = false;
+                break;
+            }
         }
-
-        //FIXME: Implementieren!!
+        bool chk = true;
+        for (int j = 0; j < isolationBins; j++) {
+            if (!isolatedLeft[j] or !isolatedRight[j]) {
+                chk = false;
+                break;
+            }
+        }
+        if (chk) {
+            DBG("Entferne %i isolierte Punkte von Stelle %i", (int) hist[i].size(), i);
+            erg[i].clear();
+            erg[i] = PointArray();
+        } else {
+            erg[i] = hist[i];
+        }
     }
     return erg;
 }
@@ -1069,11 +1091,19 @@ vector<vector<Point> > CvHelper::removeIsolatedPoints(vector<vector<Point> > his
  * @param toBin Alle Punkte, die &ouml;rtlich nach diesem Band angesiedelt sind, werden entfernt.
  * @return Ein Punktehistogram, in dem nur noch die B&auml;nder zweichen <code>fromBin</code> und <code>toBin</code> belegt sind.
  */
-vector<vector<Point> > CvHelper::filterPositionHistogramRange(vector<vector<Point> > hist, int fromBin, int toBin) {
-    if(toBin<fromBin){
-        return filterPositionHistogramRange(hist,toBin,fromBin);
+PointHistogram CvHelper::filterPositionHistogramRange(PointHistogram hist, int fromBin, int toBin) {
+    if (toBin < fromBin) {
+        return filterPositionHistogramRange(hist, toBin, fromBin);
     }
-    return hist;//FIXME:Implementieren
+    vector<vector<Point> > erg = vector<vector<Point> >(hist.size());
+    for (int i = 0; i < (int) hist.size(); i++) {
+        if (i >= fromBin && i <= toBin) {
+            erg[i] = hist[i];
+        } else {
+            erg[i] = vector<Point > ();
+        }
+    }
+    return erg;
 }
 
 /**
@@ -1081,7 +1111,7 @@ vector<vector<Point> > CvHelper::filterPositionHistogramRange(vector<vector<Poin
  * @param hist Das Punktehistogram.
  * @return Einen Vector von Punkten.
  */
-vector<Point> CvHelper::retransformPositionHistogram(vector<vector<Point> > hist) {
+PointArray CvHelper::retransformPositionHistogram(PointHistogram hist) {
     vector<Point> erg = vector<Point > ();
     for (vector<vector<Point> >::iterator root = hist.begin(); root != hist.end(); root++) {
         for (vector<Point>::iterator iter = (*root).begin(); iter != (*root).end(); iter++) {
@@ -1092,7 +1122,7 @@ vector<Point> CvHelper::retransformPositionHistogram(vector<vector<Point> > hist
     return erg;
 }
 
-vector<bool> CvHelper::initVector(vector<bool> vec, bool initValue) {
+BooleanArray CvHelper::initVector(BooleanArray vec, bool initValue) {
     for (int i = 0; i < (int) vec.size(); i++) {
         vec[i] = initValue;
     }
@@ -1121,7 +1151,6 @@ double CvHelper::checkEquality(const Mat& I1, const Mat& I2) {
 
 
 }
-
 
 /**
  * Pr&uuml;ft auf strukrurelle Gleichheit (relativ Langsam).
@@ -1163,7 +1192,7 @@ Scalar CvHelper::checkStructuralEquality(const Mat& in1, const Mat& in2) {
     t1 = 2 * mu1_mu2 + C1;
     t2 = 2 * sigma12 + C2;
     t3 = t1.mul(t2);
-    
+
     t1 = mu1_2 + mu2_2 + C1;
     t2 = sigma1_2 + sigma2_2 + C2;
     t1 = t1.mul(t2);
@@ -1173,3 +1202,15 @@ Scalar CvHelper::checkStructuralEquality(const Mat& in1, const Mat& in2) {
     return mssim;
 }
 
+PointHistogram CvHelper::onlyKeepBigBins(PointHistogram hist, int minLength) {
+    int len = hist.size();
+    PointHistogram erg = PointHistogram(hist.size());
+    for (int i = 0; i < len; i++) {
+        if (hist[i].size() < minLength) {
+            erg[i] = PointArray();
+        } else {
+            erg[i] = hist[i];
+        }
+    }
+    return erg;
+}

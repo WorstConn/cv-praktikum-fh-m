@@ -43,7 +43,7 @@ public:
      * @param createMarkedOutputFiles Falls <code>TRUE</code>, wird bei der Operation eine Kopie jedes Eingabebildes erstellt, auf der erkannte Objekte mit einem Rechteck eingefasst sind.
      *          
      */
-    virtual void createImageInfo(vector<vector<String> > input, String output, vector<String> backgroundImagePath, bool createMarkedOutputFiles = false);
+    virtual void createImageInfo(CvArrayOfStringArrays input, String output, CvStringArray backgroundImagePath, bool createMarkedOutputFiles = false);
     
     
     

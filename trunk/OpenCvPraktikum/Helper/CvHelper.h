@@ -38,7 +38,7 @@ private:
      * @return das Eingabebild mit enthaltenem Text
      */
     Mat drawString(Mat inputImg, String text, Scalar color, int posX, int posY);
-    vector<bool> initVector(vector<bool> vec, bool initValue);
+    BooleanArray initVector(BooleanArray vec, bool initValue);
 public:
     virtual ~CvHelper();
 
@@ -57,7 +57,7 @@ public:
      * @param height Maximale H&ouml;he des Ergebnisbildes
      * @return Ein Bild, das aus den Eingabebildern zusammengesetzt ist
      */
-    virtual Mat buildImageGrid(vector<Mat*> images, vector<String> imageTags, Scalar color, int maxColumn, int width, int height); //FIXME: Fehler erstellen des Grids!
+    virtual Mat buildImageGrid(vector<Mat*> images, CvStringArray imageTags, Scalar color, int maxColumn, int width, int height); //FIXME: Fehler erstellen des Grids!
 
 
     /**
@@ -102,7 +102,7 @@ public:
      * @param face2 die zu kopierende Region von Bild 2
      * @return einen Vector, der die Bilder mit den vertauschten Regionen enth&auml;lt, oder leer ist, falls ein Fehler aufgetreten ist.
      */
-    virtual vector<Mat> swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, Mat img2_mask, Rect face2);
+    virtual CvImageArray swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, Mat img2_mask, Rect face2);
 
     /**
      * Zeichnet die Konturen des Bildes
@@ -158,11 +158,6 @@ public:
      */
     Mat makeHistImage(MatND &hist);
 
-    //    double getPSNR(const Mat& I1, const Mat& I2);
-    //
-    //
-    //    Scalar getMSSIM(const Mat& I1, const Mat& I2);
-
     Mat applySurfDetect(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
     vector< DMatch > findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
     vector<KeyPoint> findKeyPoints(Mat& img, int hessian);
@@ -192,7 +187,7 @@ public:
      * @param mat eine Bildfolge
      * @return Das Akkumulierte Bild
      */
-    Mat accumulateImages(vector<Mat> mat);
+    Mat accumulateImages(CvImageArray mat);
 
     /**
      * Enfernt den Hintergrund eines Bildes mithilfe eines Kallibrierungsbiles(Bildfolge)
@@ -200,7 +195,7 @@ public:
      * @param img Das Bild mit Objekt
      * @return Ein Bild mit geschw&auml;rztem Hintergrund.
      */
-    Mat removeBackground(vector<Mat>bg, Mat img); //FIXME: Implementieren!
+    Mat removeBackground(CvImageArray bg, Mat img);
 
     Mat convertBlackAndWhite(Mat& in, int threshold);
 
@@ -214,7 +209,7 @@ public:
      * @param direction Betrachtungsrichtung. Falls <code>direction == DIRECTION_X</code> werden nur die X-Werte der Punkte in das Histogram einflie&szlig;en.
      * @return Einen Vektor von Vektoren von Punkten. F&uuml;r jedes Band existiert ein Vektor von Punkten, seine L&auml;nge gibt Aufschluss &uuml;ber die Anzahl der Punkte in diesem (&Ouml;rtlichen)-Bereich.
      */
-    vector<vector<Point> > createPositionHistogram(vector<Point> points, int imageWidth, int imageHeight, int histogramBins, POSITION_HISTOGRAM_DIRECTION direction = DIRECTION_X);
+    PointHistogram createPositionHistogram(PointArray points, int imageWidth, int imageHeight, int histogramBins, POSITION_HISTOGRAM_DIRECTION direction = DIRECTION_X);
 
     /**
      * Entfernt isolierte Punkte aus einem Punktehistogram.
@@ -222,7 +217,7 @@ public:
      * @param isolationBins Anazahl der B&auml;nder, die in einer Umgebung eines Punktes leer sein m&uuml;ssen, damit der Punkt als isoliert angesehen wird.
      * @return Das Punktehistogram, in dem isolierte Punkte entfernt wurden
      */
-    vector<vector<Point> > removeIsolatedPoints(vector<vector<Point> > hist, int isolationBins); // FIXME: Implementieren.
+    PointHistogram removeIsolatedPoints(PointHistogram hist, int isolationBins);
 
     /**
      * Filtert ein Punktehistogram. 
@@ -231,7 +226,7 @@ public:
      * @param toBin Alle Punkte, die &ouml;rtlich nach diesem Band angesiedelt sind, werden entfernt.
      * @return Ein Punktehistogram, in dem nur noch die B&auml;nder zweichen <code>fromBin</code> und <code>toBin</code> belegt sind.
      */
-    vector<vector<Point> > filterPositionHistogramRange(vector<vector<Point> > hist, int fromBin, int toBin); //FIXME:  Implementieren.
+    PointHistogram filterPositionHistogramRange(PointHistogram hist, int fromBin, int toBin);
 
 
     /**
@@ -239,14 +234,22 @@ public:
      * @param hist Das Punktehistogram.
      * @return Einen Vector von Punkten.
      */
-    vector<Point> retransformPositionHistogram(vector<vector<Point> > hist); //FIXME:  Implementieren.
+    PointArray retransformPositionHistogram(PointHistogram hist); //FIXME:  Implementieren.
 
-    
-    double checkEquality(const Mat& I1,const Mat& I2);
-    //FIXME: Evtl. eine eigene Datenklasse für Punkthistogramme, falls mehr informationen Gespeichert werden sollen (z.B.: Die Maße des Quellbildes o.ä)
+
+    double checkEquality(const Mat& I1, const Mat& I2);
+
 
     Scalar checkStructuralEquality(const Mat& i1, const Mat& i2);
-    
+
+    /**
+     * Entfernt alle Punkte aus dem Histogram, welche in einem Band liegen, in denem nicht mehr als <code>minLength</code> Punkte liegen.
+     * @param hist Das Histogram.
+     * @param minLength Minimale Anzahl an Punkten, die in einem Band liegen sollen.
+     * @return Ein neues Histogram, in dem die besetzten B&auml;nder mindestens eine L&auml;nge von <code>minLength</code> haben.
+     */
+    PointHistogram onlyKeepBigBins(PointHistogram hist, int minLength);
+
     //FIXME: BACKPROJEKTION:
     //calcBackProject( &hs, 1, 2, hist, backproj, &ranges, 1, true );
 }; // Bilder anhand der Histogramme vergleichen: compareHist()
