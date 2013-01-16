@@ -24,7 +24,7 @@ using namespace cv;
 class CvHelper {
 private:
     CvHelper();
-    map<int, String> imageTypeMap;
+    CvImageTypeMap imageTypeMap;
     String imageTypeToString(Mat img);
     static CvHelper *instance;
 
@@ -159,8 +159,8 @@ public:
     Mat makeHistImage(MatND &hist);
 
     Mat applySurfDetect(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
-    vector< DMatch > findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
-    vector<KeyPoint> findKeyPoints(Mat& img, int hessian);
+    CvMatchesArray findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
+    CvKeyPointArray findKeyPoints(Mat& img, int hessian);
     MatND makeHSHist(Mat& mat);
     Mat makeHSHistImage(MatND &hist);
     /**
@@ -236,6 +236,7 @@ public:
      */
     PointArray retransformPositionHistogram(PointHistogram hist); //FIXME:  Implementieren.
 
+    
 
     double checkEquality(const Mat& I1, const Mat& I2);
 
@@ -248,7 +249,7 @@ public:
      * @param minLength Minimale Anzahl an Punkten, die in einem Band liegen sollen.
      * @return Ein neues Histogram, in dem die besetzten B&auml;nder mindestens eine L&auml;nge von <code>minLength</code> haben.
      */
-    PointHistogram onlyKeepBigBins(PointHistogram hist, int minLength);
+    PointHistogram extractNoticableBins(PointHistogram hist, int minLength);
 
     //FIXME: BACKPROJEKTION:
     //calcBackProject( &hs, 1, 2, hist, backproj, &ranges, 1, true );

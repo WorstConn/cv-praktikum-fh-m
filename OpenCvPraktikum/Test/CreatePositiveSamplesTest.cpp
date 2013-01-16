@@ -28,7 +28,7 @@ r den Test notwendige Agumente(Dateien, Flags, uva. ...)
  */
 int CreatePositiveSamplesTest::testMain(CvStringArray args) {
     SampleCreator* creator = SampleCreator::getInstance();
-    PositiveSample posSamp = PositiveSample();
+    PlainHandPositiveSample posSamp = PlainHandPositiveSample();
     creator->setCreationMethod(&posSamp);
     creator->addInputDir("/home/ertai/Videos/POS1", "/home/ertai/Videos/Bg1/bg1-4.jpg");
     creator->addInputDir("/home/ertai/Videos/POS2", "/home/ertai/Videos/BG2/bg2-30.jpg");

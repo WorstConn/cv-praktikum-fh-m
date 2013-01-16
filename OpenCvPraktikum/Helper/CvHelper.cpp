@@ -143,7 +143,7 @@ Mat CvHelper::buildImageGrid(vector<Mat*> images, CvStringArray imageTags, Scala
 }
 
 CvHelper::CvHelper() {
-    imageTypeMap = std::map<int, String > ();
+    imageTypeMap = CvImageTypeMap();
 
 }
 
@@ -261,6 +261,8 @@ String CvHelper::imageTypeToString(Mat img) {
 
 
     if (imageTypeMap.empty()) {
+
+        // <editor-fold defaultstate="collapsed" desc="Einmaliges Erstellen der Map-Eintraege.">
         imageTypeMap.insert(std::make_pair<int, String > (CV_8U, "CV_8U"));
         imageTypeMap.insert(std::make_pair<int, String > (CV_8UC1, "CV_8UC1"));
         imageTypeMap.insert(std::make_pair<int, String > (CV_8UC2, "CV_8UC2"));
@@ -296,10 +298,12 @@ String CvHelper::imageTypeToString(Mat img) {
         imageTypeMap.insert(std::make_pair<int, String > (CV_64FC2, "CV_64FC2"));
         imageTypeMap.insert(std::make_pair<int, String > (CV_64FC3, "CV_64FC3"));
         imageTypeMap.insert(std::make_pair<int, String > (CV_64FC4, "CV_64FC4"));
-        cout << "Imagetype map gefuellt" << endl;
+        // </editor-fold>
+
+
     }
 
-    map<int, String>::iterator iter;
+    CvImageTypeMap::iterator iter;
 
     iter = imageTypeMap.find(img.type());
 
@@ -686,15 +690,15 @@ Mat CvHelper::makeHistImage(MatND &hist) {
  */
 
 Mat CvHelper::applySurfDetect(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist) {
-    vector<KeyPoint> refImgKeyPoints = findKeyPoints(refImg, hessian);
-    vector<KeyPoint> refKeyPoints = findKeyPoints(ref, hessian);
+    CvKeyPointArray refImgKeyPoints = findKeyPoints(refImg, hessian);
+    CvKeyPointArray refKeyPoints = findKeyPoints(ref, hessian);
     if (refImgKeyPoints.size() == 0 or refKeyPoints.size() == 0) {
         DBG("Keine Keypoints gefunden. Leeres Bild?");
         return Mat();
     }
     DBG("KeyPoints gefunden, %d,%d", (int) refImgKeyPoints.size(), (int) refKeyPoints.size());
 
-    vector< DMatch > goodMatches = findSurfMatches(refImg, ref, hessian, minDist, maxDist);
+    CvMatchesArray goodMatches = findSurfMatches(refImg, ref, hessian, minDist, maxDist);
 
     //-- Draw only "good" matches
     Mat matchesImg;
@@ -710,9 +714,9 @@ Mat CvHelper::applySurfDetect(Mat& refImg, Mat& ref, int hessian, int minDist, i
 
 }
 
-vector<DMatch> CvHelper::findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist) {
-    vector<KeyPoint> refImgKeyPoints = findKeyPoints(refImg, hessian);
-    vector<KeyPoint> refKeyPoints = findKeyPoints(ref, hessian);
+CvMatchesArray CvHelper::findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist) {
+    CvKeyPointArray refImgKeyPoints = findKeyPoints(refImg, hessian);
+    CvKeyPointArray refKeyPoints = findKeyPoints(ref, hessian);
     SurfDescriptorExtractor descExtractor;
     FlannBasedMatcher matcher;
 
@@ -721,7 +725,7 @@ vector<DMatch> CvHelper::findSurfMatches(Mat& refImg, Mat& ref, int hessian, int
     descExtractor.compute(ref, refKeyPoints, desc2);
 
 
-    vector<DMatch> matches;
+    CvMatchesArray matches;
     matcher.match(desc1, desc2, matches);
     double max_dist = maxDist;
     double min_dist = minDist;
@@ -735,7 +739,7 @@ vector<DMatch> CvHelper::findSurfMatches(Mat& refImg, Mat& ref, int hessian, int
     DBG("-- Min dist : %f \n", min_dist);
 
 
-    vector<DMatch> goodMatches;
+    CvMatchesArray goodMatches;
     for (int i = 0; i < desc1.rows; i++) {
         if (matches[i].distance < 2 * min_dist) {
             goodMatches.push_back(matches[i]);
@@ -746,18 +750,18 @@ vector<DMatch> CvHelper::findSurfMatches(Mat& refImg, Mat& ref, int hessian, int
 
 }
 
-vector<KeyPoint> CvHelper::findKeyPoints(Mat& img, int hessian) {
+CvKeyPointArray CvHelper::findKeyPoints(Mat& img, int hessian) {
     SurfFeatureDetector detector(hessian);
     Mat input1 = img;
 
     if (input1.data == NULL) {
         DBG(" --(!) Error reading images ");
-        return vector<KeyPoint > ();
+        return CvKeyPointArray();
     }
 
 
 
-    vector<KeyPoint> keyPoints;
+    CvKeyPointArray keyPoints;
     detector.detect(input1, keyPoints);
 
     return keyPoints;
@@ -1202,7 +1206,7 @@ Scalar CvHelper::checkStructuralEquality(const Mat& in1, const Mat& in2) {
     return mssim;
 }
 
-PointHistogram CvHelper::onlyKeepBigBins(PointHistogram hist, int minLength) {
+PointHistogram CvHelper::extractNoticableBins(PointHistogram hist, int minLength) {
     int len = hist.size();
     PointHistogram erg = PointHistogram(hist.size());
     for (int i = 0; i < len; i++) {

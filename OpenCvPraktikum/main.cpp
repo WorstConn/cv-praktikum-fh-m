@@ -491,7 +491,7 @@ int main(int argc, char** argv) {
 
     SurfFeatureDetector detector(minHessian);
 
-    std::vector<KeyPoint> keypoints_1, keypoints_2;
+    CvKeyPointArray keypoints_1, keypoints_2;
 
     detector.detect(img_1, keypoints_1);
     detector.detect(img_2, keypoints_2);
@@ -601,7 +601,7 @@ int main(int argc, char** argv) {
 
     SurfFeatureDetector detector(minHessian);
 
-    std::vector<KeyPoint> keypoints_1, keypoints_2;
+    CvKeyPointArray keypoints_1, keypoints_2;
 
     detector.detect(img_1, keypoints_1);
     detector.detect(img_2, keypoints_2);
@@ -672,7 +672,7 @@ int main(int argc, char** argv) {
 
     SurfFeatureDetector detector(minHessian);
 
-    std::vector<KeyPoint> keypoints_object, keypoints_scene;
+    CvKeyPointArray keypoints_object, keypoints_scene;
 
     detector.detect(img_object, keypoints_object);
     detector.detect(img_scene, keypoints_scene);
