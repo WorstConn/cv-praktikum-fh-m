@@ -11,11 +11,11 @@
 
 using namespace std;
 using namespace cv;
-class PositiveSample : public CreationBehavior{
+class PlainHandPositiveSample : public CreationBehavior{
 public:
-    PositiveSample();
-    PositiveSample(const PositiveSample& orig);
-    virtual ~PositiveSample();
+    PlainHandPositiveSample();
+    PlainHandPositiveSample(const PlainHandPositiveSample& orig);
+    virtual ~PlainHandPositiveSample();
     /**
      * Erstellt eine 'Zeile' Bildinformationen, wie sie f&uuml;r das Training der Cascaden ben&ouml;tigt wird.<br>
      * Unterklassen spezifizieren, welche Informationen im R&uuml;ckgabewert enthalten sind.<br> 

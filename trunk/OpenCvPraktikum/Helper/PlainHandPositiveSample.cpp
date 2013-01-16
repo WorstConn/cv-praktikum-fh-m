@@ -10,19 +10,19 @@
 using namespace std;
 using namespace cv;
 
-PositiveSample::PositiveSample() {
+PlainHandPositiveSample::PlainHandPositiveSample() {
     drawMarkedSamples = false;
     rng(1234576);
 }
 
-PositiveSample::PositiveSample(const PositiveSample& orig) {
+PlainHandPositiveSample::PlainHandPositiveSample(const PlainHandPositiveSample& orig) {
     currentBackgroundPath = orig.currentBackgroundPath;
     drawMarkedSamples = orig.drawMarkedSamples;
     currentOutputPath = orig.currentOutputPath;
     rng = orig.rng;
 }
 
-PositiveSample::~PositiveSample() {
+PlainHandPositiveSample::~PlainHandPositiveSample() {
 }
 
 /**
@@ -37,12 +37,16 @@ PositiveSample::~PositiveSample() {
  *          enth&auml;lt mindestens den Dateinamen und die Maße des Bildes.<br>
  *          
  */
-String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
-    CV_Assert(!currentBackgroundPath.empty());
+String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
+    
+    // <editor-fold defaultstate="collapsed" desc="Vorbedingungen Pruefen.">
     if (img.empty()) {
         DBG("Kein Bild!");
         return "ERROR";
     }
+    CV_Assert(!currentBackgroundPath.empty()); 
+    // </editor-fold>
+
     // <editor-fold defaultstate="collapsed" desc="Deklarationen">
     Mat kernel = Mat::ones(3, 3, CV_8U);
     Mat inputImage = img;
@@ -69,15 +73,11 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     // <editor-fold defaultstate="collapsed" desc="Erstellung eines 1- und 3- Kanaligen Differenzbildes">
     diff = Mat::zeros(bgF64.size(), CV_64FC3);
     absdiff(inputImgF64, bgF64, diff);
-
-
-
     diffGray = Mat(diff.size(), CV_64FC1);
-    if (diffGray.size().width != diff.size().width || diffGray.size().height != diff.size().height) {
-        DBG("Erstellen des Ergebnisbildes fuer die Differenz fehlgeschlagen. ");
+    cvtColor(diff, diffGray, CV_BGR2GRAY);
+    // </editor-fold>
 
-    }
-    cvtColor(diff, diffGray, CV_BGR2GRAY); // </editor-fold>
+    
     threshold(diffGray, diffGray, 52, 255, CV_THRESH_BINARY);
 
     // <editor-fold defaultstate="collapsed" desc="Erstellung des Cannybildes">
@@ -112,7 +112,7 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
         }
     }// </editor-fold>
 
-
+    // <editor-fold defaultstate="collapsed" desc="Wenn DEBUG definiert ist, Zeige ein Bild mit allen Kontourpunkten, dem Polygonen und der konvexen Huelle des Objektes an.">
 #if DEBUG
     vector<vector<Point> >hull(1);
 
@@ -143,48 +143,38 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
 
     waitKey(50);
 #endif
-    
+    // </editor-fold>
+
     vector<vector<Point> > hist = vector<vector<Point> >();
     CvHelper* helper = CvHelper::getInstance();
     hist = helper->createPositionHistogram(contour, img.size().width, img.size().height, 40, DIRECTION_X);
     hist = helper->removeIsolatedPoints(hist, 2);
     contour = helper->retransformPositionHistogram(hist);
+
+
     // <editor-fold defaultstate="collapsed" desc="Bestimmen des Rechtecks, welches das gefundene Objekt beinhaltet.">
     Point maxX, minX;
     Point maxY, minY;
     int imageWidth = cannyImage.size().width;
     for (vector<Point>::const_iterator it = contour.begin(); it != contour.end(); it++) {
-        Point pb = *it; //before
+        Point pb = *(it); //last
         Point p = *(it + 1); //current
         Point pn = *(it + 2); //next
 
         //DBG("Steigung zwischen letztem und nächsten Punkt: %f", MyMath::calcPitch(pb, pn));
 
         if (p.x <= imageWidth && p.x > 0) {
-
-
             if (maxX.x == 0 || p.x > maxX.x) {
-                if (pb.x < p.x && pn.x < p.x) {
-                    maxX = p;
-                }
+                maxX = p;
             }
             if (minX.x == 0 || p.x < minX.x) {
-                if (pb.x > p.x && pn.x > p.x) {
-                    minX = p;
-                }
-
+                minX = p;
             }
             if (minY.y == 0 || p.y < minY.y) {
-                if (pb.y > p.y && pn.y > p.y) {
-                    minY = p;
-                }
-
+                minY = p;
             }
             if (maxY.y == 0 || p.y > maxY.y) {
-                if (pb.y < p.y && pn.y < p.y) {
-                    maxY = p;
-                }
-
+                maxY = p;
             }
         }
 
@@ -200,7 +190,11 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
     Point x1, x2, x3, x4;
     x1 = Point(minX.x, minY.y);
     x2 = Point(maxX.x, minY.y);
-    x4 = Point(minX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : (minY.y + MyMath::abs(minX.y - minY.y)*3)); //FIXME: Bessere formel benoetigt
+    int tmpDiff = MyMath::abs(minX.y - maxX.y);
+    int tmpY = (minX.y >= maxX.y) ? maxX.y : minX.y;
+    
+    x4 = Point(minX.x, (minY.y + ((MyMath::abs()))));
+    x4 = Point(minX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : (minY.y + MyMath::abs(minX.y - minY.y)*3));
     x3 = Point(maxX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : minY.y + MyMath::abs(minX.y - minY.y)*3);
     // </editor-fold>
 
@@ -236,10 +230,6 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
         }
     }
 
-
-
-
-  
     kernel.release();
     inputImage.release();
     backgroundImage.release();
@@ -268,7 +258,7 @@ String PositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
  * @param createMarkedOutputFiles Falls <code>TRUE</code>, wird bei der Operation eine Kopie jedes Eingabebildes erstellt, auf der erkannte Objekte mit einem Rechteck eingefasst sind.
  *          
  */
-void PositiveSample::createImageInfo(CvArrayOfStringArrays input, String output, CvStringArray backgroundImagePath, bool createMarkedOutputFiles) {
+void PlainHandPositiveSample::createImageInfo(CvArrayOfStringArrays input, String output, CvStringArray backgroundImagePath, bool createMarkedOutputFiles) {
     if (input.size() != backgroundImagePath.size()) {
         DBG("Falsche Grösse der Eingabe-Arrays: ist %i, soll %i", (int) backgroundImagePath.size(), (int) input.size());
     }
