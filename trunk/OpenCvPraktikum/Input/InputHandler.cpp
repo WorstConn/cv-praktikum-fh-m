@@ -53,10 +53,7 @@ bool InputHandler::open() {
             try {
                 connected = openDefWebCam();
                 DBG("WebCam gefunden!");
-
                 return connected;
-
-
             } catch (Exception& ex) {
                 DBG("Keine WebCam gefunden!");
             }
@@ -385,7 +382,7 @@ bool InputHandler::openFolder() {
     if (!imageFiles.empty()) {
         DBG("Verwende bestehende Dateiliste");
         connected = true;
-        CvStringArray::iterator iter = imageFiles.begin();
+        StringArray::iterator iter = imageFiles.begin();
         String filename = (*iter);
 
         currentImage = imread(filename);
@@ -395,7 +392,7 @@ bool InputHandler::openFolder() {
         return true;
     } else {
         DBG("Erstelle neue Dateiliste");
-        CvStringSet searchStrings = CvStringSet();
+        StringSet searchStrings = StringSet();
         searchStrings.insert("jpg");
         searchStrings.insert("jpeg");
         searchStrings.insert("png");
@@ -426,7 +423,7 @@ void InputHandler::nextFromFolder() {
     currentImage = imread(img);
 
     if (imageFiles.size() > 1) {
-        CvStringArray::iterator iter = imageFiles.begin();
+        StringArray::iterator iter = imageFiles.begin();
         imageFiles.erase(iter);
     } else {
         reachesEnd = true;

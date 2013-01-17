@@ -20,7 +20,7 @@ WindowManagerTest::WindowManagerTest(const WindowManagerTest& orig) : AImageActi
 WindowManagerTest::~WindowManagerTest() {
 }
 
-int WindowManagerTest::testMain(CvStringArray args) {
+int WindowManagerTest::testMain(StringArray args) {
     InputHandler handler = InputHandler();
     handler.addImageFolder("/home/ertai/Bilder");
     handler.setInputSource(INPUT_FOLDER);

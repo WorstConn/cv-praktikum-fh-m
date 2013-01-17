@@ -24,9 +24,9 @@ private:
     virtual bool openDefIpCam() = 0;
 protected:
     String defaultIpCamURL;
-    CvStringArray videoFiles;
-    CvStringSet imageFolders;
-    CvStringArray imageFiles;
+    StringArray videoFiles;
+    StringSet imageFolders;
+    StringArray imageFiles;
     bool connected;
     
     INPUT_TYPE sourceType;

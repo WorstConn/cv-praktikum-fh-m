@@ -27,10 +27,10 @@ public:
 
 protected:
     CreationBehavior* creationMethod;
-    CvStringArray imageInfo;
+    StringArray imageInfo;
     String outputFilePath;
-    CvStringArray inputDirectories;
-    CvStringArray backgroundImages;
+    StringArray inputDirectories;
+    StringArray backgroundImages;
 
 private:
     SampleCreator();

@@ -38,13 +38,13 @@ PlainHandPositiveSample::~PlainHandPositiveSample() {
  *          
  */
 String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int pos) {
-    
+
     // <editor-fold defaultstate="collapsed" desc="Vorbedingungen Pruefen.">
     if (img.empty()) {
         DBG("Kein Bild!");
         return "ERROR";
     }
-    CV_Assert(!currentBackgroundPath.empty()); 
+    CV_Assert(!currentBackgroundPath.empty());
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Deklarationen">
@@ -77,7 +77,7 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
     cvtColor(diff, diffGray, CV_BGR2GRAY);
     // </editor-fold>
 
-    
+
     threshold(diffGray, diffGray, 52, 255, CV_THRESH_BINARY);
 
     // <editor-fold defaultstate="collapsed" desc="Erstellung des Cannybildes">
@@ -157,10 +157,10 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
     Point maxY, minY;
     int imageWidth = cannyImage.size().width;
     for (vector<Point>::const_iterator it = contour.begin(); it != contour.end(); it++) {
-        Point pb = *(it); //last
-        Point p = *(it + 1); //current
-        Point pn = *(it + 2); //next
-
+        //        Point pb = *(it); //last
+        //        Point p = *(it + 1); //current
+        //        Point pn = *(it + 2); //next
+        Point p = *(it); //current
         //DBG("Steigung zwischen letztem und nächsten Punkt: %f", MyMath::calcPitch(pb, pn));
 
         if (p.x <= imageWidth && p.x > 0) {
@@ -191,11 +191,10 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
     x1 = Point(minX.x, minY.y);
     x2 = Point(maxX.x, minY.y);
     int tmpDiff = MyMath::abs(minX.y - maxX.y);
-    int tmpY = (minX.y >= maxX.y) ? maxX.y : minX.y;
-    
-    x4 = Point(minX.x, (minY.y + ((MyMath::abs()))));
-    x4 = Point(minX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : (minY.y + MyMath::abs(minX.y - minY.y)*3));
-    x3 = Point(maxX.x, ((minY.y + MyMath::abs(minX.y - minY.y)*3) > ergC3.size().height) ? ergC3.size().height : minY.y + MyMath::abs(minX.y - minY.y)*3);
+    int tmpY = (minX.y >= maxX.y) ? MyMath::abs(maxX.y - minY.y) : MyMath::abs(minX.y - minY.y);
+    tmpDiff += tmpY;
+    x4 = Point(minX.x, (minY.y + (tmpDiff * 2)));
+    x3 = Point(maxX.x, (minY.y + (tmpDiff * 2)));
     // </editor-fold>
 
     Point offset;
@@ -241,6 +240,7 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
     ergC3.release();
     contours0.clear();
     hierarchy.clear();
+
     return erg;
 
 }
@@ -258,7 +258,7 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
  * @param createMarkedOutputFiles Falls <code>TRUE</code>, wird bei der Operation eine Kopie jedes Eingabebildes erstellt, auf der erkannte Objekte mit einem Rechteck eingefasst sind.
  *          
  */
-void PlainHandPositiveSample::createImageInfo(CvArrayOfStringArrays input, String output, CvStringArray backgroundImagePath, bool createMarkedOutputFiles) {
+void PlainHandPositiveSample::createImageInfo(ArrayOfStringArrays input, String output, StringArray backgroundImagePath, bool createMarkedOutputFiles) {
     if (input.size() != backgroundImagePath.size()) {
         DBG("Falsche Grösse der Eingabe-Arrays: ist %i, soll %i", (int) backgroundImagePath.size(), (int) input.size());
     }
@@ -280,9 +280,9 @@ void PlainHandPositiveSample::createImageInfo(CvArrayOfStringArrays input, Strin
     DBG("Erstelle Fenster");
     namedWindow("Sample-Creation", CV_WINDOW_AUTOSIZE);
 #endif
-    for (CvArrayOfStringArrays::iterator root = input.begin(); root != input.end(); root++) {
+    for (ArrayOfStringArrays::iterator root = input.begin(); root != input.end(); root++) {
         currentBackgroundPath = backgroundImagePath[samplesPosition];
-        for (CvStringArray::iterator files = (*root).begin(); files != (*root).end(); files++) {
+        for (StringArray::iterator files = (*root).begin(); files != (*root).end(); files++) {
 
             currentImage = imread((*files));
 

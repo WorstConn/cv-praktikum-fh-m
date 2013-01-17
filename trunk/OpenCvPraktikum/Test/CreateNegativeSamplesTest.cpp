@@ -23,7 +23,7 @@ CreateNegativeSamplesTest::~CreateNegativeSamplesTest() {
  * @param args F&uuml;r den Test notwendige Agumente (Dateien, Flags, uva. ...)
  * @return <code>EXIT_SUCCESS</code> wenn der Test ohne Fehler beendet werden konnte. Sonst <code>EXIT_FAILURE</code>.
  */
-int CreateNegativeSamplesTest::testMain(CvStringArray args) {
+int CreateNegativeSamplesTest::testMain(StringArray args) {
     SampleCreator* creator = SampleCreator::getInstance();
     NegativeSample negSmp = NegativeSample();
     creator->setCreationMethod(&negSmp);

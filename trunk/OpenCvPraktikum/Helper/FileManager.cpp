@@ -13,9 +13,9 @@ using namespace cv;
 FileManager* FileManager::instance = NULL;
 
 FileManager::FileManager() {
-    foundFiles = CvStringArray();
+    foundFiles = StringArray();
     searchPath = "";
-    searchStrings = CvStringSet();
+    searchStrings = StringSet();
 }
 
 FileManager::FileManager(const FileManager& orig) {
@@ -34,7 +34,7 @@ FileManager* FileManager::getInstance() {
     return instance;
 }
 
-void FileManager::find(CvStringSet name, String dir) {
+void FileManager::find(StringSet name, String dir) {
 
     // <editor-fold defaultstate="collapsed" desc="Parameterpruefung">
     if (dir.empty() or checkDir(dir) == -1) {
@@ -55,10 +55,10 @@ void FileManager::find(CvStringSet name, String dir) {
 
     int nfiles = 0;
     vector < vector < String >> ::iterator it;
-    CvStringArray::iterator iter;
-    CvStringArray erg = CvStringArray();
+    StringArray::iterator iter;
+    StringArray erg = StringArray();
     for (it = mylist.begin(); it != mylist.end(); it++) {
-        CvStringArray& lst = *it;
+        StringArray& lst = *it;
 
         nfiles += lst.size();
 
@@ -81,11 +81,11 @@ void FileManager::find(CvStringSet name, String dir) {
 
 }
 
-int FileManager::seekdir(CvArrayOfStringArrays &mylist, String path, CvStringSet name) {
+int FileManager::seekdir(ArrayOfStringArrays &mylist, String path, StringSet name) {
 
     DIR* dir = opendir(path.c_str());
     vector<String> lst;
-    vector<String> vname = CvStringArray(name.begin(), name.end());
+    vector<String> vname = StringArray(name.begin(), name.end());
 
     if (dir == 0) {
         cout << "Can not open directory '" << path << "'\n";
@@ -107,7 +107,7 @@ int FileManager::seekdir(CvArrayOfStringArrays &mylist, String path, CvStringSet
 
 
         } else if (d->d_type == DT_REG) {
-            CvStringSet::iterator iter;
+            StringSet::iterator iter;
 
             for (iter = name.begin(); iter != name.end(); iter++) {
                 String lower = "";
@@ -186,7 +186,7 @@ int FileManager::checkDir(String path) {
  * Gibt die Liste der zuletzt gefundenen Dateien zur&uuml;ck.
  * @return  Die Liste der Dateinamen;
  */
-CvStringArray FileManager::getFoundList() {
+StringArray FileManager::getFoundList() {
     if (foundFiles.empty()) {
         if (searchStrings.empty() or searchPath.empty()) {
             DBG("Keine Eingabe festgelegt");
@@ -203,7 +203,7 @@ CvStringArray FileManager::getFoundList() {
  * Gibt die Liste der zuletzt gesuchten Worte zur&uuml;ck.
  * @return Die Liste der Suchw&ouml;rter.
  */
-CvStringSet FileManager::getSearchStrings() {
+StringSet FileManager::getSearchStrings() {
     return searchStrings;
 }
 
@@ -226,7 +226,7 @@ void FileManager::setSearchPath(String path) {
 
 }
 
-void FileManager::setSearchStrings(CvStringSet strings) {
+void FileManager::setSearchStrings(StringSet strings) {
     searchStrings.insert(strings.begin(), strings.end());
 }
 
@@ -259,11 +259,11 @@ String FileManager::getFileName(String path) {
 }
 
 void FileManager::clearAll() {
-    searchStrings = CvStringSet();
+    searchStrings = StringSet();
     if (!searchStrings.empty()) {
         DBG("Suchstrings nicht leer nach neuer erstellung...");
     }
-    foundFiles = CvStringArray();
+    foundFiles = StringArray();
     if (!foundFiles.empty()) {
         DBG("Gefundene Dateien nicht leer nach neuer erstellung...");
     }

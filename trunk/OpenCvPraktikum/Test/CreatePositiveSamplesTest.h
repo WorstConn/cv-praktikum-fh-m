@@ -17,7 +17,7 @@ public:
     CreatePositiveSamplesTest();
     CreatePositiveSamplesTest(const CreatePositiveSamplesTest& orig);
     virtual ~CreatePositiveSamplesTest();
-    virtual int testMain(CvStringArray args);
+    virtual int testMain(StringArray args);
 
     virtual void printUsage();
 private:
