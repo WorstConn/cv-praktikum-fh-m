@@ -18,14 +18,14 @@ public:
     VideoInputToImageSequenceOutputTest();
     VideoInputToImageSequenceOutputTest(const VideoInputToImageSequenceOutputTest& orig);
     virtual ~VideoInputToImageSequenceOutputTest();
-    virtual int testMain(CvStringArray args);
+    virtual int testMain(StringArray args);
     virtual void printUsage();
 private:
     String inputFile;
     bool useCam;
     String outputPath;
     bool valid;
-    void parseInput(CvStringArray args);
+    void parseInput(StringArray args);
 
 };
 

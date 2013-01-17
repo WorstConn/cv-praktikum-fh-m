@@ -47,7 +47,7 @@ void SampleCreator::addInputDir(String dir, String backgroundImage) {
         backgroundImages.push_back(backgroundImage);
     } else {
         bool contains = false;
-        for (CvStringArray::iterator iter = inputDirectories.begin(); iter != inputDirectories.end(); iter++) {
+        for (StringArray::iterator iter = inputDirectories.begin(); iter != inputDirectories.end(); iter++) {
             if ((*iter).compare(dir) == 0) {
                 contains = true;
                 break;
@@ -71,7 +71,7 @@ void SampleCreator::setOutputPath(String output) {
 }
 
 bool SampleCreator::removeFromInput(String dir) {
-    CvStringArray::iterator iter;
+    StringArray::iterator iter;
     bool contains;
     int pos = 0;
     for (iter = inputDirectories.begin(); iter != inputDirectories.end(); iter++) {
@@ -103,7 +103,7 @@ bool SampleCreator::createSampleFile() {
         DBG("Wenn festgelegt, muss für jeden Eingabeordner eine Hintergrunddatei existieren.");
         return false;
     }
-    CvStringSet searchStrings = CvStringSet();
+    StringSet searchStrings = StringSet();
     searchStrings.insert("jpg");
     searchStrings.insert("jpeg");
     searchStrings.insert("png");
@@ -111,9 +111,9 @@ bool SampleCreator::createSampleFile() {
 
 
     FileManager* fileMan = FileManager::getInstance();
-    CvStringArray tmp;
-    vector < CvStringArray > images = vector < CvStringArray > ();
-    for (CvStringArray::iterator iter = inputDirectories.begin(); iter != inputDirectories.end(); iter++) {
+    StringArray tmp;
+    vector < StringArray > images = vector < StringArray > ();
+    for (StringArray::iterator iter = inputDirectories.begin(); iter != inputDirectories.end(); iter++) {
         if (fileMan->checkDir((*iter)) <= 0) {
             DBG("Ordner %s enthaelt keine Bilder!", (*iter).c_str());
             return false;

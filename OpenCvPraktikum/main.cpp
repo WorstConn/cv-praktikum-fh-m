@@ -14,6 +14,136 @@
 #include <map>
 #include <string>
 
+// <editor-fold defaultstate="collapsed" desc="Backprojection">
+#if /*Backprojection*/1
+using namespace cv;
+using namespace std;
+
+/// Global Variables
+Mat src;
+Mat hsv;
+Mat mask;
+
+int lo = 20;
+int up = 20;
+const char* window_image = String("Source image").c_str();
+
+/// Function Headers
+void Hist_and_Backproj();
+void pickPoint(int event, int x, int y, int, void*);
+
+/**
+ * @function main
+ */
+int main(int argc, char** argv) {
+    InputHandler handler = InputHandler();
+    handler.setInputSource(INPUT_CAM);
+    if (!handler.open()) {
+        DBG("Konnte Eingabe nicht öffnen");
+        return EXIT_FAILURE;
+    }
+    if (handler.requestFormat(r720p)) {
+        DBG("Eingabe in 720p");
+    }
+    handler.next();
+    Mat camSrc;
+    src = handler.getImage();
+    blur(src, src, Size(7, 7), Point(0, 0), CV_BLUR_NO_SCALE);
+
+    /// Transform it to HSV
+    cvtColor(src, hsv, CV_BGR2HSV);
+
+    /// Show the image 
+    namedWindow("Norm", CV_WINDOW_AUTOSIZE);
+    imshow("Norm", src);
+    namedWindow("HSV-Image");
+
+
+    /// Set Trackbars for floodfill thresholds
+    createTrackbar("Low thresh", "Norm", &lo, 255, 0);
+    createTrackbar("High thresh", "Norm", &up, 255, 0);
+    /// Set a Mouse Callback
+    setMouseCallback("Norm", pickPoint, 0);
+
+    while (true) {
+        handler.next();
+        if (!handler.reachesEndOfInput()) {
+            src = handler.getImage();
+            cvtColor(src, hsv, CV_BGR2HSV);
+            blur(src, src, Size(7, 7), Point(0, 0), CV_BLUR_NO_SCALE);
+        }
+        imshow("Norm", src);
+
+        if (cvWaitKey(500) != -1) {
+            break;
+        }
+    }
+    return 0;
+}
+
+/**
+ * @function pickPoint
+ */
+void pickPoint(int event, int x, int y, int, void*) {
+    if (event != CV_EVENT_LBUTTONDOWN) {
+        return;
+    }
+
+    // Fill and get the mask
+    Point seed = Point(x, y);
+    Vec3i vec = src.at<Vec3i > (seed);
+
+    DBG("Ausgewaehlter Punkt mit der Farbe: %i,%i,%i bei Lo=%i und High=%i", vec.val[0], vec.val[1], vec.val[2], lo, up);
+    int newMaskVal = 255;
+    Scalar newVal = Scalar(120, 120, 120);
+
+    int connectivity = 8;
+    int flags = connectivity + (newMaskVal << 8) + FLOODFILL_FIXED_RANGE /*+ FLOODFILL_MASK_ONLY*/;
+
+    Mat mask2 = Mat::zeros(src.rows + 2, src.cols + 2, CV_8UC1);
+    floodFill(src, mask2, seed, newVal, 0, Scalar(lo, lo, lo), Scalar(up, up, up), flags);
+    mask = mask2(Range(1, mask2.rows - 1), Range(1, mask2.cols - 1));
+
+    imshow("Mask", mask);
+
+    Hist_and_Backproj();
+}
+
+/**
+ * @function Hist_and_Backproj
+ */
+void Hist_and_Backproj() {
+    MatND hist;
+    int h_bins = 10;
+    int s_bins = 10;
+    int histSize[] = {h_bins, s_bins};
+
+    float h_range[] = {0, 179};
+    float s_range[] = {0, 255};
+    const float* ranges[] = {h_range, s_range};
+    Mat hs = Mat::zeros(hsv.size(), CV_8UC3);
+
+    int ch[] = {0, 0, 1, 1};
+    mixChannels(&hsv, 1, &hs, 1, ch, 2);
+    imshow("HSV-Image", hs);
+    int channels[] = {0, 1};
+
+
+    /// Get the Histogram and normalize it
+    calcHist(&hsv, 1, channels, mask, hist, 2, histSize, ranges, true, false);
+
+    normalize(hist, hist, 0, 255, NORM_MINMAX, -1, Mat());
+    imshow("Hist", hist);
+    /// Get Backprojection
+    MatND backproj;
+    calcBackProject(&hsv, 1, channels, hist, backproj, ranges, 1, true);
+    imshow("BackProj", backproj);
+
+}
+#endif
+// </editor-fold>
+
+
 // <editor-fold defaultstate="collapsed" desc="Ml-OpenCv">
 #if  /* ML */ 0
 
@@ -89,11 +219,11 @@ int main(int, char** argv) {
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="Einfacher (beliebiger Test)">
-#if /*Einfacher (beliebiger Test)*/1
+#if /*Einfacher (beliebiger Test)*/0
 
 int main(int, char** argv) {
     ATest* test = new CreatePositiveSamplesTest();
-    if (test->testMain(CvStringArray()) == EXIT_SUCCESS) {
+    if (test->testMain(StringArray()) == EXIT_SUCCESS) {
         cout << "Test erfolgreich! :-)" << endl;
         return EXIT_SUCCESS;
     } else {
@@ -491,7 +621,7 @@ int main(int argc, char** argv) {
 
     SurfFeatureDetector detector(minHessian);
 
-    CvKeyPointArray keypoints_1, keypoints_2;
+    KeyPointArray keypoints_1, keypoints_2;
 
     detector.detect(img_1, keypoints_1);
     detector.detect(img_2, keypoints_2);
@@ -601,7 +731,7 @@ int main(int argc, char** argv) {
 
     SurfFeatureDetector detector(minHessian);
 
-    CvKeyPointArray keypoints_1, keypoints_2;
+    KeyPointArray keypoints_1, keypoints_2;
 
     detector.detect(img_1, keypoints_1);
     detector.detect(img_2, keypoints_2);
@@ -672,7 +802,7 @@ int main(int argc, char** argv) {
 
     SurfFeatureDetector detector(minHessian);
 
-    CvKeyPointArray keypoints_object, keypoints_scene;
+    KeyPointArray keypoints_object, keypoints_scene;
 
     detector.detect(img_object, keypoints_object);
     detector.detect(img_scene, keypoints_scene);
@@ -1215,7 +1345,7 @@ using namespace cv;
 
 int main(int argc, char* argv[]) {
     MainTest test = MainTest();
-    CvStringArray argsVec;
+    StringArray argsVec;
     if (argc > 1) {
         String tmp;
         for (int i = 1; i < argc; i++) {
@@ -1267,7 +1397,7 @@ int main(int argc, char* argv[]) {
     CvHelper* help = CvHelper::getInstance();
     Mat grid = Mat::zeros(Size(800, 600), CV_8UC3);
     Mat frame;
-    CvStringArray tags = CvStringArray ();
+    StringArray tags = StringArray();
     tags.push_back("Normal");
     tags.push_back("Gauß");
     tags.push_back("Hist.Eq.");
@@ -1361,7 +1491,7 @@ int main() {
     images.push_back(&sobelY);
     images.push_back(&histImg);
     images.push_back(&cannyImageInv);
-    CvStringArray tags = CvStringArray ();
+    StringArray tags = StringArray();
     tags.push_back("Bild");
     tags.push_back("BinBild");
     tags.push_back("SobelX");

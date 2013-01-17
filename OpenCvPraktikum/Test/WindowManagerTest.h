@@ -19,7 +19,7 @@ public:
     WindowManagerTest(const WindowManagerTest& orig);
     virtual ~WindowManagerTest();
     virtual void action(int pos, void* data);
-    virtual int testMain(CvStringArray args);
+    virtual int testMain(StringArray args);
     virtual void printUsage();
 private:
     WindowManager *manager;

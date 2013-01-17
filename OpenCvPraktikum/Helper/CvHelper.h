@@ -24,7 +24,7 @@ using namespace cv;
 class CvHelper {
 private:
     CvHelper();
-    CvImageTypeMap imageTypeMap;
+    ImageTypeMap imageTypeMap;
     String imageTypeToString(Mat img);
     static CvHelper *instance;
 
@@ -57,7 +57,7 @@ public:
      * @param height Maximale H&ouml;he des Ergebnisbildes
      * @return Ein Bild, das aus den Eingabebildern zusammengesetzt ist
      */
-    virtual Mat buildImageGrid(vector<Mat*> images, CvStringArray imageTags, Scalar color, int maxColumn, int width, int height); //FIXME: Fehler erstellen des Grids!
+    virtual Mat buildImageGrid(vector<Mat*> images, StringArray imageTags, Scalar color, int maxColumn, int width, int height); //FIXME: Fehler erstellen des Grids!
 
 
     /**
@@ -102,7 +102,7 @@ public:
      * @param face2 die zu kopierende Region von Bild 2
      * @return einen Vector, der die Bilder mit den vertauschten Regionen enth&auml;lt, oder leer ist, falls ein Fehler aufgetreten ist.
      */
-    virtual CvImageArray swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, Mat img2_mask, Rect face2);
+    virtual ImageArray swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, Mat img2_mask, Rect face2);
 
     /**
      * Zeichnet die Konturen des Bildes
@@ -159,8 +159,8 @@ public:
     Mat makeHistImage(MatND &hist);
 
     Mat applySurfDetect(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
-    CvMatchesArray findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
-    CvKeyPointArray findKeyPoints(Mat& img, int hessian);
+    MatchesArray findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
+    KeyPointArray findKeyPoints(Mat& img, int hessian);
     MatND makeHSHist(Mat& mat);
     Mat makeHSHistImage(MatND &hist);
     /**
@@ -187,7 +187,7 @@ public:
      * @param mat eine Bildfolge
      * @return Das Akkumulierte Bild
      */
-    Mat accumulateImages(CvImageArray mat);
+    Mat accumulateImages(ImageArray mat);
 
     /**
      * Enfernt den Hintergrund eines Bildes mithilfe eines Kallibrierungsbiles(Bildfolge)
@@ -195,7 +195,7 @@ public:
      * @param img Das Bild mit Objekt
      * @return Ein Bild mit geschw&auml;rztem Hintergrund.
      */
-    Mat removeBackground(CvImageArray bg, Mat img);
+    Mat removeBackground(ImageArray bg, Mat img);
 
     Mat convertBlackAndWhite(Mat& in, int threshold);
 
@@ -236,7 +236,7 @@ public:
      */
     PointArray retransformPositionHistogram(PointHistogram hist); //FIXME:  Implementieren.
 
-    
+
 
     double checkEquality(const Mat& I1, const Mat& I2);
 
@@ -250,6 +250,10 @@ public:
      * @return Ein neues Histogram, in dem die besetzten B&auml;nder mindestens eine L&auml;nge von <code>minLength</code> haben.
      */
     PointHistogram extractNoticableBins(PointHistogram hist, int minLength);
+
+
+    
+    //Mat createBackproject(Mat& src, Mat& mask, int minVal, int maxVal);
 
     //FIXME: BACKPROJEKTION:
     //calcBackProject( &hs, 1, 2, hist, backproj, &ranges, 1, true );

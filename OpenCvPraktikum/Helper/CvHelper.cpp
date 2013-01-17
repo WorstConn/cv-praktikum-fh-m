@@ -51,7 +51,7 @@ Mat CvHelper::drawString(Mat inputImg, String text, Scalar color, int posX, int 
  * @param height Maximale H&ouml;he des Ergebnisbildes
  * @return Ein Bild, das aus den Eingabebildern zusammengesetzt ist
  */
-Mat CvHelper::buildImageGrid(vector<Mat*> images, CvStringArray imageTags, Scalar color, int maxColumn, int width, int height) {
+Mat CvHelper::buildImageGrid(vector<Mat*> images, StringArray imageTags, Scalar color, int maxColumn, int width, int height) {
 
     int rahmenbreite = 5; //Abstand zwischen den Bildern
     Mat grid = Mat(width, height, CV_8UC3);
@@ -143,7 +143,7 @@ Mat CvHelper::buildImageGrid(vector<Mat*> images, CvStringArray imageTags, Scala
 }
 
 CvHelper::CvHelper() {
-    imageTypeMap = CvImageTypeMap();
+    imageTypeMap = ImageTypeMap();
 
 }
 
@@ -303,7 +303,7 @@ String CvHelper::imageTypeToString(Mat img) {
 
     }
 
-    CvImageTypeMap::iterator iter;
+    ImageTypeMap::iterator iter;
 
     iter = imageTypeMap.find(img.type());
 
@@ -442,11 +442,11 @@ vector<Rect> CvHelper::detectAll(Mat& img, CascadeClassifier& cascade) {
  * @param face2 die zu kopierende Region von Bild 2
  * @return einen Vector, der die Bilder mit den vertauschten Regionen enth&auml;lt, oder leer ist, falls ein Fehler aufgetreten ist.
  */
-CvImageArray CvHelper::swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, Mat img2_mask, Rect face2) {
+ImageArray CvHelper::swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, Mat img2_mask, Rect face2) {
 
     if (img1.data == NULL || img2.data == NULL) {
         cout << "Keine Bilder zum vertauschen angegeben" << endl;
-        return CvImageArray();
+        return ImageArray();
     }
     Mat img1Roi = Mat(Size(face2.width, face2.height), CV_8UC3);
     Mat img2Roi = Mat(Size(face1.width, face1.height), CV_8UC3);
@@ -455,7 +455,7 @@ CvImageArray CvHelper::swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, 
 
     if (img1_mask.data != NULL && img2_mask.data != NULL) {
         cerr << "Sorry, nocht nicht implementiert..." << endl << "Bitte so lange nocht swapFaces ohne Maskenbilder aufrufen" << endl;
-        return CvImageArray();
+        return ImageArray();
         /*
          * Masken leider noch nicht beruecksichtigt         
          */
@@ -485,12 +485,12 @@ CvImageArray CvHelper::swapFaces(Mat img1, Mat img1_mask, Rect face1, Mat img2, 
 
         if (img2.data == NULL or img1.data == NULL) {
 
-            return CvImageArray();
+            return ImageArray();
 
         }
 
     }
-    CvImageArray erg = CvImageArray();
+    ImageArray erg = ImageArray();
     erg.push_back(img1);
     erg.push_back(img2);
     return erg;
@@ -690,15 +690,15 @@ Mat CvHelper::makeHistImage(MatND &hist) {
  */
 
 Mat CvHelper::applySurfDetect(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist) {
-    CvKeyPointArray refImgKeyPoints = findKeyPoints(refImg, hessian);
-    CvKeyPointArray refKeyPoints = findKeyPoints(ref, hessian);
+    KeyPointArray refImgKeyPoints = findKeyPoints(refImg, hessian);
+    KeyPointArray refKeyPoints = findKeyPoints(ref, hessian);
     if (refImgKeyPoints.size() == 0 or refKeyPoints.size() == 0) {
         DBG("Keine Keypoints gefunden. Leeres Bild?");
         return Mat();
     }
     DBG("KeyPoints gefunden, %d,%d", (int) refImgKeyPoints.size(), (int) refKeyPoints.size());
 
-    CvMatchesArray goodMatches = findSurfMatches(refImg, ref, hessian, minDist, maxDist);
+    MatchesArray goodMatches = findSurfMatches(refImg, ref, hessian, minDist, maxDist);
 
     //-- Draw only "good" matches
     Mat matchesImg;
@@ -714,9 +714,9 @@ Mat CvHelper::applySurfDetect(Mat& refImg, Mat& ref, int hessian, int minDist, i
 
 }
 
-CvMatchesArray CvHelper::findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist) {
-    CvKeyPointArray refImgKeyPoints = findKeyPoints(refImg, hessian);
-    CvKeyPointArray refKeyPoints = findKeyPoints(ref, hessian);
+MatchesArray CvHelper::findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist) {
+    KeyPointArray refImgKeyPoints = findKeyPoints(refImg, hessian);
+    KeyPointArray refKeyPoints = findKeyPoints(ref, hessian);
     SurfDescriptorExtractor descExtractor;
     FlannBasedMatcher matcher;
 
@@ -725,7 +725,7 @@ CvMatchesArray CvHelper::findSurfMatches(Mat& refImg, Mat& ref, int hessian, int
     descExtractor.compute(ref, refKeyPoints, desc2);
 
 
-    CvMatchesArray matches;
+    MatchesArray matches;
     matcher.match(desc1, desc2, matches);
     double max_dist = maxDist;
     double min_dist = minDist;
@@ -739,7 +739,7 @@ CvMatchesArray CvHelper::findSurfMatches(Mat& refImg, Mat& ref, int hessian, int
     DBG("-- Min dist : %f \n", min_dist);
 
 
-    CvMatchesArray goodMatches;
+    MatchesArray goodMatches;
     for (int i = 0; i < desc1.rows; i++) {
         if (matches[i].distance < 2 * min_dist) {
             goodMatches.push_back(matches[i]);
@@ -750,18 +750,18 @@ CvMatchesArray CvHelper::findSurfMatches(Mat& refImg, Mat& ref, int hessian, int
 
 }
 
-CvKeyPointArray CvHelper::findKeyPoints(Mat& img, int hessian) {
+KeyPointArray CvHelper::findKeyPoints(Mat& img, int hessian) {
     SurfFeatureDetector detector(hessian);
     Mat input1 = img;
 
     if (input1.data == NULL) {
         DBG(" --(!) Error reading images ");
-        return CvKeyPointArray();
+        return KeyPointArray();
     }
 
 
 
-    CvKeyPointArray keyPoints;
+    KeyPointArray keyPoints;
     detector.detect(input1, keyPoints);
 
     return keyPoints;
@@ -893,7 +893,7 @@ double CvHelper::compareHistogram(MatND& hist1, MatND& hist2, int m) {
  * @param mat eine Bildfolge
  * @return Das Akkumulierte Bild
  */
-Mat CvHelper::accumulateImages(CvImageArray mats) {
+Mat CvHelper::accumulateImages(ImageArray mats) {
     if (mats.size() < 2) {
         DBG("Vektor der Laenge: %i mind. 2 benoetigt", static_cast<int> (mats.size()));
         return Mat();
@@ -920,7 +920,7 @@ Mat CvHelper::accumulateImages(CvImageArray mats) {
  * @param img Das Bild mit Objekt
  * @return Ein Bild mit geschw&auml;rztem Hintergrund.
  */
-Mat CvHelper::removeBackground(CvImageArray bg, Mat img) {
+Mat CvHelper::removeBackground(ImageArray bg, Mat img) {
     Mat accum = accumulateImages(bg);
     MatND mask;
     absdiff(accum, img, mask);
@@ -1136,19 +1136,17 @@ BooleanArray CvHelper::initVector(BooleanArray vec, bool initValue) {
 /**
  * Pr&uuml;ft auf Gleichheit.
  */
-double CvHelper::checkEquality(const Mat& I1, const Mat& I2) {
-    Mat s1;
-    absdiff(I1, I2, s1);
-    s1.convertTo(s1, CV_32F);
-    s1 = s1.mul(s1);
-    Scalar s = sum(s1);
-    // sum elements per channel
-    double sse = s.val[0] + s.val[1] + s.val[2]; // sum channels
-    if (sse <=
-            1e-10) // for small values return zero
+double CvHelper::checkEquality(const Mat& img1, const Mat& img2) {
+    Mat sumArr;
+    absdiff(img1, img2, sumArr);
+    sumArr.convertTo(sumArr, CV_32F);
+    sumArr = sumArr.mul(sumArr);
+    Scalar sumScalar = sum(sumArr);
+    double channelSum = sumScalar.val[0] + sumScalar.val[1] + sumScalar.val[2];
+    if (channelSum <= 1e-10)
         return 0;
     else {
-        double mse = sse / (double) (I1.channels() * I1.total());
+        double mse = channelSum / (double) (img1.channels() * img1.total());
         double psnr = 10.0 * log10((255 * 255) / mse);
         return psnr;
     }
@@ -1161,48 +1159,45 @@ double CvHelper::checkEquality(const Mat& I1, const Mat& I2) {
  */
 Scalar CvHelper::checkStructuralEquality(const Mat& in1, const Mat& in2) {
     const double C1 = 6.5025, C2 = 58.5225;
-
-    int d = CV_32F;
     Mat img1, img2;
-    in1.convertTo(img1, d);
-
-    in2.convertTo(img2, d);
+    
+    in1.convertTo(img1, CV_32F);
+    in2.convertTo(img2, CV_32F);
+    
     Mat img2_2 = img2.mul(img2);
-
     Mat img1_2 = img1.mul(img1);
-    // I1^2
     Mat img1_img2 = img1.mul(img2);
 
-    Mat mu1, mu2;
+    Mat blured1, blured2;
 
-    GaussianBlur(img1, mu1, Size(11, 11), 1.5);
-    GaussianBlur(img2, mu2, Size(11, 11), 1.5);
+    GaussianBlur(img1, blured1, Size(11, 11), 1.5);
+    GaussianBlur(img2, blured2, Size(11, 11), 1.5);
 
-    Mat mu1_2 = mu1.mul(mu1);
-    Mat mu2_2 = mu2.mul(mu2);
-    Mat mu1_mu2 = mu1.mul(mu2);
+    Mat blured1_2 = blured1.mul(blured1);
+    Mat blured2_2 = blured2.mul(blured2);
+    Mat blured1_blured2 = blured1.mul(blured2);
     Mat sigma1_2, sigma2_2, sigma12;
 
     GaussianBlur(img1_2, sigma1_2, Size(11, 11), 1.5);
-    sigma1_2 -= mu1_2;
-
+    sigma1_2 -= blured1_2;
     GaussianBlur(img2_2, sigma2_2, Size(11, 11), 1.5);
-    sigma2_2 -= mu2_2;
-
+    sigma2_2 -= blured2_2;
     GaussianBlur(img1_img2, sigma12, Size(11, 11), 1.5);
-    sigma12 -= mu1_mu2;
+    sigma12 -= blured1_blured2;
 
+    
     Mat t1, t2, t3;
-    t1 = 2 * mu1_mu2 + C1;
+    t1 = 2 * blured1_blured2 + C1;
     t2 = 2 * sigma12 + C2;
     t3 = t1.mul(t2);
 
-    t1 = mu1_2 + mu2_2 + C1;
+    t1 = blured1_2 + blured2_2 + C1;
     t2 = sigma1_2 + sigma2_2 + C2;
     t1 = t1.mul(t2);
     Mat ssim_map;
     divide(t3, t1, ssim_map);
     Scalar mssim = mean(ssim_map);
+    
     return mssim;
 }
 
@@ -1210,7 +1205,7 @@ PointHistogram CvHelper::extractNoticableBins(PointHistogram hist, int minLength
     int len = hist.size();
     PointHistogram erg = PointHistogram(hist.size());
     for (int i = 0; i < len; i++) {
-        if (hist[i].size() < minLength) {
+        if (hist[i].size() < (unsigned int)minLength) {
             erg[i] = PointArray();
         } else {
             erg[i] = hist[i];

@@ -22,7 +22,7 @@ MainTest::~MainTest() {
 
 }
 
-int MainTest::testMain(CvStringArray args) {// LOL
+int MainTest::testMain(StringArray args) {// LOL
     vector<int> retVals;
 
     vector<ATest*>::iterator iter;

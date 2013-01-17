@@ -116,13 +116,14 @@ enum OUTPUT_TYPE {
 typedef std::vector<std::vector<cv::Point> > PointHistogram;
 typedef std::vector<cv::Point> PointArray;
 typedef std::vector<bool> BooleanArray;
-typedef std::vector<cv::String> CvStringArray;
-typedef std::set<cv::String> CvStringSet;
-typedef std::vector<cv::Mat> CvImageArray;
-typedef std::vector<CvStringArray> CvArrayOfStringArrays;
-typedef std::map<int, cv::String> CvImageTypeMap;
-typedef std::vector<cv::DMatch> CvMatchesArray;
-typedef std::vector<cv::KeyPoint> CvKeyPointArray;
+typedef std::vector<cv::String> StringArray;
+typedef std::set<cv::String> StringSet;
+typedef std::vector<cv::Mat> ImageArray;
+typedef std::vector<StringArray> ArrayOfStringArrays;
+typedef std::map<int, cv::String> ImageTypeMap;
+typedef std::vector<cv::DMatch> MatchesArray;
+typedef std::vector<cv::KeyPoint> KeyPointArray;
+typedef std::vector<cv::Mat*> ImagePointerArray;
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="             OS spezifische Includes">
@@ -166,6 +167,17 @@ typedef struct inode_struct Inode;
 #include "Helper/PlainHandPositiveSample.h"
 #include "Helper/SampleCreator.h"
 
+// </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="             Objekt-Klassen">
+#include "Objects/ExtendedImageAttributes.h"
+#include "Objects/HistogramCreationMethod.h"
+#include "Objects/MaskCreationMethod.h"
+#include "Objects/ContourCreationMethod.h"
+#include "Objects/KeyPointCreationMethod.h"
+typedef ExtendedImageAttributes ImageAttributes;
+#include "Objects/PixelObject.h"
+#include "Objects/Hand.h"
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="             Modifikatoren">

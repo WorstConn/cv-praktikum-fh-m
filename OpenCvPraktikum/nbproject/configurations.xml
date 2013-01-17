@@ -27,8 +27,8 @@
         <itemPath>Helper/MyMath.h</itemPath>
         <itemPath>Helper/NegativeSample.cpp</itemPath>
         <itemPath>Helper/NegativeSample.h</itemPath>
-        <itemPath>Helper/PositiveSample.cpp</itemPath>
-        <itemPath>Helper/PositiveSample.h</itemPath>
+        <itemPath>Helper/PlainHandPositiveSample.cpp</itemPath>
+        <itemPath>Helper/PlainHandPositiveSample.h</itemPath>
         <itemPath>Helper/SampleCreator.cpp</itemPath>
         <itemPath>Helper/SampleCreator.h</itemPath>
       </logicalFolder>
@@ -55,6 +55,20 @@
         <itemPath>Modifier/ModificatorComponent.h</itemPath>
         <itemPath>Modifier/ScaleModificator.cpp</itemPath>
         <itemPath>Modifier/ScaleModificator.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f8" displayName="Objects" projectFiles="true">
+        <itemPath>Objects/ContourCreationMethod.cpp</itemPath>
+        <itemPath>Objects/ContourCreationMethod.h</itemPath>
+        <itemPath>Objects/ExtendedImageAttributes.cpp</itemPath>
+        <itemPath>Objects/ExtendedImageAttributes.h</itemPath>
+        <itemPath>Objects/Hand.cpp</itemPath>
+        <itemPath>Objects/Hand.h</itemPath>
+        <itemPath>Objects/HistogramCreationMethod.cpp</itemPath>
+        <itemPath>Objects/HistogramCreationMethod.h</itemPath>
+        <itemPath>Objects/MaskCreationMethod.cpp</itemPath>
+        <itemPath>Objects/MaskCreationMethod.h</itemPath>
+        <itemPath>Objects/PixelObject.cpp</itemPath>
+        <itemPath>Objects/PixelObject.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f3" displayName="Output" projectFiles="true">
         <itemPath>Output/ImageListOutput.cpp</itemPath>

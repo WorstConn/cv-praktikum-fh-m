@@ -19,7 +19,7 @@ VideoInputToImageSequenceOutputTest::VideoInputToImageSequenceOutputTest(const V
 VideoInputToImageSequenceOutputTest::~VideoInputToImageSequenceOutputTest() {
 }
 
-int VideoInputToImageSequenceOutputTest::testMain(CvStringArray args) {
+int VideoInputToImageSequenceOutputTest::testMain(StringArray args) {
     if (args.size() < 3) {
         cout << "Nicht ausreichend Argumente" << endl;
         printUsage();
@@ -58,8 +58,8 @@ void VideoInputToImageSequenceOutputTest::printUsage() {
     cout << "Valid Arguments" << endl << " -c    Input from cam" << endl << " -v [PATH]    Input from Video found at PATH" << endl << "-o [OUTPUTDIR]     Directory, where the videoframes are written. " << endl;
 }
 
-void VideoInputToImageSequenceOutputTest::parseInput(CvStringArray args) {
-    CvStringArray::iterator iter;
+void VideoInputToImageSequenceOutputTest::parseInput(StringArray args) {
+    StringArray::iterator iter;
     valid = false;
     bool gotOut = false;
     bool gotIn = false;
