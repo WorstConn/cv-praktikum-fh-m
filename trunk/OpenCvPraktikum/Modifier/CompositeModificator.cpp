@@ -26,10 +26,10 @@ CompositeModificator::~CompositeModificator() {
     }
 }
 
-void CompositeModificator::modify(Mat* img) {
+void CompositeModificator::modify(Mat& img) {
     vector<ModificatorComponent*>::const_iterator iter;
     for (iter = components.begin(); iter != components.end(); iter++) {
-        (*iter)->modify((*img));
+        (*iter)->modify((img));
     }
 }
 

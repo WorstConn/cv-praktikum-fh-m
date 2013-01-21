@@ -124,7 +124,6 @@ bool CvWindow::isShowing() {
     return show;
 }
 
-
 String CvWindow::getName() {
     return name;
 }

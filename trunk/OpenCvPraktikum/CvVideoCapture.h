@@ -102,7 +102,8 @@ private:
     void nextFrame();
 
     void setFrame(Mat mat);
-
+    
+    CvWindow* window;
 
 
 public:
@@ -158,6 +159,9 @@ public:
 
     bool available();
 
+    void setWindow(CvWindow* wnd);
+    
+    void closeWindow();
 
 
 };

@@ -16,10 +16,10 @@
 #if /* CvDTree-Test */ 0
 
 int main(int, char** argv) {
-    
+
     RandomizedTree randTree = RandomizedTree();
-    
- 
+
+
 
     return EXIT_SUCCESS;
 }
@@ -739,34 +739,35 @@ int main(int, char** argv) {
     }
     handler.requestFormat(r720p);
     DBG("Lese einige Bilder damit Kamera sich einstellen kann(Helligkeit,Fokus,...).");
-    for(int i=0; i<=10; i++){
-        if(!handler.grabNext()){
+    for (int i = 0; i <= 10; i++) {
+        if (!handler.grabNext()) {
             DBG("Fehler beim lesen der Eingabe");
         }
     }
-    
+
     CvVideoCapture* cap = new CvVideoCapture(handler);
     Output* out = new ImageListOutput("/home/ertai/Videos/BG5", "BG6-", ".jpg");
     BgFgSegmModificator mod = BgFgSegmModificator("/home/ertai/Videos/BG5/BG5-11.jpg");
     cap->setImageModifikator(&mod);
-    
+
     cap->setOutput(out);
     WindowManager* man = WindowManager::getInstance();
-    CvWindow* wnd = man->createWindow("Recording",0,0);
+    CvWindow* wnd = man->createWindow("Recording", 0, 0);
     Mat img = handler.getImage();
     wnd->showWindow();
     wnd->setCurrentImage(&img);
     cap->setTimeToRecord(1500);
     cap->setRecordingTime(150000);
+    cap->setWindow(wnd);
     cap->start();
-    
-    while(true){
-        img = cap->getFrame();//handler.getImage();
-        
-        wnd->setCurrentImage(&img);
-        cvWaitKey(40);
-        img.release();
-    }
+
+    //    while(true){
+    //        img = handler.getImage();
+    //        
+    //        wnd->setCurrentImage(&img);
+    //        cvWaitKey(40);
+    //        
+    //    }
 
     cap->joinThread();
     cvWaitKey(0);
@@ -2153,4 +2154,5 @@ void cornerHarris_demo(int, void*) {
 
 
 
-
+//opencv_createsamples -info /home/ertai/Videos/positives.dat -num 2500 -vec /home/ertai/Videos/train_plainHand.vec -w 50 -h 50
+//opencv_traincascade -data Videos/cascade -vec Videos/train_plainHand.vec -bg Videos/bg.dat -numPos 222 -numNeg 1500 -numStages 5 -precalcValBufSize 3096 -precalcIdxBufSize 3096 -featureType LBP -w 64 -h 64 -minHitRate 0.999 -maxFalseAlarmRate 0.1 -mode ALL

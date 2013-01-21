@@ -18,9 +18,10 @@ ScaleModificator::ScaleModificator(const ScaleModificator& orig) : ImageModifica
 ScaleModificator::~ScaleModificator() {
 }
 
-void ScaleModificator::modify(cv::Mat& mat) {
+void ScaleModificator::modify(Mat& mat) {
     CvHelper *helper = CvHelper::getInstance();
-    mat = helper->scaleImage((mat), 2.0);
+    Mat erg = helper->scaleImage((mat), 2.0);
+    mat = erg;
 
 }
 

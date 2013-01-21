@@ -16,7 +16,7 @@ using namespace cv;
  * Modifikator zum entfernen des Hintergrundes aus einem Bild
  * 
  */
-class BgFgSegmModificator : public ImageModificator{
+class BgFgSegmModificator : public ImageModificator {
 public:
     /**
      * Erstellt einen Subtraktor auf Basis eines Vektors von Pfaden zu Bildern, die den Hintergrund darstellen.
@@ -26,7 +26,7 @@ public:
     BgFgSegmModificator(Mat bgImage);
     BgFgSegmModificator(const BgFgSegmModificator& orig);
     virtual ~BgFgSegmModificator();
-        virtual void modify(Mat&);
+    virtual void modify(Mat& img);
     virtual float getScale();
 private:
     Mat bg;

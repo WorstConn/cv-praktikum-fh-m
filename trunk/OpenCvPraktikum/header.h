@@ -45,7 +45,7 @@ enum OUTPUT_TYPE {
 #define PREF_VIDEO_OUTPUT_FILE_EXT ".avi"
 #define PREF_IMAGE_OUTPUT_FILE_EXT ".png"
 
-
+// <editor-fold defaultstate="collapsed" desc="             Versuche libfreenect">
 #ifdef TRY_KINECT
 #include <libfreenect.h>
 #include <libfreenect_sync.h>
@@ -53,9 +53,7 @@ enum OUTPUT_TYPE {
 #include <cmath>
 #include <pthread.h>
 #endif
-
-
-
+// </editor-fold>
 
 /**
  * Ausgabedefinition
@@ -64,7 +62,7 @@ enum OUTPUT_TYPE {
 #define DBG(format, ...) do {\
         printf("DBG: \"");\
         printf(format, ##__VA_ARGS__);\
-        printf("\" line: %d function: %s\n", __LINE__,(char*) __func__);} while(0);
+        printf("\" function: %s file: %s line: %d\n",(char*) __func__, (char*)__FILE__, __LINE__);} while(0);
 #define DBG_EXIT(format, ...) do {\
         DBG(format, ##__VA_ARGS__)\
         exit(EXIT_FAILURE);} while(0);
@@ -216,14 +214,6 @@ typedef ExtendedImageAttributes ImageAttributes;
 
 // </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="             Formatumwandlung und Bildverarbeitung">
-/*
- * Formatumwandlung und Bildverarbeitung
- */
-#include "CvVideoCapture.h"
-
-// </editor-fold>
-
 // <editor-fold defaultstate="collapsed" desc="             Anzeige">
 /**
  * Anzeige
@@ -233,7 +223,18 @@ typedef ExtendedImageAttributes ImageAttributes;
 #include "View/ModificatorAction.h"
 #include "View/CvWindow.h"
 #include "View/WindowManager.h"
+
+
+// </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="             Formatumwandlung">
+/*
+ * Formatumwandlung und Bildverarbeitung
+ */
+
+#include "CvVideoCapture.h"
 #include "Control/RecorderCtl.h"
+
 
 // </editor-fold>
 
