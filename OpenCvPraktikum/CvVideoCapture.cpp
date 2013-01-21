@@ -25,7 +25,7 @@ CvVideoCapture::CvVideoCapture(ImageSequenceInput& in) : capture(in) {
     frames_to_record = 0;
     imageMod = NULL;
     frameDelay = 0;
-
+    window = NULL;
 
 }
 
@@ -43,8 +43,7 @@ CvVideoCapture::CvVideoCapture(const CvVideoCapture& other) : capture(other.capt
     outputname = other.outputname;
     recording = other.recording;
     frameDelay = other.frameDelay;
-
-
+    window = other.window;
 }
 
 CvVideoCapture::~CvVideoCapture() {
@@ -183,6 +182,7 @@ void CvVideoCapture::record() {
         recordSeconds = DEFAULT_DURATION;
     }
     // <editor-fold defaultstate="collapsed" desc="Aufnahme Schleife">
+
     while (recording) {
 
 
@@ -200,6 +200,7 @@ void CvVideoCapture::record() {
 
         try {
             capture.next();
+
         } catch (Exception& ex) {
             DBG("%s", ex.what());
             break;
@@ -208,17 +209,21 @@ void CvVideoCapture::record() {
             DBG("Input Ende erreicht!");
             break;
         }
+
         Mat frm = capture.getImage();
-
-
-
-
         if (imageMod != NULL) {
             //frm=getFrame();  // Falls es zu 'Concurrent modification error' kommt...
-            frame_mutex.lock();
+
 
             imageMod->modify(frm);
-            frame_mutex.unlock();
+
+            
+        }
+        if (window != NULL) {
+            if (!window->isShowing()) {
+                window->showWindow();
+            }
+            window->setCurrentImage(&frm);
         }
         setFrame(frm);
         writer->write(frm);
@@ -357,4 +362,14 @@ void CvVideoCapture::setOutput(Output* out) {
         return;
     }
 
+}
+
+void CvVideoCapture::setWindow(CvWindow* wnd) {
+    window = wnd;
+    window->showWindow();
+}
+
+void CvVideoCapture::closeWindow() {
+    window->closeWindow();
+    window = NULL;
 }

@@ -54,6 +54,6 @@ protected:
 private:
 
 };
-
+//FIXME: Weiter Implementierung notwendig.
 #endif	/* MODIFICATORCOMPONENT_H */
 

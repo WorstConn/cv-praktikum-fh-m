@@ -18,7 +18,7 @@ public:
     ScaleModificator();
     ScaleModificator(const ScaleModificator& orig);
     virtual ~ScaleModificator();
-    virtual void modify(Mat&);
+    virtual void modify(Mat& img);
     virtual float getScale();
 private:
 

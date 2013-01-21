@@ -50,6 +50,7 @@ void BgFgSegmModificator::modify(Mat& mat) {
     erg = Mat::zeros(mat.size(), CV_8UC3);
     // unter Verwendung des Eingabebildes und der erstellten Maske, das Ergebnisbild erzeugen.
     mat.copyTo(erg, bw);
-    bw.release();
+    //bw.release();
     mat = erg;
+    
 }

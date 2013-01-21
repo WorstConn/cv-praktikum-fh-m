@@ -18,7 +18,7 @@ public:
     CompositeModificator();
     CompositeModificator(const CompositeModificator& orig);
     virtual ~CompositeModificator();
-    virtual void modify(Mat* img);
+    virtual void modify(Mat& img);
     virtual float getScale();
     virtual void addModificator(String name, ModificatorComponent* mod);
     virtual bool removModificator(String name);
