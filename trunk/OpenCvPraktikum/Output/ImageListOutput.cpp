@@ -13,6 +13,7 @@ using namespace cv;
 ImageListOutput::ImageListOutput(String p, String n, String fileExt) : Output(p, n, fileExt) {
     counter = 0;
     writeParams = vector<int>();
+    
 }
 
 ImageListOutput::ImageListOutput(const ImageListOutput& orig) : Output(orig) {

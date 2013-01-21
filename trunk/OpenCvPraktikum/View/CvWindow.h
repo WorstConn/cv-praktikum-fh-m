@@ -24,7 +24,6 @@ public:
     void closeWindow();
     virtual ~CvWindow();
     String getName();
-    void addTrackbar(String name, int i, TrackbarCallback cb);
 
 private:
     String name;

@@ -332,7 +332,7 @@ Rect CvHelper::detectBiggest(Mat& img, CascadeClassifier& cascade) {
     cvtColor(img, gray, CV_BGR2GRAY);
     resize(gray, smallImg, smallImg.size(), 0, 0, INTER_LINEAR);
     equalizeHist(smallImg, smallImg);
-    cascade.detectMultiScale(smallImg, faces, 1.1, 2, 0, Size(30, 30));
+    cascade.detectMultiScale(smallImg, faces, 1.3, 3, 0, Size(100, 100));
 
 
     if (faces.empty()) {
@@ -391,10 +391,10 @@ Rect CvHelper::detectBiggest(Mat& img, CascadeClassifier& cascade) {
  * @param cascade Die cascade
  * @return einen Vektor von Rects, die die einzelnen erkannten Objekte einfassen
  */
-vector<Rect> CvHelper::detectAll(Mat& img, CascadeClassifier& cascade) {
+vector<Rect> CvHelper::detectAll(Mat& img, CascadeClassifier& cascade, int minWidth, float maxWidth, float aspectRatio) {
 
-    vector<Rect> faces = vector<Rect > ();
-    const static Scalar color = CV_RGB(0, 0, 255);
+    vector<Rect> objects = vector<Rect > ();
+    const static Scalar color = CV_RGB(255, 255, 255);
 
     Mat gray;
     Mat smallImg(cvRound(img.rows), cvRound(img.cols), CV_8UC1);
@@ -404,31 +404,13 @@ vector<Rect> CvHelper::detectAll(Mat& img, CascadeClassifier& cascade) {
     equalizeHist(smallImg, smallImg);
 
 
-    cascade.detectMultiScale(smallImg, faces, 1.1, 2, 0, Size(30, 30));
+    cascade.detectMultiScale(smallImg, objects, 1.1, 3, 0 | CV_HAAR_SCALE_IMAGE, Size(64, 64));
 
 
-    if (faces.empty()) {
-        return vector<Rect > ();
-    }
 
-    for (vector<Rect>::iterator iter = faces.begin(); iter != faces.end(); iter++) {
-        Point center;
+    DBG("%i Hände gefunden.", (int) objects.size());
 
-        int radius;
-
-        center.x = cvRound((iter->x + iter->width * 0.5));
-        center.y = cvRound((iter->y + iter->height * 0.5));
-        radius = cvRound((iter->width + iter->height)*0.25);
-        /*
-         * Ist das erkannte Gesicht zu klein (radius kleiner gleich 10% der Bildbreite)
-         */
-        if (radius <= cvRound(((float) img.cols)*0.1)) {
-            return vector<Rect > ();
-        }
-        circle(img, center, radius, color, 2, 8, 0);
-
-    }
-    return faces;
+    return objects;
 
 }
 
@@ -768,7 +750,7 @@ KeyPointArray CvHelper::findKeyPoints(Mat& img, int hessian) {
 
 }
 
-MatND CvHelper::makeHSHist(Mat& mat) {
+MatND CvHelper::makeHSHist(Mat& mat, Mat& mask) {
     Mat src = mat;
     Mat hsv;
 
@@ -777,7 +759,7 @@ MatND CvHelper::makeHSHist(Mat& mat) {
 
     // Quantize the hue to 30 levels
     // and the saturation to 32 levels
-    int hbins = 180, sbins = 256;
+    int hbins = 32, sbins = 32;
     int histSize[] = {hbins, sbins};
     // hue varies from 0 to 179, see cvtColor
     float hranges[] = {0, 180};
@@ -789,7 +771,7 @@ MatND CvHelper::makeHSHist(Mat& mat) {
     // we compute the histogram from the 0-th and 1-st channels
     int channels[] = {0, 1};
 
-    calcHist(&hsv, 1, channels, Mat(), // do not use mask
+    calcHist(&hsv, 1, channels, mask, // do not use mask
             hist, 2, histSize, ranges,
             true, // the histogram is uniform
             false);
@@ -1160,10 +1142,10 @@ double CvHelper::checkEquality(const Mat& img1, const Mat& img2) {
 Scalar CvHelper::checkStructuralEquality(const Mat& in1, const Mat& in2) {
     const double C1 = 6.5025, C2 = 58.5225;
     Mat img1, img2;
-    
+
     in1.convertTo(img1, CV_32F);
     in2.convertTo(img2, CV_32F);
-    
+
     Mat img2_2 = img2.mul(img2);
     Mat img1_2 = img1.mul(img1);
     Mat img1_img2 = img1.mul(img2);
@@ -1185,7 +1167,7 @@ Scalar CvHelper::checkStructuralEquality(const Mat& in1, const Mat& in2) {
     GaussianBlur(img1_img2, sigma12, Size(11, 11), 1.5);
     sigma12 -= blured1_blured2;
 
-    
+
     Mat t1, t2, t3;
     t1 = 2 * blured1_blured2 + C1;
     t2 = 2 * sigma12 + C2;
@@ -1197,7 +1179,7 @@ Scalar CvHelper::checkStructuralEquality(const Mat& in1, const Mat& in2) {
     Mat ssim_map;
     divide(t3, t1, ssim_map);
     Scalar mssim = mean(ssim_map);
-    
+
     return mssim;
 }
 
@@ -1205,7 +1187,7 @@ PointHistogram CvHelper::extractNoticableBins(PointHistogram hist, int minLength
     int len = hist.size();
     PointHistogram erg = PointHistogram(hist.size());
     for (int i = 0; i < len; i++) {
-        if (hist[i].size() < (unsigned int)minLength) {
+        if (hist[i].size() < (unsigned int) minLength) {
             erg[i] = PointArray();
         } else {
             erg[i] = hist[i];

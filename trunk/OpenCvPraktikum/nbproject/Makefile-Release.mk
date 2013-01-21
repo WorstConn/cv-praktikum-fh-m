@@ -52,6 +52,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/Input/AInputHandler.o \
 	${OBJECTDIR}/Modifier/HsvModifier.o \
 	${OBJECTDIR}/Objects/Hand.o \
+	${OBJECTDIR}/Objects/HsvHistogamCreation.o \
 	${OBJECTDIR}/Test/MainTest.o \
 	${OBJECTDIR}/Modifier/ModificatorComponent.o \
 	${OBJECTDIR}/Test/Prak3A8.o \
@@ -71,6 +72,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/Input/InputHandler.o \
 	${OBJECTDIR}/View/AImageAction.o \
 	${OBJECTDIR}/Helper/MyMath.o \
+	${OBJECTDIR}/Objects/SimpleMaskCreation.o \
 	${OBJECTDIR}/Modifier/CompositeModificator.o \
 	${OBJECTDIR}/Objects/ContourCreationMethod.o \
 	${OBJECTDIR}/Helper/PlainHandPositiveSample.o \
@@ -187,6 +189,11 @@ ${OBJECTDIR}/Objects/Hand.o: Objects/Hand.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Objects/Hand.o Objects/Hand.cpp
 
+${OBJECTDIR}/Objects/HsvHistogamCreation.o: Objects/HsvHistogamCreation.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Objects
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Objects/HsvHistogamCreation.o Objects/HsvHistogamCreation.cpp
+
 ${OBJECTDIR}/Test/MainTest.o: Test/MainTest.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Test
 	${RM} $@.d
@@ -281,6 +288,11 @@ ${OBJECTDIR}/Helper/MyMath.o: Helper/MyMath.cpp
 	${MKDIR} -p ${OBJECTDIR}/Helper
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Helper/MyMath.o Helper/MyMath.cpp
+
+${OBJECTDIR}/Objects/SimpleMaskCreation.o: Objects/SimpleMaskCreation.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Objects
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Objects/SimpleMaskCreation.o Objects/SimpleMaskCreation.cpp
 
 ${OBJECTDIR}/Modifier/CompositeModificator.o: Modifier/CompositeModificator.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Modifier

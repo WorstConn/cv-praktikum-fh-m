@@ -15,6 +15,8 @@ public:
     HistogramCreationMethod();
     HistogramCreationMethod(const HistogramCreationMethod& orig);
     virtual ~HistogramCreationMethod();
+    virtual MatND createHistogram(Mat img, Mat mask)=0;
+    
 private:
 
 };

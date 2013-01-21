@@ -67,8 +67,10 @@ void CvWindow::showWindow() {
         DBG("Name des Fensters ist leer!");
         return;
     }
-    namedWindow(this->name, CV_GUI_EXPANDED);
-    show = true;
+    if (!show) {
+        namedWindow(this->name, CV_GUI_EXPANDED);
+        show = true;
+    }
 
     refreshThread = new thread(&CvWindow::loop, this);
 }
@@ -121,11 +123,7 @@ void CvWindow::loop() {
 bool CvWindow::isShowing() {
     return show;
 }
-//FIME: TrackBar-Prop-Objekt erstellen!!
 
-void CvWindow::addTrackbar(String name, int max, TrackbarCallback ptr) {
-
-}
 
 String CvWindow::getName() {
     return name;

@@ -65,10 +65,14 @@
         <itemPath>Objects/Hand.h</itemPath>
         <itemPath>Objects/HistogramCreationMethod.cpp</itemPath>
         <itemPath>Objects/HistogramCreationMethod.h</itemPath>
+        <itemPath>Objects/HsvHistogamCreation.cpp</itemPath>
+        <itemPath>Objects/HsvHistogamCreation.h</itemPath>
         <itemPath>Objects/MaskCreationMethod.cpp</itemPath>
         <itemPath>Objects/MaskCreationMethod.h</itemPath>
         <itemPath>Objects/PixelObject.cpp</itemPath>
         <itemPath>Objects/PixelObject.h</itemPath>
+        <itemPath>Objects/SimpleMaskCreation.cpp</itemPath>
+        <itemPath>Objects/SimpleMaskCreation.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f3" displayName="Output" projectFiles="true">
         <itemPath>Output/ImageListOutput.cpp</itemPath>

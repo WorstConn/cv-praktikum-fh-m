@@ -121,7 +121,7 @@ public:
     /**
      * Stoppt die Aufnahme
      */
-    bool stop();
+    void stop();
     /**
      * Setzt die Skalierung des Videos
      */

@@ -213,7 +213,7 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
     String erg;
     erg = imgPath + " ";
     if (pos > 0) {
-        erg += iToStr(pos) + " ";
+        erg += iToStr(1) + " ";
     }
     erg += iToStr(offset.x) + " " + iToStr(offset.y) + " " + iToStr(width) + " " + iToStr(height);
     width = MyMath::abs(x2.x - x1.x);

@@ -175,6 +175,8 @@ typedef struct inode_struct Inode;
 #include "Objects/MaskCreationMethod.h"
 #include "Objects/ContourCreationMethod.h"
 #include "Objects/KeyPointCreationMethod.h"
+#include "Objects/SimpleMaskCreation.h"
+#include "Objects/HsvHistogamCreation.h"
 typedef ExtendedImageAttributes ImageAttributes;
 #include "Objects/PixelObject.h"
 #include "Objects/Hand.h"

@@ -13,7 +13,8 @@ using namespace cv;
 RecorderCtl::RecorderCtl(String ctl) {
     name = (ctl.empty()) ? "Default" : ctl;
     capture = NULL;
-    wnd = new CvWindow(name);
+    wnd = WindowManager::getInstance();
+    wnd->createWindow(name,0,0);
     state = INIT;
     ctlThread = NULL;
     lastImgUpdate = -1;
@@ -38,7 +39,7 @@ RecorderCtl::~RecorderCtl() {
 
 bool RecorderCtl::refreshWindowImage(Mat img) {
     if (wnd != NULL) {
-        wnd->setCurrentImage(&img);
+        wnd->updateWindowImage(name,&img);
         return true;
     }
     return false;
@@ -51,7 +52,7 @@ void RecorderCtl::dispose() {
 
     }
     if (wnd != NULL) {
-        wnd->closeWindow();
+        wnd->closeWindow(name);
         wnd = NULL;
     }
     if (capture != NULL) {
@@ -61,16 +62,12 @@ void RecorderCtl::dispose() {
 
 }
 
-void RecorderCtl::setWindow(CvWindow *wnd) {
-    this->wnd = wnd;
-}
-
 void RecorderCtl::setCapture(CvVideoCapture *capture) {
     this->capture = capture;
 }
 
 CvWindow* RecorderCtl::getWindow() {
-    return wnd;
+    return wnd->getWindow(name);
 }
 
 CvVideoCapture* RecorderCtl::getCapture() {
@@ -136,15 +133,13 @@ void RecorderCtl::grabLoop() {
         DBG("Initialisiere Zeit.");
     }
     Mat tmp;
-    if (!wnd->isShowing()) {
-        wnd->showWindow();
-    }
+    wnd->showWindow(name);
     try {
         DBG("GrabLoop");
         while (state == GRAB) {
             capture->requestNext();
             tmp = capture->getFrame();
-            wnd->setCurrentImage(&tmp);
+            wnd->updateWindowImage(name,&tmp);
         }
     } catch (Exception& ex) {
         DBG("%s", ex.what());
@@ -162,10 +157,7 @@ void RecorderCtl::recordLoop() {
         time(&lastImgUpdate);
     }
     Mat tmp;
-    if (!wnd->isShowing()) {
-
-        wnd->showWindow();
-    }
+    wnd->showWindow(name);
     if (!capture->isRecording()) {
         DBG("Starte Aufnahme");
         capture->start();
@@ -174,7 +166,8 @@ void RecorderCtl::recordLoop() {
         DBG("Betrete Record-Loop");
         while (state == RECORD) {
             tmp = capture->getFrame();
-            wnd->setCurrentImage(&tmp);
+            cvWaitKey(50);
+            wnd->updateWindowImage(name,&tmp);
         }
     } catch (Exception& ex) {
         DBG("%s", ex.what());
