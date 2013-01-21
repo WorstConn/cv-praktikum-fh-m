@@ -13,9 +13,504 @@
 #include <mutex>
 #include <map>
 #include <string>
+#if /* CvDTree-Test */ 0
 
-// <editor-fold defaultstate="collapsed" desc="Backprojection">
-#if /*Backprojection*/1
+int main(int, char** argv) {
+    
+    RandomizedTree randTree = RandomizedTree();
+    
+ 
+
+    return EXIT_SUCCESS;
+}
+
+#endif
+#if /*Detect-Object Cascade*/0
+
+
+using namespace std;
+using namespace cv;
+
+typedef vector<Rect> RectArray;
+
+int main(int, char** argv) {
+    CvHelper* helper = CvHelper::getInstance();
+    CascadeClassifier cascade;
+    cascade.load(String("/home/ertai/Videos/cascade/cascade.xml"));
+    InputHandler handler = InputHandler();
+    handler.setInputSource(INPUT_CAM);
+    handler.open();
+    Mat img;
+    handler.requestFormat(r720p);
+    handler.next();
+    img = handler.getImage();
+    namedWindow("Cam");
+    helper->detectAll(img, cascade, 100, 1000, 4 / 3);
+    imshow("Cam", img);
+
+    RectArray hands;
+
+    while (true) {
+        if (!handler.reachesEndOfInput()) {
+            handler.next();
+            img = handler.getImage();
+            hands = helper->detectAll(img, cascade, 100, 1000, 4 / 3);
+            if (!hands.empty()) {
+                for (RectArray::const_iterator iter = hands.begin(); iter != hands.end(); iter++) {
+                    Point center;
+
+                    int radius;
+
+                    center.x = cvRound((iter->x + iter->width * 0.5));
+                    center.y = cvRound((iter->y + iter->height * 0.5));
+                    radius = cvRound((iter->width + iter->height)*0.25);
+
+                    circle(img, center, radius, Scalar(255, 255, 255), 3, 8, 0);
+
+                }
+
+            }
+        }
+        imshow("Cam", img);
+        cvWaitKey(5);
+    }
+    return EXIT_SUCCESS;
+}
+
+#endif
+
+#if /*Detection Description Matching*/0
+
+#include "highgui/highgui.hpp"
+#include "calib3d/calib3d.hpp"
+#include "imgproc/imgproc.hpp"
+#include "features2d/features2d.hpp"
+
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+void help(char** argv) {
+    cout << "\nThis program demonstrats keypoint finding and matching between 2 images using features2d framework.\n"
+            << "   In one case, the 2nd image is synthesized by homography from the first, in the second case, there are 2 images\n"
+            << "\n"
+            << "Case1: second image is obtained from the first (given) image using random generated homography matrix\n"
+            << argv[0] << " [detectorType] [descriptorType] [matcherType] [matcherFilterType] [image] [evaluate(0 or 1)]\n"
+            << "Example of case1:\n"
+            << "./descriptor_extractor_matcher SURF SURF FlannBased NoneFilter cola.jpg 0\n"
+            << "\n"
+            << "Case2: both images are given. If ransacReprojThreshold>=0 then homography matrix are calculated\n"
+            << argv[0] << " [detectorType] [descriptorType] [matcherType] [matcherFilterType] [image1] [image2] [ransacReprojThreshold]\n"
+            << "\n"
+            << "Matches are filtered using homography matrix in case1 and case2 (if ransacReprojThreshold>=0)\n"
+            << "Example of case2:\n"
+            << "./descriptor_extractor_matcher SURF SURF BruteForce CrossCheckFilter cola1.jpg cola2.jpg 3\n"
+            << "\n"
+            << "Possible detectorType values: see in documentation on createFeatureDetector().\n"
+            << "Possible descriptorType values: see in documentation on createDescriptorExtractor().\n"
+            << "Possible matcherType values: see in documentation on createDescriptorMatcher().\n"
+            << "Possible matcherFilterType values: NoneFilter, CrossCheckFilter." << endl;
+}
+
+#define DRAW_RICH_KEYPOINTS_MODE     0
+#define DRAW_OUTLIERS_MODE           0
+
+const string winName = "correspondences";
+
+enum {
+    NONE_FILTER = 0, CROSS_CHECK_FILTER = 1
+};
+
+int getMatcherFilterType(const string& str) {
+    if (str == "NoneFilter")
+        return NONE_FILTER;
+    if (str == "CrossCheckFilter")
+        return CROSS_CHECK_FILTER;
+    CV_Error(CV_StsBadArg, "Invalid filter name");
+    return -1;
+}
+
+void simpleMatching(Ptr<DescriptorMatcher>& descriptorMatcher,
+        const Mat& descriptors1, const Mat& descriptors2,
+        vector<DMatch>& matches12) {
+
+    descriptorMatcher->match(descriptors1, descriptors2, matches12);
+}
+
+void crossCheckMatching(Ptr<DescriptorMatcher>& descriptorMatcher,
+        const Mat& descriptors1, const Mat& descriptors2,
+        vector<DMatch>& filteredMatches12, int knn = 1) {
+    filteredMatches12.clear();
+    vector<vector<DMatch> > matches12, matches21;
+    descriptorMatcher->knnMatch(descriptors1, descriptors2, matches12, knn);
+    descriptorMatcher->knnMatch(descriptors2, descriptors1, matches21, knn);
+    for (size_t m = 0; m < matches12.size(); m++) {
+        bool findCrossCheck = false;
+        for (size_t fk = 0; fk < matches12[m].size(); fk++) {
+            DMatch forward = matches12[m][fk];
+
+            for (size_t bk = 0; bk < matches21[forward.trainIdx].size(); bk++) {
+                DMatch backward = matches21[forward.trainIdx][bk];
+                if (backward.trainIdx == forward.queryIdx) {
+                    filteredMatches12.push_back(forward);
+                    findCrossCheck = true;
+                    break;
+                }
+            }
+            if (findCrossCheck) break;
+        }
+    }
+}
+
+void warpPerspectiveRand(const Mat& src, Mat& dst, Mat& H, RNG& rng) {
+    H.create(3, 3, CV_32FC1);
+    H.at<float>(0, 0) = rng.uniform(0.8f, 1.2f);
+    H.at<float>(0, 1) = rng.uniform(-0.1f, 0.1f);
+    H.at<float>(0, 2) = rng.uniform(-0.1f, 0.1f) * src.cols;
+    H.at<float>(1, 0) = rng.uniform(-0.1f, 0.1f);
+    H.at<float>(1, 1) = rng.uniform(0.8f, 1.2f);
+    H.at<float>(1, 2) = rng.uniform(-0.1f, 0.1f) * src.rows;
+    H.at<float>(2, 0) = rng.uniform(-1e-4f, 1e-4f);
+    H.at<float>(2, 1) = rng.uniform(-1e-4f, 1e-4f);
+    H.at<float>(2, 2) = rng.uniform(0.8f, 1.2f);
+
+    warpPerspective(src, dst, H, src.size());
+}
+
+void doIteration(const Mat& img1, Mat& img2, bool isWarpPerspective,
+        vector<KeyPoint>& keypoints1, const Mat& descriptors1,
+        Ptr<FeatureDetector>& detector, Ptr<DescriptorExtractor>& descriptorExtractor,
+        Ptr<DescriptorMatcher>& descriptorMatcher, int matcherFilter, bool eval,
+        double ransacReprojThreshold, RNG& rng) {
+    assert(!img1.empty());
+    Mat H12;
+    if (isWarpPerspective)
+        warpPerspectiveRand(img1, img2, H12, rng);
+    else
+        assert(!img2.empty()/* && img2.cols==img1.cols && img2.rows==img1.rows*/);
+
+    cout << endl << "< Extracting keypoints from second image..." << endl;
+    vector<KeyPoint> keypoints2;
+    detector->detect(img2, keypoints2);
+    cout << keypoints2.size() << " points" << endl << ">" << endl;
+
+    if (!H12.empty() && eval) {
+        cout << "< Evaluate feature detector..." << endl;
+        float repeatability;
+        int correspCount;
+        evaluateFeatureDetector(img1, img2, H12, &keypoints1, &keypoints2, repeatability, correspCount);
+        cout << "repeatability = " << repeatability << endl;
+        cout << "correspCount = " << correspCount << endl;
+        cout << ">" << endl;
+    }
+
+    cout << "< Computing descriptors for keypoints from second image..." << endl;
+    Mat descriptors2;
+    descriptorExtractor->compute(img2, keypoints2, descriptors2);
+    cout << ">" << endl;
+
+    cout << "< Matching descriptors..." << endl;
+    vector<DMatch> filteredMatches;
+    switch (matcherFilter) {
+        case CROSS_CHECK_FILTER:
+            crossCheckMatching(descriptorMatcher, descriptors1, descriptors2, filteredMatches, 2);
+            break;
+        default:
+            simpleMatching(descriptorMatcher, descriptors1, descriptors2, filteredMatches);
+    }
+    cout << ">" << endl;
+
+    if (!H12.empty() && eval) {
+        cout << "< Evaluate descriptor matcher..." << endl;
+        vector<Point2f> curve;
+        Ptr<GenericDescriptorMatcher> gdm = new VectorDescriptorMatcher(descriptorExtractor, descriptorMatcher);
+        evaluateGenericDescriptorMatcher(img1, img2, H12, keypoints1, keypoints2, 0, 0, curve, gdm);
+
+        Point2f firstPoint = *curve.begin();
+        Point2f lastPoint = *curve.rbegin();
+        int prevPointIndex = -1;
+        cout << "1-precision = " << firstPoint.x << "; recall = " << firstPoint.y << endl;
+        for (float l_p = 0; l_p <= 1 + FLT_EPSILON; l_p += 0.05f) {
+            int nearest = getNearestPoint(curve, l_p);
+            if (nearest >= 0) {
+                Point2f curPoint = curve[nearest];
+                if (curPoint.x > firstPoint.x && curPoint.x < lastPoint.x && nearest != prevPointIndex) {
+                    cout << "1-precision = " << curPoint.x << "; recall = " << curPoint.y << endl;
+                    prevPointIndex = nearest;
+                }
+            }
+        }
+        cout << "1-precision = " << lastPoint.x << "; recall = " << lastPoint.y << endl;
+        cout << ">" << endl;
+    }
+
+    vector<int> queryIdxs(filteredMatches.size()), trainIdxs(filteredMatches.size());
+    for (size_t i = 0; i < filteredMatches.size(); i++) {
+        queryIdxs[i] = filteredMatches[i].queryIdx;
+        trainIdxs[i] = filteredMatches[i].trainIdx;
+    }
+
+    if (!isWarpPerspective && ransacReprojThreshold >= 0) {
+        cout << "< Computing homography (RANSAC)..." << endl;
+        vector<Point2f> points1;
+        KeyPoint::convert(keypoints1, points1, queryIdxs);
+        vector<Point2f> points2;
+        KeyPoint::convert(keypoints2, points2, trainIdxs);
+        H12 = findHomography(Mat(points1), Mat(points2), CV_RANSAC, ransacReprojThreshold);
+        cout << ">" << endl;
+    }
+
+    Mat drawImg;
+    if (!H12.empty()) // filter outliers
+    {
+        vector<char> matchesMask(filteredMatches.size(), 0);
+        vector<Point2f> points1;
+        KeyPoint::convert(keypoints1, points1, queryIdxs);
+        vector<Point2f> points2;
+        KeyPoint::convert(keypoints2, points2, trainIdxs);
+        Mat points1t;
+        perspectiveTransform(Mat(points1), points1t, H12);
+
+        double maxInlierDist = ransacReprojThreshold < 0 ? 3 : ransacReprojThreshold;
+        for (size_t i1 = 0; i1 < points1.size(); i1++) {
+            if (norm(points2[i1] - points1t.at<Point2f > ((int) i1, 0)) <= maxInlierDist) // inlier
+                matchesMask[i1] = 1;
+        }
+        // draw inliers
+        drawMatches(img1, keypoints1, img2, keypoints2, filteredMatches, drawImg, CV_RGB(0, 255, 0), CV_RGB(0, 0, 255), matchesMask
+#if DRAW_RICH_KEYPOINTS_MODE
+                , DrawMatchesFlags::DRAW_RICH_KEYPOINTS
+#endif
+                );
+
+#if DRAW_OUTLIERS_MODE
+        // draw outliers
+        for (size_t i1 = 0; i1 < matchesMask.size(); i1++)
+            matchesMask[i1] = !matchesMask[i1];
+        drawMatches(img1, keypoints1, img2, keypoints2, filteredMatches, drawImg, CV_RGB(0, 0, 255), CV_RGB(255, 0, 0), matchesMask,
+                DrawMatchesFlags::DRAW_OVER_OUTIMG | DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+#endif
+    } else
+        drawMatches(img1, keypoints1, img2, keypoints2, filteredMatches, drawImg);
+
+    imshow(winName, drawImg);
+}
+
+int main(int argc, char** argv) {
+
+    bool isWarpPerspective = true;
+    double ransacReprojThreshold = -1.1;
+    if (!isWarpPerspective)
+        ransacReprojThreshold = 1.2;
+
+    cout << "< Creating detector, descriptor extractor and descriptor matcher ..." << endl;
+    Ptr<FeatureDetector> detector = FeatureDetector::create("SURF");
+    Ptr<DescriptorExtractor> descriptorExtractor = DescriptorExtractor::create("SURF");
+    Ptr<DescriptorMatcher> descriptorMatcher = DescriptorMatcher::create("FlannBased");
+    int mactherFilterType = getMatcherFilterType("CrossCheckFilter");
+    bool eval = true; //!isWarpPerspective ? false : (atoi(argv[6]) == 0 ? false : true);
+    cout << ">" << endl;
+    if (detector.empty() || descriptorExtractor.empty() || descriptorMatcher.empty()) {
+        cout << "Can not create detector or descriptor exstractor or descriptor matcher of given types" << endl;
+        return -1;
+    }
+
+    cout << "< Reading the images..." << endl;
+    Mat img1 = imread("/home/ertai/Videos/POS1/pos1-0009.jpg"), img2;
+    if (!isWarpPerspective)
+        img2 = imread("/home/ertai/Videos/POS1/pos1-0255.jpg");
+    cout << ">" << endl;
+    if (img1.empty() || (!isWarpPerspective && img2.empty())) {
+        cout << "Can not read images" << endl;
+        return -1;
+    }
+
+    cout << endl << "< Extracting keypoints from first image..." << endl;
+    vector<KeyPoint> keypoints1;
+    detector->detect(img1, keypoints1);
+    cout << keypoints1.size() << " points" << endl << ">" << endl;
+
+    cout << "< Computing descriptors for keypoints from first image..." << endl;
+    Mat descriptors1;
+    descriptorExtractor->compute(img1, keypoints1, descriptors1);
+    cout << ">" << endl;
+
+    namedWindow(winName, 1);
+    RNG rng = theRNG();
+    doIteration(img1, img2, isWarpPerspective, keypoints1, descriptors1,
+            detector, descriptorExtractor, descriptorMatcher, mactherFilterType, eval,
+            ransacReprojThreshold, rng);
+    for (;;) {
+        char c = (char) waitKey(0);
+        if (c == '\x1b') // esc
+        {
+            cout << "Exiting ..." << endl;
+            break;
+        } else if (isWarpPerspective) {
+            doIteration(img1, img2, isWarpPerspective, keypoints1, descriptors1,
+                    detector, descriptorExtractor, descriptorMatcher, mactherFilterType, eval,
+                    ransacReprojThreshold, rng);
+        }
+    }
+    return 0;
+}
+
+#endif
+
+#if /*Hybrid-Tracker*/0
+
+
+#include "contrib/hybridtracker.hpp"
+
+using namespace cv;
+using namespace std;
+
+Mat frame, image;
+Rect selection;
+Point origin;
+bool selectObject = false;
+int trackObject = 0;
+int live = 1;
+
+void drawRectangle(Mat* image, Rect win) {
+    rectangle(*image, Point(win.x, win.y), Point(win.x + win.width, win.y
+            + win.height), Scalar(0, 255, 0), 2, CV_AA);
+}
+
+void onMouse(int event, int x, int y, int, void*) {
+    if (selectObject) {
+        selection.x = MIN(x, origin.x);
+        selection.y = MIN(y, origin.y);
+        selection.width = std::abs(x - origin.x);
+        selection.height = std::abs(y - origin.y);
+        selection &= Rect(0, 0, image.cols, image.rows);
+    }
+
+    switch (event) {
+        case CV_EVENT_LBUTTONDOWN:
+            origin = Point(x, y);
+            selection = Rect(x, y, 0, 0);
+            selectObject = true;
+            break;
+        case CV_EVENT_LBUTTONUP:
+            selectObject = false;
+            trackObject = -1;
+            break;
+    }
+}
+
+void help() {
+    printf("Usage: ./hytrack live or ./hytrack <test_file> \n\
+For Live View or Benchmarking. Read documentation is source code.\n\n");
+}
+
+int main(int argc, char** argv) {
+    if (argc != 2) {
+        help();
+        return 1;
+    }
+
+    FILE* f = 0;
+    VideoCapture cap;
+    char test_file[20] = "";
+
+    if (strcmp(argv[1], "live") != 0) {
+        sprintf(test_file, "%s", argv[1]);
+        f = fopen(test_file, "r");
+        char vid[20];
+        int values_read = fscanf(f, "%s\n", vid);
+        CV_Assert(values_read == 1);
+        cout << "Benchmarking against " << vid << endl;
+        live = 0;
+    } else {
+        cap.open(0);
+        if (!cap.isOpened()) {
+            cout << "Failed to open camera" << endl;
+            return 0;
+        }
+        cout << "Opened camera" << endl;
+        cap.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
+        cap.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
+        cap >> frame;
+    }
+
+    HybridTrackerParams params;
+
+    // motion model params
+    params.motion_model = CvMotionModel::LOW_PASS_FILTER;
+    params.low_pass_gain = 0.1f;
+    // mean shift params
+    params.ms_tracker_weight = 0.8f;
+    params.ms_params.tracking_type = CvMeanShiftTrackerParams::HSV;
+    // feature tracking params
+    params.ft_tracker_weight = 0.2f;
+    params.ft_params.feature_type = CvFeatureTrackerParams::SIFT;
+    params.ft_params.window_size = 0;
+
+    DBG("Parameter erstellt.");
+    HybridTracker tracker(params);
+    //params
+    char img_file[20] = "seqG/0001.png";
+    char img_file_num[10];
+    namedWindow("Win", 1);
+
+    setMouseCallback("Win", onMouse, 0);
+
+    int i = 0;
+    float w[4];
+    for (;;) {
+        i++;
+        if (live) {
+            cap >> frame;
+            if (frame.empty())
+                break;
+            frame.copyTo(image);
+        } else {
+            int values_read = fscanf(f, "%d %f %f %f %f\n", &i, &w[0], &w[1], &w[2], &w[3]);
+            CV_Assert(values_read == 5);
+            sprintf(img_file, "seqG/%04d.png", i);
+            image = imread(img_file, CV_LOAD_IMAGE_COLOR);
+            if (image.empty())
+                break;
+            selection = Rect(cvRound(w[0] * image.cols), cvRound(w[1] * image.rows),
+                    cvRound(w[2] * image.cols), cvRound(w[3] * image.rows));
+        }
+
+        sprintf(img_file_num, "Frame: %d", i);
+        putText(image, img_file_num, Point(10, image.rows - 20), FONT_HERSHEY_PLAIN, 0.75, Scalar(255, 255, 255));
+        if (!image.empty()) {
+
+            if (trackObject < 0) {
+                tracker.newTracker(image, selection);
+                trackObject = 1;
+            }
+
+            if (trackObject) {
+                tracker.updateTracker(image);
+                drawRectangle(&image, tracker.getTrackingWindow());
+            }
+
+            if (selectObject && selection.width > 0 && selection.height > 0) {
+                Mat roi(image, selection);
+                bitwise_not(roi, roi);
+            }
+
+            drawRectangle(&image, Rect(cvRound(w[0] * image.cols), cvRound(w[1] * image.rows),
+                    cvRound(w[2] * image.cols), cvRound(w[3] * image.rows)));
+            imshow("Win", image);
+
+            waitKey(100);
+        } else
+            i = 0;
+    }
+
+    fclose(f);
+    return 0;
+}
+#endif
+
+#if /*Backprojection*/0
 using namespace cv;
 using namespace std;
 
@@ -141,10 +636,7 @@ void Hist_and_Backproj() {
 
 }
 #endif
-// </editor-fold>
 
-
-// <editor-fold defaultstate="collapsed" desc="Ml-OpenCv">
 #if  /* ML */ 0
 
 using namespace cv;
@@ -216,13 +708,11 @@ int main(int, char** argv) {
 }
 
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="Einfacher (beliebiger Test)">
 #if /*Einfacher (beliebiger Test)*/0
 
 int main(int, char** argv) {
-    ATest* test = new CreatePositiveSamplesTest();
+    ATest* test = new CreateNegativeSamplesTest();
     if (test->testMain(StringArray()) == EXIT_SUCCESS) {
         cout << "Test erfolgreich! :-)" << endl;
         return EXIT_SUCCESS;
@@ -234,36 +724,56 @@ int main(int, char** argv) {
 
 }
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="Video zu Bildsequenz">
-#if /* Video zu Bildsequenz */0
+#if /* Video zu Bildsequenz */1
 using namespace cv;
 using namespace std;
 
 int main(int, char** argv) {
     InputHandler handler = InputHandler();
-    handler.setInputSource(INPUT_VIDEO);
-    handler.addVideo("/home/ertai/Videos/VIDEO0024.mp4");
+    handler.setInputSource(INPUT_CAM);
+
     if (!handler.open()) {
         DBG("Konnte Eingabe nicht öffnen");
         return EXIT_FAILURE;
     }
+    handler.requestFormat(r720p);
+    DBG("Lese einige Bilder damit Kamera sich einstellen kann(Helligkeit,Fokus,...).");
+    for(int i=0; i<=10; i++){
+        if(!handler.grabNext()){
+            DBG("Fehler beim lesen der Eingabe");
+        }
+    }
+    
     CvVideoCapture* cap = new CvVideoCapture(handler);
-    Output* out = new ImageListOutput("/home/ertai/Videos/Negs2", "neg2-", ".png");
-
+    Output* out = new ImageListOutput("/home/ertai/Videos/BG5", "BG6-", ".jpg");
+    BgFgSegmModificator mod = BgFgSegmModificator("/home/ertai/Videos/BG5/BG5-11.jpg");
+    cap->setImageModifikator(&mod);
+    
     cap->setOutput(out);
-    cap->setTimeToRecord(150);
+    WindowManager* man = WindowManager::getInstance();
+    CvWindow* wnd = man->createWindow("Recording",0,0);
+    Mat img = handler.getImage();
+    wnd->showWindow();
+    wnd->setCurrentImage(&img);
+    cap->setTimeToRecord(1500);
     cap->setRecordingTime(150000);
     cap->start();
+    
+    while(true){
+        img = cap->getFrame();//handler.getImage();
+        
+        wnd->setCurrentImage(&img);
+        cvWaitKey(40);
+        img.release();
+    }
 
     cap->joinThread();
+    cvWaitKey(0);
     return EXIT_SUCCESS;
 }
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="BgfgSegmentierung">
 #if /* BgfgSegmentierung */0
 
 #include <X11/Xlib.h>
@@ -442,9 +952,7 @@ int main(int, char** argv) {
 
 
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="cornerDetector_Demo">
 #if /*cornerDetector_Demo*/0
 
 /**
@@ -579,9 +1087,7 @@ void myHarris_function(int, void*) {
 
 
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="SURF_FlannMatcher">
 #if /*SURF_FlannMatcher*/0
 /**
  * @file SURF_FlannMatcher
@@ -689,9 +1195,7 @@ void readme() {
 
 
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="SURF_detector">
 #if /*SURF_detector*/0
 /**
  * @file SURF_detector
@@ -760,9 +1264,7 @@ void readme() {
 }
 
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="SURF_Homography">
 #if /*SURF_Homography*/0
 /**
  * @file SURF_Homography
@@ -894,9 +1396,7 @@ void readme() {
     std::cout << " Usage: ./SURF_Homography <img1> <img2>" << std::endl;
 }
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="Kinect">
 #if /*Kinect*/0
 #ifdef TRY_KINECT
 using namespace cv;
@@ -1217,9 +1717,7 @@ int main(int argc, char **argv) {
 #endif
 
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="Funktionszeiger">
 #if /*Funktionszeigerr*/0
 
 #include <cstdio>
@@ -1335,9 +1833,7 @@ int main() {
 }
 
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="Test-Routinen">
 #if /*Test-Routinen*/0
 
 using namespace std;
@@ -1362,9 +1858,7 @@ int main(int argc, char* argv[]) {
 
 
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="Histogram Equalization">
 #if /*Histogram Equalization*/0
 
 using namespace std;
@@ -1416,9 +1910,7 @@ int main(int argc, char* argv[]) {
 
 }
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="Praktikum 3">
 #if /*Praktikum 3*/0
 
 Mat origImage;
@@ -1517,9 +2009,7 @@ int main() {
 }
 
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="HS-Histogram Test">
 #if /*HS-Histogram Test*/0
 
 
@@ -1582,9 +2072,7 @@ int main(int argc, char **argv) {
 }
 
 #endif
-// </editor-fold>
 
-// <editor-fold defaultstate="collapsed" desc="Harris Eckendetektor">
 #if /*Harris Eckendetektor*/0 
 
 
@@ -1642,7 +2130,6 @@ void cornerHarris_demo(int, void*) {
 }
 
 #endif
-// </editor-fold>
 
 
 
@@ -1656,6 +2143,8 @@ void cornerHarris_demo(int, void*) {
 
 
 //Samples erstellen
+//opencv_createsamples -info /home/ertai/Videos/positives.dat -num 2500 -vec /home/ertai/Videos/train_plainHand.vec -w 512 -h 512
+
 //opencv_createsamples -img 01.png -num 10 -bg /media/WD-Platte/Bilder\&Fotos/Wallpaper/bg.dat -vec samples.vec -maxxangle 0.6 -maxyangle 0 -maxzangle 0.3 -maxidev 100 -bgcolor 0 -bgthresh 0 -w 200 -h 200
 //http://docs.opencv.org/doc/user_guide/ug_traincascade.html
 //find . -name '*.jpg' -exec identify -format '%i 1 0 0 %w %h' \{\} \; > info.dat
@@ -1663,18 +2152,5 @@ void cornerHarris_demo(int, void*) {
 //http://note.sonots.com/SciSoftware/haartraining.html#ybd647df
 
 
-//TODO: Ein paar Modifikatoren...
-//TODO: Schreiberthread-Queue für ImageListOutput
-
-/*
- * Kinect Compile
- * 
-g++ -fPIC -g -Wall -I/usr/include/GL -I/usr/local/include/opencv -I/
-usr/X121R6/include -I../libusb/libusb/libusb-1.0 -I/usr/local/include/
-libfreenect -L/usr/local/lib -lcxcore -lcv -lhighgui -lcvaux -lml -I/
-usr/X11R6/include -L/usr/X11R6/lib -o k_cvTest k_cvTest.cpp -lfreenect
--lglui -lglut -lGLU -lGL
- 
- */
 
 

@@ -119,10 +119,10 @@ void WindowManager::relesase() {
 }
 
 void WindowManager::showWindow(String name) {
-    
+
     int len = windows.size();
     for (int i = 0; i < len; i++) {
-        if (windows[i]->getName().find(name) == 0) {
+        if (windows[i]->getName().find(name) != String::npos) {
             if (!windows[i]->isShowing()) {
                 DBG("Fenster anzeigen");
                 windows[i]->showWindow();
@@ -135,7 +135,7 @@ void WindowManager::showWindow(String name) {
 void WindowManager::updateWindowImage(String name, Mat* mat) {
     int len = windows.size();
     for (int i = 0; i < len; i++) {
-        if (windows[i]->getName().find(name) == 0) {
+        if (windows[i]->getName().find(name) != String::npos) {
             DBG("Fensterbild gesetzt");
             windows[i]->setCurrentImage(mat);
             break;
@@ -147,11 +147,10 @@ void WindowManager::updateWindowImage(String name, Mat* mat) {
 void WindowManager::closeWindow(String name) {
     int len = windows.size();
     for (int i = 0; i < len; i++) {
-        if (windows[i]->getName().find(name) == 0) {
+        if (windows[i]->getName().find(name) != String::npos) {
             if (windows[i]->isShowing()) {
                 windows[i]->closeWindow();
-                break;
-            } else {
+                windows.erase(windows.begin()+i);
                 break;
             }
         }

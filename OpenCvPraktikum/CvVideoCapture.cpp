@@ -12,7 +12,6 @@
 
 using namespace std;
 using namespace cv;
-//#define err(x) std::cout<<x<<std::endl;
 
 CvVideoCapture::CvVideoCapture(ImageSequenceInput& in) : capture(in) {
 
@@ -62,10 +61,8 @@ bool CvVideoCapture::start() {
 
 }
 
-bool CvVideoCapture::stop() {
+void CvVideoCapture::stop() {
     recording = false;
-
-    return true;
 }
 
 void CvVideoCapture::setScale(float scale) {
@@ -101,12 +98,12 @@ bool CvVideoCapture::isRecording() {
     return recording;
 }
 
-cv::Mat CvVideoCapture::getFrame() {
+Mat CvVideoCapture::getFrame() {
     if (recording) {
         /* Lock anfordern*/
         frame_mutex.lock();
         /*Aktuellen Frame Kopieren*/
-        Mat m = Mat(frame.rows, frame.cols, frame.type());
+        Mat m = Mat::zeros(frame.size(), frame.type());
         frame.copyTo(m);
         /* Lock freigeben*/
         frame_mutex.unlock();
@@ -117,6 +114,8 @@ cv::Mat CvVideoCapture::getFrame() {
 }
 
 void CvVideoCapture::record() {
+
+
 
     // <editor-fold defaultstate="collapsed" desc="Vorbedingungen und Fehlerabfrage">
     recording = true;
@@ -185,7 +184,7 @@ void CvVideoCapture::record() {
     }
     // <editor-fold defaultstate="collapsed" desc="Aufnahme Schleife">
     while (recording) {
-DBG("Test");
+
 
         if (frames_to_record != 0 and frames_to_record < framecount) {
             break;
@@ -210,31 +209,29 @@ DBG("Test");
             break;
         }
         Mat frm = capture.getImage();
-        setFrame(frm);
+
 
 
 
         if (imageMod != NULL) {
-
-
             //frm=getFrame();  // Falls es zu 'Concurrent modification error' kommt...
+            frame_mutex.lock();
 
             imageMod->modify(frm);
-
+            frame_mutex.unlock();
         }
-
+        setFrame(frm);
         writer->write(frm);
 
-        frm.release();
         if (lastupd == -1) {
             time(&lastupd);
         } else if ((((long int) current)-((long int) lastupd)) < frameDelay) {
-            DBG("Warte fuer naechstren Frame: %i msec", (int) (frameDelay - (((long int) current)-((long int) lastupd))));
-
             this_thread::sleep_for(chrono::milliseconds(frameDelay - (((long int) current)-((long int) lastupd))));
+
             time(&lastupd);
 
         }
+        frm.release();
 
 
     }// </editor-fold>
@@ -248,8 +245,6 @@ DBG("Test");
 
 void CvVideoCapture::operator()() {
     record();
-
-
 }
 
 void CvVideoCapture::nextFrame() {
@@ -280,7 +275,7 @@ void CvVideoCapture::requestNext() {
 }
 
 void CvVideoCapture::release() {
-    frame.release();
+
 
     if (recthread != NULL) {
         recording = false;
@@ -289,6 +284,7 @@ void CvVideoCapture::release() {
         }
 
     }
+    frame.release();
 }
 
 void CvVideoCapture::releaseCapture() {
@@ -320,7 +316,6 @@ void CvVideoCapture::setFramesToRecord(int frames) {
 void CvVideoCapture::setFrame(Mat mat) {
     frame_mutex.lock();
     frame = mat;
-
     frame_mutex.unlock();
 }
 

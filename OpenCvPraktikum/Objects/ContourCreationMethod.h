@@ -10,11 +10,13 @@
 #include "../header.h"
 using namespace std;
 using namespace cv;
+
 class ContourCreationMethod {
 public:
     ContourCreationMethod();
     ContourCreationMethod(const ContourCreationMethod& orig);
     virtual ~ContourCreationMethod();
+    virtual PointArray createContour(Mat inputImg, int maxObjects, bool isColorImage)=0;
 private:
 
 };

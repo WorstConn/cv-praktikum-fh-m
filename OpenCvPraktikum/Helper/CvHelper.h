@@ -88,9 +88,12 @@ public:
      * Erkennt alle Objekte auf einem Bild
      * @param img Das Bild
      * @param cascade Die cascade
-     * @return einen Vektor von Rects, die die einzelnen erkannten Objekte einfassen
+     * @param minWidth mindestgr&ouml;&szlig;e der erkannten Objekte in Bildpunkten
+     * @param maxWidth maximalgr&ouml;&szlig; der erkannten Objekte in Bildpunkten
+     * @param aspectRatio Verh&auml;ltniss von Breite zu H&ouml;he. Zum Beispiel r=4/3.
+     * @return einen Vektor von Rechtecken, die die einzelnen erkannten Objekte einfassen
      */
-    virtual vector<Rect> detectAll(Mat& img, CascadeClassifier& cascade);
+    virtual vector<Rect> detectAll(Mat& img, CascadeClassifier& cascade, int minWidth, float maxWidth, float aspectRatio);
 
     /**
      * Vertauscht bestimmte Regionen zweier Bilder miteinander
@@ -161,7 +164,7 @@ public:
     Mat applySurfDetect(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
     MatchesArray findSurfMatches(Mat& refImg, Mat& ref, int hessian, int minDist, int maxDist);
     KeyPointArray findKeyPoints(Mat& img, int hessian);
-    MatND makeHSHist(Mat& mat);
+    MatND makeHSHist(Mat& mat, Mat& mask);
     Mat makeHSHistImage(MatND &hist);
     /**
      * F&uuml;hrt eine Histogram Angleichung durch. Die Helligkeit wird normalisiert und der Kontrast erh&ouml;t.
@@ -252,7 +255,7 @@ public:
     PointHistogram extractNoticableBins(PointHistogram hist, int minLength);
 
 
-    
+
     //Mat createBackproject(Mat& src, Mat& mask, int minVal, int maxVal);
 
     //FIXME: BACKPROJEKTION:
