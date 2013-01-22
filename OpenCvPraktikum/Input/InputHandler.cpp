@@ -181,9 +181,13 @@ void InputHandler::dispose() {
 }
 
 bool InputHandler::grabNext() {
+    bool erg = true;
+
+    Size resolution = helper->resToSize(currentCamInputFormat());
 
     switch (sourceType) {
         case INPUT_FOLDER:
+
             if (imageFiles.empty()) {
                 if (!imageFolders.empty()) {
                     releaseCurrentImage();
@@ -191,77 +195,107 @@ bool InputHandler::grabNext() {
                 } else {
                     DBG("Keine Bilder");
                     connected = false;
-                    return false;
+                    erg = false;
+                    break;
                 }
             } else {
                 releaseCurrentImage();
                 nextFromFolder();
             }
             break;
+
         case INPUT_VIDEO:
 
             if (!currentImage.empty()) {
-                last = Mat(currentImage.size(), CV_8UC3);
+                releaseCurrentImage(); // Etwas verwirrend, aber es wird nur ein evtl. vorhandenes letztes Bild freigegeben.
+                last = Mat(currentImage.size(), currentImage.type());
                 currentImage.copyTo(last);
-
-
-            }
-            releaseCurrentImage();
-            if (!cap.grab()) {
-                DBG("Kein Bild bekommen.");
-                connected = false;
-                reachesEnd = true;
-                return false;
             }
 
-            currentImage = Mat::zeros(Size(1280, 720), CV_8UC3);
-            if (!cap.read(currentImage)) {
 
+
+            currentImage = Mat::zeros(resolution, CV_8UC3);
+            cap>>currentImage;
+            if (currentImage.empty()) {
                 if (videoFiles.empty()) {
                     DBG("Kein Bild bekommen.");
                     connected = false;
                     reachesEnd = true;
-                    return false;
+                    erg = false;
+                    break;
                 } else {
-                    cap.release();
-                    if (!openVideo()) {
-                        DBG("Kein Bild bekommen.");
-                        connected = false;
-                        reachesEnd = true;
-                        return false;
-                    } else {
-                        break;
+
+                    DBG("Oeffne neue Videodatei...");
+                    cap.open(videoFiles[0]);
+                    videoFiles.erase(videoFiles.begin());
+                    if(cap.isOpened()){
+                        DBG("Video geoeffnet");
+                        for(int i=0 ;i<5;i++){
+                            cap>>currentImage;
+                        }
+                    }else{
+                        DBG("Video konnte nicht geoeffnet werden");
                     }
+                    break;
                 }
+
+
             }
 
             break;
-        default:
-            releaseCurrentImage();
-            if (!cap.grab()) {
+
+        case INPUT_CAM:
+            if (!currentImage.empty()) {
+                releaseCurrentImage();
+                last = Mat(currentImage.size(), currentImage.type());
+                currentImage.copyTo(last);
+                DBG("%s", helper->resToString(currentCamInputFormat()).c_str());
+
+            }
+
+            currentImage = Mat::zeros(helper->resToSize(currentCamInputFormat()), currentImage.type());
+
+            if (!cap.grab() or !cap.read(currentImage)) {
                 DBG("Kein Bild bekommen.");
                 connected = false;
                 reachesEnd = true;
-                return false;
+                erg = false;
+                break;
+            }
+            break;
+        case INPUT_IP_CAM:
+            if (!currentImage.empty()) {
+                releaseCurrentImage();
+                last = Mat(currentImage.size(), currentImage.type());
+                currentImage.copyTo(last);
             }
 
             currentImage = Mat::zeros(Size(1280, 720), CV_8UC3);
 
-            if (!cap.read(currentImage)) {
+            if (!cap.grab() or !cap.read(currentImage)) {
                 DBG("Kein Bild bekommen.");
                 connected = false;
                 reachesEnd = true;
-                return false;
+                erg = false;
+                break;
             }
+            break;
+        case INPUT_NONE:
+            erg = false;
+            DBG("Keine Eingabe");
+            break;
+
     };
 
-    if (!last.empty()){
-        DBG("Strukturelle Gleichheit der letzten Bilder: %f", helper->checkEquality(last, currentImage));
-    }else{
-        DBG("Letztes bild ist leer...");
-    }
+    //    if (!last.empty()) {
+    //        // Scalar s = helper->checkStructuralEquality(last, currentImage); // SEHR langsam!
+    //        DBG("Gleichheit der letzten Bilder: %f", helper->checkEquality(last, currentImage));
+    //        // DBG("Strukturelle Gleichheit der letzten Bilder: %f,%f,%f", s.val[0], s.val[1], s.val[2]); 
+    //    } else {
+    //        DBG("Letztes bild ist leer...");
+    //    }
 
-    return true;
+    return erg;
 
 }
 
@@ -289,15 +323,8 @@ bool InputHandler::opened() {
 }
 
 int InputHandler::inputWidth() {
-    if (!connected) {
-        DBG("Capture is not open -> Width is 0");
 
-        return 0;
-    }
     int i = static_cast<int> (cap.get(CV_CAP_PROP_FRAME_WIDTH));
-    if (currentImage.data != NULL) {
-        i = currentImage.cols;
-    }
     return i;
 
 }
@@ -425,10 +452,14 @@ bool InputHandler::openVideo() {
         DBG("%d Videos in Warteschlange", (int) videoFiles.size());
     }
     cap = VideoCapture(videoFiles[0]);
+
     videoFiles.erase(videoFiles.begin());
-    DBG("Setze Quelle auf INPUT_VIDEO");
-    sourceType = INPUT_VIDEO;
-    return cap.isOpened();
+
+    //    DBG("Setze Quelle auf INPUT_VIDEO");
+    //    sourceType = INPUT_VIDEO;
+
+    DBG("Video geoeffnet.%i", (int) cap.isOpened());
+    return cap.isOpened(); //erg;
 }
 
 bool InputHandler::openFolder() {

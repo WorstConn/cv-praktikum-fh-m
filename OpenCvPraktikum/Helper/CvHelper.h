@@ -93,7 +93,7 @@ public:
      * @param aspectRatio Verh&auml;ltniss von Breite zu H&ouml;he. Zum Beispiel r=4/3.
      * @return einen Vektor von Rechtecken, die die einzelnen erkannten Objekte einfassen
      */
-    virtual vector<Rect> detectAll(Mat& img, CascadeClassifier& cascade, int minWidth, float maxWidth, float aspectRatio);
+    virtual RectangleArray detectAll(Mat& img, CascadeClassifier& cascade, int minWidth, float maxWidth, float aspectRatio);
 
     /**
      * Vertauscht bestimmte Regionen zweier Bilder miteinander
@@ -255,7 +255,10 @@ public:
     PointHistogram extractNoticableBins(PointHistogram hist, int minLength);
 
 
+    Size resToSize(INPUT_FORMAT fmt);
 
+    
+    String resToString(INPUT_FORMAT fmt);
     //Mat createBackproject(Mat& src, Mat& mask, int minVal, int maxVal);
 
     //FIXME: BACKPROJEKTION:

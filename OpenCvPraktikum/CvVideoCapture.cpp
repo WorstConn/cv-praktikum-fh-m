@@ -43,7 +43,7 @@ CvVideoCapture::CvVideoCapture(const CvVideoCapture& other) : capture(other.capt
     outputname = other.outputname;
     recording = other.recording;
     frameDelay = other.frameDelay;
-    window = other.window;
+    window=other.window;
 }
 
 CvVideoCapture::~CvVideoCapture() {
@@ -186,22 +186,20 @@ void CvVideoCapture::record() {
     while (recording) {
 
         if (frames_to_record != 0 and frames_to_record < framecount) {
+            recording=false;
             break;
         }
 
         if (recordSeconds != 0 and ((long int) (current - startTime)) > ((long int) (recordSeconds + 2))) {
+            recording=false;
             break;
         }
 
         time(&current);
         framecount++;
 
-        try {
-            capture.next();
-        } catch (Exception& ex) {
-            DBG("%s", ex.what());
-            break;
-        }
+        capture.next();
+
 
         if (capture.reachesEndOfInput()) {
             DBG("Input Ende erreicht!");
@@ -215,9 +213,6 @@ void CvVideoCapture::record() {
         }
 
         if (window != NULL) {
-            if (!window->isShowing()) {
-                window->showWindow();
-            }
             window->setCurrentImage(&frm);
         }
 

@@ -323,7 +323,7 @@ String CvHelper::imageTypeToString(Mat img) {
  * @return Ein Rect, das ein Erkanntes Objekt zur&uuml;ck einscklie&szlig;t, oder leer ist, falls kein Objekt gefunden wurde
  */
 Rect CvHelper::detectBiggest(Mat& img, CascadeClassifier& cascade) {
-    vector<Rect> faces = vector<Rect > ();
+    RectangleArray faces = RectangleArray();
     const static Scalar color = CV_RGB(0, 0, 255);
     Mat gray;
     Mat smallImg(cvRound(img.rows), cvRound(img.cols), CV_8UC1);
@@ -391,23 +391,16 @@ Rect CvHelper::detectBiggest(Mat& img, CascadeClassifier& cascade) {
  * @param cascade Die cascade
  * @return einen Vektor von Rects, die die einzelnen erkannten Objekte einfassen
  */
-vector<Rect> CvHelper::detectAll(Mat& img, CascadeClassifier& cascade, int minWidth, float maxWidth, float aspectRatio) {
+RectangleArray CvHelper::detectAll(Mat& img, CascadeClassifier& cascade, int minWidth, float maxWidth, float aspectRatio) {
 
-    vector<Rect> objects = vector<Rect > ();
-    const static Scalar color = CV_RGB(255, 255, 255);
-
+    RectangleArray objects = RectangleArray();
     Mat gray;
     Mat smallImg(cvRound(img.rows), cvRound(img.cols), CV_8UC1);
 
     cvtColor(img, gray, CV_BGR2GRAY);
     resize(gray, smallImg, smallImg.size(), 0, 0, INTER_LINEAR);
     equalizeHist(smallImg, smallImg);
-
-
     cascade.detectMultiScale(smallImg, objects, 1.1, 3, 0 | CV_HAAR_SCALE_IMAGE, Size(64, 64));
-
-
-
     DBG("%i Hände gefunden.", (int) objects.size());
 
     return objects;
@@ -1193,5 +1186,57 @@ PointHistogram CvHelper::extractNoticableBins(PointHistogram hist, int minLength
             erg[i] = hist[i];
         }
     }
+    return erg;
+}
+
+Size CvHelper::resToSize(INPUT_FORMAT fmt) {
+    Size erg = Size();
+
+    // <editor-fold defaultstate="collapsed" desc="Switch ueber alle bekannten Aufloesungen.">
+    switch (fmt) {
+        case r720p:
+            erg = Size(1280, 720);
+            break;
+        case r1080p:
+            erg = Size(1920, 1080);
+            break;
+        case r480p:
+            erg = Size(640, 480);
+            break;
+        case rUnknown:
+            erg = Size(0, 0);
+            break;
+        case rNULL:
+            erg = Size(0, 0);
+            break;
+    }
+    // </editor-fold>
+
+    return erg;
+}
+
+String CvHelper::resToString(INPUT_FORMAT fmt) {
+    String erg = "Unbekannt";
+
+    // <editor-fold defaultstate="collapsed" desc="Switch ueber alle bekannten Aufloesungen.">
+    switch (fmt) {
+        case r720p:
+            erg = "720p";
+            break;
+        case r1080p:
+            erg = "1080p";
+            break;
+        case r480p:
+            erg = "VGA";
+            break;
+        case rUnknown:
+            erg = "Unbekannt";
+            break;
+        case rNULL:
+            erg = "Unbekannt";
+            break;
+    }
+    // </editor-fold>
+
     return erg;
 }
