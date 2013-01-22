@@ -12,18 +12,19 @@ using namespace cv;
 InputHandler::InputHandler() {
 
     currentImage = Mat();
-
+    last = Mat();
+    helper = CvHelper::getInstance();
 }
 
 InputHandler::InputHandler(const char* camURL) :
 AInputHandler(camURL) {
-
+    helper = CvHelper::getInstance();
     currentImage = Mat();
+    last = Mat();
 
 }
 
 InputHandler::~InputHandler() {
-
 }
 
 IplImage InputHandler::currentIplImage() {
@@ -126,6 +127,9 @@ bool InputHandler::close() {
 }
 
 bool InputHandler::releaseCurrentImage() {
+    if (!last.empty()) {
+        last.release();
+    }
     return true;
 }
 
@@ -178,9 +182,6 @@ void InputHandler::dispose() {
 
 bool InputHandler::grabNext() {
 
-
-
-
     switch (sourceType) {
         case INPUT_FOLDER:
             if (imageFiles.empty()) {
@@ -192,33 +193,83 @@ bool InputHandler::grabNext() {
                     connected = false;
                     return false;
                 }
-
             } else {
                 releaseCurrentImage();
                 nextFromFolder();
             }
             break;
+        case INPUT_VIDEO:
+
+            if (!currentImage.empty()) {
+                last = Mat(currentImage.size(), CV_8UC3);
+                currentImage.copyTo(last);
+
+
+            }
+            releaseCurrentImage();
+            if (!cap.grab()) {
+                DBG("Kein Bild bekommen.");
+                connected = false;
+                reachesEnd = true;
+                return false;
+            }
+
+            currentImage = Mat::zeros(Size(1280, 720), CV_8UC3);
+            if (!cap.read(currentImage)) {
+
+                if (videoFiles.empty()) {
+                    DBG("Kein Bild bekommen.");
+                    connected = false;
+                    reachesEnd = true;
+                    return false;
+                } else {
+                    cap.release();
+                    if (!openVideo()) {
+                        DBG("Kein Bild bekommen.");
+                        connected = false;
+                        reachesEnd = true;
+                        return false;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            break;
         default:
             releaseCurrentImage();
-            cap.grab();
-            if (currentImage.empty()) {
-                currentImage = Mat::zeros(Size(1280, 720), CV_8UC3);
+            if (!cap.grab()) {
+                DBG("Kein Bild bekommen.");
+                connected = false;
+                reachesEnd = true;
+                return false;
             }
+
+            currentImage = Mat::zeros(Size(1280, 720), CV_8UC3);
+
             if (!cap.read(currentImage)) {
                 DBG("Kein Bild bekommen.");
                 connected = false;
                 reachesEnd = true;
                 return false;
             }
-            break;
+    };
+
+    if (!last.empty()){
+        DBG("Strukturelle Gleichheit der letzten Bilder: %f", helper->checkEquality(last, currentImage));
+    }else{
+        DBG("Letztes bild ist leer...");
     }
+
     return true;
 
 }
 
 void InputHandler::next() {
 
-    if (!grabNext())throw Exception();
+    if (!grabNext()) {
+        DBG("Konnte naechstes Bild nicht von der Eingabequelle lesen.");
+    }
 }
 
 Mat InputHandler::getImage() {
@@ -370,6 +421,8 @@ bool InputHandler::openVideo() {
     if (videoFiles.empty()) {
         DBG("Keine Videos verfuegbar");
         return false;
+    } else {
+        DBG("%d Videos in Warteschlange", (int) videoFiles.size());
     }
     cap = VideoCapture(videoFiles[0]);
     videoFiles.erase(videoFiles.begin());
@@ -420,6 +473,10 @@ void InputHandler::nextFromFolder() {
         return;
     }
     String img = imageFiles[0];
+    releaseCurrentImage();
+    last = Mat(currentImage.size(), CV_8UC3);
+    currentImage.copyTo(last);
+    currentImage = Mat();
     currentImage = imread(img);
 
     if (imageFiles.size() > 1) {

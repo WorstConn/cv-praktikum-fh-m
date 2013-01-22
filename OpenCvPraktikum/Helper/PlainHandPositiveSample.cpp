@@ -10,9 +10,13 @@
 using namespace std;
 using namespace cv;
 
+//FIXME: Sehr hohe Empfindlichkeit gegen Helligkeitsunterschiede
+
+
 PlainHandPositiveSample::PlainHandPositiveSample() {
     drawMarkedSamples = false;
     rng(1234576);
+    backgroundImage = Mat();
 }
 
 PlainHandPositiveSample::PlainHandPositiveSample(const PlainHandPositiveSample& orig) {
@@ -20,6 +24,7 @@ PlainHandPositiveSample::PlainHandPositiveSample(const PlainHandPositiveSample& 
     drawMarkedSamples = orig.drawMarkedSamples;
     currentOutputPath = orig.currentOutputPath;
     rng = orig.rng;
+    backgroundImage = orig.backgroundImage;
 }
 
 PlainHandPositiveSample::~PlainHandPositiveSample() {
@@ -50,7 +55,9 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
     // <editor-fold defaultstate="collapsed" desc="Deklarationen">
     Mat kernel = Mat::ones(3, 3, CV_8U);
     Mat inputImage = img;
-    Mat backgroundImage = imread(currentBackgroundPath); //FIXME: nur einmal einlesen...
+    if (backgroundImage.empty()) {
+        backgroundImage = imread(currentBackgroundPath); //FIXME: nur einmal einlesen...
+    }
     Mat cannyImage;
     Mat inputImgF64;
     Mat bgF64;
@@ -70,7 +77,7 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
 
     // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="Erstellung eines 1- und 3- Kanaligen Differenzbildes">
+    // <editor-fold defaultstate="collapsed" desc="Erstellung eines Differenzbildes">
     diff = Mat::zeros(bgF64.size(), CV_64FC3);
     absdiff(inputImgF64, bgF64, diff);
     diffGray = Mat(diff.size(), CV_64FC1);
@@ -78,13 +85,13 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
     // </editor-fold>
 
 
+    // Untere Grenze muss evtl. an Gegebenheiten angepasst werden, um eine 'gute' Maske zu erhalten.
     threshold(diffGray, diffGray, 52, 255, CV_THRESH_BINARY);
 
     // <editor-fold defaultstate="collapsed" desc="Erstellung des Cannybildes">
     Canny(diffGray, cannyImage, 45.0f, 3.0f * 45.0f);
     dilate(cannyImage, cannyImage, kernel, Point(-1, -1), 2);
     erode(cannyImage, cannyImage, kernel, Point(-1, -1), 2); // </editor-fold>
-
 
     // <editor-fold defaultstate="collapsed" desc="Finden der Kontouren und Approximation durch Polygone">
     findContours(cannyImage, contours0, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_TC89_L1, Point(0, 0));
@@ -151,7 +158,6 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
     hist = helper->removeIsolatedPoints(hist, 2);
     contour = helper->retransformPositionHistogram(hist);
 
-
     // <editor-fold defaultstate="collapsed" desc="Bestimmen des Rechtecks, welches das gefundene Objekt beinhaltet.">
     Point maxX, minX;
     Point maxY, minY;
@@ -197,9 +203,6 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
     x3 = Point(maxX.x, (minY.y + (tmpDiff * 2)));
     // </editor-fold>
 
-    Point offset;
-    int width, height;
-    offset = x1;
 
     // <editor-fold defaultstate="collapsed" desc="Zeichnen der Gefundenen punkte, zur Pruefung.">
     line(inputImage, x1, x2, Scalar(255, 0, 0), 6);
@@ -208,6 +211,9 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
     line(inputImage, x4, x1, Scalar(255, 255, 0), 6);
     // </editor-fold>
 
+    Point offset;
+    int width, height;
+    offset = x1;
     width = MyMath::abs(x2.x - x1.x);
     height = MyMath::abs(x4.y - x1.y);
     String erg;
@@ -225,10 +231,10 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
 
         if (drawMarkedSamples) {
             imwrite(FileManager::getParentPath(currentOutputPath) + "Sample-" + FileManager::getFileName(imgPath) + "-" + iToStr(pos) + ".png", inputImage);
-            //DBG("Markiertes Bild nach %s geschrieben.", String(FileManager::getParentPath(currentOutputPath) + "Sample-" + iToStr(pos) + ".png").c_str());
         }
     }
 
+    // <editor-fold defaultstate="collapsed" desc="Aufraeumen">
     kernel.release();
     inputImage.release();
     backgroundImage.release();
@@ -240,9 +246,9 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
     ergC3.release();
     contours0.clear();
     hierarchy.clear();
+    // </editor-fold>
 
     return erg;
-
 }
 
 /**
@@ -262,7 +268,6 @@ void PlainHandPositiveSample::createImageInfo(ArrayOfStringArrays input, String 
     if (input.size() != backgroundImagePath.size()) {
         DBG("Falsche Grösse der Eingabe-Arrays: ist %i, soll %i", (int) backgroundImagePath.size(), (int) input.size());
     }
-
     /* Wenn wir uns im Debugmodus befinden, Zeichne doch bitte die markierten Bilder zur Pruefung*/
 #if DEBUG
     drawMarkedSamples = true;
@@ -283,9 +288,7 @@ void PlainHandPositiveSample::createImageInfo(ArrayOfStringArrays input, String 
     for (ArrayOfStringArrays::iterator root = input.begin(); root != input.end(); root++) {
         currentBackgroundPath = backgroundImagePath[samplesPosition];
         for (StringArray::iterator files = (*root).begin(); files != (*root).end(); files++) {
-
             currentImage = imread((*files));
-
             outputStream << createImageInfo(currentImage, (*files), imagesCounter);
             if (((files + 1)) != (*root).end()) {
                 outputStream << endl;

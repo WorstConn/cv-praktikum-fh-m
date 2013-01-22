@@ -25,6 +25,16 @@ enum INPUT_TYPE {
     INPUT_NONE, INPUT_VIDEO, INPUT_CAM, INPUT_IP_CAM, INPUT_FOLDER
 };
 
+
+enum KEY_CHAR {
+    ESC = 0x1B,
+    ENTER = '\r',
+    NEWLINE = '\n',
+    SPACE = ' ',
+    TAB = 0x09,
+    DEL = '\b',
+};
+
 enum POSITION_HISTOGRAM_DIRECTION {
     DIRECTION_X, DIRECTION_Y
 };
@@ -163,6 +173,11 @@ typedef struct inode_struct Inode;
 #include "Helper/CreationBehavior.h"
 #include "Helper/NegativeSample.h"
 #include "Helper/PlainHandPositiveSample.h"
+#include "Helper/FistPositiveSample.h"
+#include "Helper/ThumbUpPositiveSample.h"
+#include "Helper/TwoFingersPositiveSample.h"
+#include "Helper/ThreeFingersPositiveSample.h"
+#include "Helper/FourFingersPositveSample.h"
 #include "Helper/SampleCreator.h"
 
 // </editor-fold>

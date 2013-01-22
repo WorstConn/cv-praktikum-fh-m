@@ -63,7 +63,7 @@ bool AInputHandler::addVideo(String vid) {
     if (FileManager::getInstance()->checkFile(vid)) {
         DBG("Datei %s gefunden", vid.c_str());
         videoFiles.push_back(vid);
-
+        sourceType = INPUT_VIDEO;
         return true;
     }
     DBG("Video konnte nicht gefunden werden");

@@ -165,74 +165,78 @@ void CvVideoCapture::record() {
 
     }// </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="Zeit und Framecounter Initialisierung">
+    // <editor-fold defaultstate="collapsed" desc="Initialisierungen">
     time(&startTime);
     time_t lastupd = -1;
     time_t current;
     time(&current);
-    int framecount = 0; // </editor-fold>
+    int framecount = 0;
     if (frames_to_record == 0) {
-
         frames_to_record = DEFAULT_FRAME_COUNT;
-
     }
     frameDelay = (int) (1000.0f / ((float) fps));
     DBG("Framedelay = %i", frameDelay);
     if (recordSeconds == 0) {
         recordSeconds = DEFAULT_DURATION;
     }
+
+    // </editor-fold>
+
     // <editor-fold defaultstate="collapsed" desc="Aufnahme Schleife">
-
     while (recording) {
-
 
         if (frames_to_record != 0 and frames_to_record < framecount) {
             break;
         }
+
         if (recordSeconds != 0 and ((long int) (current - startTime)) > ((long int) (recordSeconds + 2))) {
             break;
         }
-
-
 
         time(&current);
         framecount++;
 
         try {
             capture.next();
-
         } catch (Exception& ex) {
             DBG("%s", ex.what());
             break;
         }
+
         if (capture.reachesEndOfInput()) {
             DBG("Input Ende erreicht!");
             break;
         }
 
         Mat frm = capture.getImage();
+
         if (imageMod != NULL) {
-            //frm=getFrame();  // Falls es zu 'Concurrent modification error' kommt...
-
-
             imageMod->modify(frm);
-
-            
         }
+
         if (window != NULL) {
             if (!window->isShowing()) {
                 window->showWindow();
             }
             window->setCurrentImage(&frm);
         }
+
         setFrame(frm);
         writer->write(frm);
 
         if (lastupd == -1) {
             time(&lastupd);
         } else if ((((long int) current)-((long int) lastupd)) < frameDelay) {
-            this_thread::sleep_for(chrono::milliseconds(frameDelay - (((long int) current)-((long int) lastupd))));
-
+            //this_thread::sleep_for(chrono::milliseconds(frameDelay - (((long int) current)-((long int) lastupd))));
+            if (cvWaitKey(frameDelay - (((long int) current)-((long int) lastupd))) == ESC) {
+                recording = false;
+                if (window != NULL && window->isShowing()) {
+                    window->closeWindow();
+                    DBG("Schliesse Fenster: %s, ESC gedrueckt", window->getName().c_str());
+                }
+                DBG("Schliesse Aufnahme nach %s. ESC gedrueckt", outputname.c_str());
+                break;
+            }
             time(&lastupd);
 
         }
