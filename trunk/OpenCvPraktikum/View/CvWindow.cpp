@@ -93,31 +93,37 @@ void CvWindow::loop() {
     while (show) {
 
         imageMutex.lock();
-
         if (currentImage != NULL) {
             imshow(this->name, *this->currentImage);
 
         }
-
         imageMutex.unlock();
 
         int c = waitKey(refreshDelay);
-        if (c != -1) {
+        if (cvWaitKey(refreshDelay) == ESC) {
             show = false;
+            DBG("Schliesse Fenster: %s, ESC gedrueckt", name.c_str());
             break;
         }
+
         time(&current);
         if (lastupdate == -1 || ((long int) current - lastupdate)>(long int) refreshDelay) {
             if (lastupdate == -1) {
                 time(&lastupdate);
             } else {
                 this_thread::sleep_for(chrono::milliseconds((long int) (current - lastupdate)));
+//                if (cvWaitKey(current - lastupdate) == ESC) {
+//                    show = false;
+//                    DBG("Schliesse Fenster: %s, ESC gedrueckt", name.c_str());
+//                    break;
+//                }
             }
 
         }
     }
 
     DBG("Verlasse loop");
+    closeWindow();
 }
 
 bool CvWindow::isShowing() {

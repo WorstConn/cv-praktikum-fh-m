@@ -6,13 +6,14 @@
  */
 
 #include "header.h"
-
 #include <iostream>
 #include <chrono>
 #include <thread>
 #include <mutex>
 #include <map>
 #include <string>
+
+// <editor-fold defaultstate="collapsed" desc="                         CvDTree-Test">
 #if /* CvDTree-Test */ 0
 
 int main(int, char** argv) {
@@ -21,11 +22,15 @@ int main(int, char** argv) {
 
 
 
+
     return EXIT_SUCCESS;
 }
 
 #endif
-#if /*Detect-Object Cascade*/0
+// </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="                         Detect-Object Cascade">
+#if /* Detect-Object Cascade */0
 
 
 using namespace std;
@@ -78,8 +83,10 @@ int main(int, char** argv) {
 }
 
 #endif
+// </editor-fold>
 
-#if /*Detection Description Matching*/0
+// <editor-fold defaultstate="collapsed" desc="                         Detection Description Matching">
+#if /* Detection Description Matching */0
 
 #include "highgui/highgui.hpp"
 #include "calib3d/calib3d.hpp"
@@ -357,8 +364,10 @@ int main(int argc, char** argv) {
 }
 
 #endif
+// </editor-fold>
 
-#if /*Hybrid-Tracker*/0
+// <editor-fold defaultstate="collapsed" desc="                         Hybrid-Tracker">
+#if /* Hybrid-Tracker */0
 
 
 #include "contrib/hybridtracker.hpp"
@@ -509,8 +518,10 @@ int main(int argc, char** argv) {
     return 0;
 }
 #endif
+// </editor-fold>
 
-#if /*Backprojection*/0
+// <editor-fold defaultstate="collapsed" desc="                         Backprojection">
+#if /* Backprojection */0
 using namespace cv;
 using namespace std;
 
@@ -636,7 +647,9 @@ void Hist_and_Backproj() {
 
 }
 #endif
+// </editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc="                         ML">
 #if  /* ML */ 0
 
 using namespace cv;
@@ -708,8 +721,10 @@ int main(int, char** argv) {
 }
 
 #endif
+// </editor-fold>
 
-#if /*Einfacher (beliebiger Test)*/0
+// <editor-fold defaultstate="collapsed" desc="                         Einfacher (beliebiger Test)">
+#if /* Einfacher (beliebiger Test) */0
 
 int main(int, char** argv) {
     ATest* test = new CreateNegativeSamplesTest();
@@ -724,20 +739,25 @@ int main(int, char** argv) {
 
 }
 #endif
+// </editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc="                         Video zu Bildsequenz">
 #if /* Video zu Bildsequenz */1
 using namespace cv;
 using namespace std;
 
 int main(int, char** argv) {
     InputHandler handler = InputHandler();
-    handler.setInputSource(INPUT_CAM);
-
+    //handler.setInputSource(INPUT_CAM);
+    handler.addVideo("/home/ertai/Videos/VIDEO0026.mp4");
+    handler.addVideo("/home/ertai/Videos/VIDEO0027.mp4");
+    handler.addVideo("/home/ertai/Videos/VIDEO0028.mp4");
+    
     if (!handler.open()) {
         DBG("Konnte Eingabe nicht öffnen");
         return EXIT_FAILURE;
     }
-    handler.requestFormat(r720p);
+    //handler.requestFormat(r720p);
     DBG("Lese einige Bilder damit Kamera sich einstellen kann(Helligkeit,Fokus,...).");
     for (int i = 0; i <= 10; i++) {
         if (!handler.grabNext()) {
@@ -746,9 +766,9 @@ int main(int, char** argv) {
     }
 
     CvVideoCapture* cap = new CvVideoCapture(handler);
-    Output* out = new ImageListOutput("/home/ertai/Videos/BG5", "BG6-", ".jpg");
-    BgFgSegmModificator mod = BgFgSegmModificator("/home/ertai/Videos/BG5/BG5-11.jpg");
-    cap->setImageModifikator(&mod);
+    Output* out = new ImageListOutput("/home/ertai/Videos/negTmp", "neg2", ".jpg");
+    //BgFgSegmModificator mod = BgFgSegmModificator("/home/ertai/Videos/BG5/BG5-11.jpg");
+    //cap->setImageModifikator(&mod);
 
     cap->setOutput(out);
     WindowManager* man = WindowManager::getInstance();
@@ -761,20 +781,18 @@ int main(int, char** argv) {
     cap->setWindow(wnd);
     cap->start();
 
-    //    while(true){
-    //        img = handler.getImage();
-    //        
-    //        wnd->setCurrentImage(&img);
-    //        cvWaitKey(40);
-    //        
-    //    }
+
 
     cap->joinThread();
-    cvWaitKey(0);
+    man->closeWindow("Recording");
+    cap->release();
+    handler.releaseAll();
     return EXIT_SUCCESS;
 }
 #endif
+// </editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc="                         BgfgSegmentierung">
 #if /* BgfgSegmentierung */0
 
 #include <X11/Xlib.h>
@@ -953,8 +971,10 @@ int main(int, char** argv) {
 
 
 #endif
+// </editor-fold>
 
-#if /*cornerDetector_Demo*/0
+// <editor-fold defaultstate="collapsed" desc="                         cornerDetector_Demo">
+#if /* cornerDetector_Demo */0
 
 /**
  * @function cornerDetector_Demo.cpp
@@ -1088,8 +1108,10 @@ void myHarris_function(int, void*) {
 
 
 #endif
+// </editor-fold>
 
-#if /*SURF_FlannMatcher*/0
+// <editor-fold defaultstate="collapsed" desc="                         SURF_FlannMatcher">
+#if /* SURF_FlannMatcher */0
 /**
  * @file SURF_FlannMatcher
  * @brief SURF detector + descriptor + FLANN Matcher
@@ -1196,8 +1218,10 @@ void readme() {
 
 
 #endif
+// </editor-fold>
 
-#if /*SURF_detector*/0
+// <editor-fold defaultstate="collapsed" desc="                         SURF_detector">
+#if /* SURF_detector */0
 /**
  * @file SURF_detector
  * @brief SURF keypoint detection + keypoint drawing with OpenCV functions
@@ -1265,8 +1289,10 @@ void readme() {
 }
 
 #endif
+// </editor-fold>
 
-#if /*SURF_Homography*/0
+// <editor-fold defaultstate="collapsed" desc="                         SURF_Homography">
+#if /* SURF_Homography */0
 /**
  * @file SURF_Homography
  * @brief SURF detector + descriptor + FLANN Matcher + FindHomography
@@ -1397,7 +1423,9 @@ void readme() {
     std::cout << " Usage: ./SURF_Homography <img1> <img2>" << std::endl;
 }
 #endif
+// </editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc="                         Kinect">
 #if /*Kinect*/0
 #ifdef TRY_KINECT
 using namespace cv;
@@ -1718,123 +1746,9 @@ int main(int argc, char **argv) {
 #endif
 
 #endif
+// </editor-fold>
 
-#if /*Funktionszeigerr*/0
-
-#include <cstdio>
-
-void globalfunction(int i) {
-    printf("Global (%i)\n", i);
-}
-
-static void staticglobalfunction(int i) {
-    printf("Static Global (%i)\n", i);
-}
-
-namespace Name_Space {
-
-    void namespacefunction(int i) {
-        printf("Namespace (%i)\n", i);
-    }
-}
-
-void (*returnfunction(const char* str))(int) {
-    printf("Return \"%s\":\n", str);
-    return &globalfunction;
-}
-
-typedef void (*functiontype)(int);
-
-class TestClass {
-public:
-    void (*funcptr1)(int i);
-    void (TestClass::*funcptr2)(int i);
-
-    void classfunction(int i) {
-        printf("Class (%i)\n", i);
-    }
-
-    static void staticclassfunction(int i) {
-        printf("Static Class (%i)\n", i);
-    }
-
-    void callglobal(int i) {
-        funcptr1 = &globalfunction;
-        (*funcptr1)(i);
-    }
-
-    void callclass(int i) {
-        funcptr2 = &TestClass::classfunction;
-        (this->*funcptr2)(i);
-    }
-};
-
-class TestClassB : public TestClass {
-public:
-    void (*funcptr3)(int i);
-    void (TestClassB::*funcptr4)(int i);
-
-    void classfunction(int i) {
-        printf("Class (%i)\n", i);
-    }
-
-    static void staticclassfunction(int i) {
-        printf("Static Class (%i)\n", i);
-    }
-
-    void callglobal(int i) {
-        funcptr3 = &globalfunction;
-        (*funcptr3)(i);
-    }
-
-    void callclass(int i) {
-        funcptr4 = &TestClassB::classfunction;
-        (this->*funcptr4)(i);
-    }
-};
-
-int main() {
-    TestClass test;
-
-    // Global function using local function-pointer
-    void (*funcptr1)(int i) = &globalfunction;
-    (*funcptr1)(1);
-    // Static global function using local function-pointer
-    void (*funcptr2)(int i) = &staticglobalfunction;
-    (*funcptr2)(2);
-    // Function in namespace using local function pointer
-    void (*funcptr3)(int i) = &Name_Space::namespacefunction;
-    (*funcptr3)(3);
-
-    // Static member function using local function pointer
-    void (*funcptr4)(int i) = &TestClassB::staticclassfunction;
-    (*funcptr4)(4);
-    // Global function using class-function-pointer inside of class
-    test.callglobal(5);
-    // Global function using class-function-pointer outside of class
-    test.funcptr1 = &globalfunction;
-    (*test.funcptr1)(6);
-
-    // Class function using class-function-pointer inside of class
-    test.callclass(7);
-    // Class function using local function-pointer
-    void (TestClass::*classfunc)(int i) = &TestClass::classfunction;
-    (test.*classfunc)(8);
-    // Class function using class-function-pointer outside of class
-    test.funcptr2 = &TestClass::classfunction;
-    (test.*(test.funcptr2))(9);
-
-    (*returnfunction("global"))(10);
-    printf("Using typedef:\n");
-    functiontype typefuncptr = &globalfunction;
-    (*typefuncptr)(11);
-
-
-    return 0;
-}
-
-#endif
-
+// <editor-fold defaultstate="collapsed" desc="                         Test-Routinen">
 #if /*Test-Routinen*/0
 
 using namespace std;
@@ -1859,8 +1773,10 @@ int main(int argc, char* argv[]) {
 
 
 #endif
+// </editor-fold>
 
-#if /*Histogram Equalization*/0
+// <editor-fold defaultstate="collapsed" desc="                         Histogram_Equalization">
+#if /*Histogram_Equalization*/0
 
 using namespace std;
 using namespace cv;
@@ -1911,7 +1827,9 @@ int main(int argc, char* argv[]) {
 
 }
 #endif
+// </editor-fold>
 
+// <editor-fold defaultstate="collapsed" desc="                         Praktikum 3">
 #if /*Praktikum 3*/0
 
 Mat origImage;
@@ -2010,8 +1928,10 @@ int main() {
 }
 
 #endif
+// </editor-fold>
 
-#if /*HS-Histogram Test*/0
+// <editor-fold defaultstate="collapsed" desc="                         HS-Histogram">
+#if /*HS-Histogram*/0
 
 
 
@@ -2073,8 +1993,10 @@ int main(int argc, char **argv) {
 }
 
 #endif
+// </editor-fold>
 
-#if /*Harris Eckendetektor*/0 
+// <editor-fold defaultstate="collapsed" desc="                         Harris_Eckendetektor">
+#if /*Harris_Eckendetektor*/0 
 
 
 using namespace cv;
@@ -2131,28 +2053,19 @@ void cornerHarris_demo(int, void*) {
 }
 
 #endif
+// </editor-fold>
 
 
 
 
 
 // Tipp: falls dir das Erstellen immer zu lange dauert, 
-// gehe in den Projektordner und führe von dort 'make -j N' -> N anzahl der synchronen "JOBS"
+// gehe in den Projektordner und führe von dort 'make -j N' aus -> N anzahl der synchronen "JOBS" (Zeitersparniss auf meinem PhenomII ~ 1min zu 12sec)...
 
 
-
-
-
-//Samples erstellen
-//opencv_createsamples -info /home/ertai/Videos/positives.dat -num 2500 -vec /home/ertai/Videos/train_plainHand.vec -w 512 -h 512
-
-//opencv_createsamples -img 01.png -num 10 -bg /media/WD-Platte/Bilder\&Fotos/Wallpaper/bg.dat -vec samples.vec -maxxangle 0.6 -maxyangle 0 -maxzangle 0.3 -maxidev 100 -bgcolor 0 -bgthresh 0 -w 200 -h 200
-//http://docs.opencv.org/doc/user_guide/ug_traincascade.html
-//find . -name '*.jpg' -exec identify -format '%i 1 0 0 %w %h' \{\} \; > info.dat
-//opencv_traincascade -data hnd -vec samples.vec -bg /media/WD-Platte/Bilder\&Fotos/Wallpaper/bg.dat -numPos 100 -numNeg 340 -numStages 20 -precalcValBufSize 1024 -precalcIdxBufSize 2048 -featureType LBP -w 200 -h 200 -minHitRate 0.999 -maxFalseAlarmRate 0.5 -mode ALL
-//http://note.sonots.com/SciSoftware/haartraining.html#ybd647df
-
-
-
-//opencv_createsamples -info /home/ertai/Videos/positives.dat -num 2500 -vec /home/ertai/Videos/train_plainHand.vec -w 50 -h 50
-//opencv_traincascade -data Videos/cascade -vec Videos/train_plainHand.vec -bg Videos/bg.dat -numPos 222 -numNeg 1500 -numStages 5 -precalcValBufSize 3096 -precalcIdxBufSize 3096 -featureType LBP -w 64 -h 64 -minHitRate 0.999 -maxFalseAlarmRate 0.1 -mode ALL
+// Samples erstellen    
+//                        Erstellte Textdatei mit Markierungen                   Ergebnisdatei                     Groesse der Samples      Zeigt die Samples an.
+//opencv_createsamples -info /home/ertai/Videos/positives.dat -num 2500 -vec /home/ertai/Videos/train_plainHand.vec -w 50 -h 50                 (show)
+// Training
+//                           Ergebnis                positive Samples            negative       Anzahl der positiven und negativen     Anzahl der Stages       Performancewerte, je groesser desto besser        Erzeugter Typ     (wie bei Sampleerstellung)       Mindest Trefferqoute des Ergebnisses     Hoechste Fehlerrate des Ergebisses(!kleinere Werte können Laufzeit um Tage verlaengern.)                                                    
+//opencv_traincascade -data Videos/cascade   -vec Videos/train_plainHand.vec  -bg Videos/bg.dat    -numPos 222 -numNeg 1500               -numStages 5      -precalcValBufSize 3096 -precalcIdxBufSize 3096    -featureType LBP         -w 64 -h 64                             -minHitRate 0.999               -maxFalseAlarmRate 0.1                                                                  -mode ALL

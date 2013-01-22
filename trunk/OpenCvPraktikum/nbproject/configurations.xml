@@ -23,6 +23,10 @@
         <itemPath>Helper/CvHelper.h</itemPath>
         <itemPath>Helper/FileManager.cpp</itemPath>
         <itemPath>Helper/FileManager.h</itemPath>
+        <itemPath>Helper/FistPositiveSample.cpp</itemPath>
+        <itemPath>Helper/FistPositiveSample.h</itemPath>
+        <itemPath>Helper/FourFingersPositveSample.cpp</itemPath>
+        <itemPath>Helper/FourFingersPositveSample.h</itemPath>
         <itemPath>Helper/MyMath.cpp</itemPath>
         <itemPath>Helper/MyMath.h</itemPath>
         <itemPath>Helper/NegativeSample.cpp</itemPath>
@@ -31,6 +35,12 @@
         <itemPath>Helper/PlainHandPositiveSample.h</itemPath>
         <itemPath>Helper/SampleCreator.cpp</itemPath>
         <itemPath>Helper/SampleCreator.h</itemPath>
+        <itemPath>Helper/ThreeFingersPositiveSample.cpp</itemPath>
+        <itemPath>Helper/ThreeFingersPositiveSample.h</itemPath>
+        <itemPath>Helper/ThumbUpPositiveSample.cpp</itemPath>
+        <itemPath>Helper/ThumbUpPositiveSample.h</itemPath>
+        <itemPath>Helper/TwoFingersPositiveSample.cpp</itemPath>
+        <itemPath>Helper/TwoFingersPositiveSample.h</itemPath>
       </logicalFolder>
       <logicalFolder name="f5" displayName="Input" projectFiles="true">
         <itemPath>Input/AInputHandler.cpp</itemPath>

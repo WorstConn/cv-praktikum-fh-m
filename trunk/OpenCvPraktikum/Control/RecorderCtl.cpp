@@ -14,7 +14,7 @@ RecorderCtl::RecorderCtl(String ctl) {
     name = (ctl.empty()) ? "Default" : ctl;
     capture = NULL;
     wnd = WindowManager::getInstance();
-    wnd->createWindow(name,0,0);
+    wnd->createWindow(name, 0, 0);
     state = INIT;
     ctlThread = NULL;
     lastImgUpdate = -1;
@@ -39,7 +39,7 @@ RecorderCtl::~RecorderCtl() {
 
 bool RecorderCtl::refreshWindowImage(Mat img) {
     if (wnd != NULL) {
-        wnd->updateWindowImage(name,&img);
+        wnd->updateWindowImage(name, &img);
         return true;
     }
     return false;
@@ -139,7 +139,7 @@ void RecorderCtl::grabLoop() {
         while (state == GRAB) {
             capture->requestNext();
             tmp = capture->getFrame();
-            wnd->updateWindowImage(name,&tmp);
+            wnd->updateWindowImage(name, &tmp);
         }
     } catch (Exception& ex) {
         DBG("%s", ex.what());
@@ -166,8 +166,12 @@ void RecorderCtl::recordLoop() {
         DBG("Betrete Record-Loop");
         while (state == RECORD) {
             tmp = capture->getFrame();
-            cvWaitKey(50);
-            wnd->updateWindowImage(name,&tmp);
+            if (cvWaitKey(50) == ESC) {
+                DBG("Beende aufnahme->ESC gedrueckt");
+                dispose();
+                break;
+            }
+            wnd->updateWindowImage(name, &tmp);
         }
     } catch (Exception& ex) {
         DBG("%s", ex.what());

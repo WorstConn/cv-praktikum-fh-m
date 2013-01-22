@@ -15,7 +15,10 @@ using namespace cv;
 class InputHandler : public AInputHandler {
 private:
     Mat currentImage;
+    Mat last;
     VideoCapture cap;
+    CvHelper* helper;
+    
     virtual bool openDefWebCam();
 
     virtual bool openDefIpCam();

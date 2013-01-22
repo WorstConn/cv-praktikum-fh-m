@@ -49,6 +49,7 @@ public:
     
 private:
     String currentBackgroundPath;
+    Mat backgroundImage;
     bool drawMarkedSamples;
     String currentOutputPath;
     RNG rng;

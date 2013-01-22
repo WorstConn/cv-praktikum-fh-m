@@ -38,9 +38,11 @@ OBJECTFILES= \
 	${OBJECTDIR}/Objects/ExtendedImageAttributes.o \
 	${OBJECTDIR}/Test/ATest.o \
 	${OBJECTDIR}/View/CvWindow.o \
+	${OBJECTDIR}/Helper/TwoFingersPositiveSample.o \
 	${OBJECTDIR}/Helper/SampleCreator.o \
 	${OBJECTDIR}/Helper/FileManager.o \
 	${OBJECTDIR}/Modifier/ImageModificator.o \
+	${OBJECTDIR}/Helper/FourFingersPositveSample.o \
 	${OBJECTDIR}/Objects/HistogramCreationMethod.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/Helper/NegativeSample.o \
@@ -54,6 +56,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/Objects/Hand.o \
 	${OBJECTDIR}/Objects/HsvHistogamCreation.o \
 	${OBJECTDIR}/Test/MainTest.o \
+	${OBJECTDIR}/Helper/FistPositiveSample.o \
 	${OBJECTDIR}/Modifier/ModificatorComponent.o \
 	${OBJECTDIR}/Test/Prak3A8.o \
 	${OBJECTDIR}/Test/VideoInputToImageSequenceOutputTest.o \
@@ -68,9 +71,11 @@ OBJECTFILES= \
 	${OBJECTDIR}/Output/Output.o \
 	${OBJECTDIR}/View/AAction.o \
 	${OBJECTDIR}/Objects/MaskCreationMethod.o \
+	${OBJECTDIR}/Helper/ThumbUpPositiveSample.o \
 	${OBJECTDIR}/Helper/CreationBehavior.o \
 	${OBJECTDIR}/Input/InputHandler.o \
 	${OBJECTDIR}/View/AImageAction.o \
+	${OBJECTDIR}/Helper/ThreeFingersPositiveSample.o \
 	${OBJECTDIR}/Helper/MyMath.o \
 	${OBJECTDIR}/Objects/SimpleMaskCreation.o \
 	${OBJECTDIR}/Modifier/CompositeModificator.o \
@@ -119,6 +124,11 @@ ${OBJECTDIR}/View/CvWindow.o: View/CvWindow.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/View/CvWindow.o View/CvWindow.cpp
 
+${OBJECTDIR}/Helper/TwoFingersPositiveSample.o: Helper/TwoFingersPositiveSample.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Helper
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/Helper/TwoFingersPositiveSample.o Helper/TwoFingersPositiveSample.cpp
+
 ${OBJECTDIR}/Helper/SampleCreator.o: Helper/SampleCreator.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Helper
 	${RM} $@.d
@@ -133,6 +143,11 @@ ${OBJECTDIR}/Modifier/ImageModificator.o: Modifier/ImageModificator.cpp
 	${MKDIR} -p ${OBJECTDIR}/Modifier
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/Modifier/ImageModificator.o Modifier/ImageModificator.cpp
+
+${OBJECTDIR}/Helper/FourFingersPositveSample.o: Helper/FourFingersPositveSample.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Helper
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/Helper/FourFingersPositveSample.o Helper/FourFingersPositveSample.cpp
 
 ${OBJECTDIR}/Objects/HistogramCreationMethod.o: Objects/HistogramCreationMethod.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Objects
@@ -198,6 +213,11 @@ ${OBJECTDIR}/Test/MainTest.o: Test/MainTest.cpp
 	${MKDIR} -p ${OBJECTDIR}/Test
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/Test/MainTest.o Test/MainTest.cpp
+
+${OBJECTDIR}/Helper/FistPositiveSample.o: Helper/FistPositiveSample.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Helper
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/Helper/FistPositiveSample.o Helper/FistPositiveSample.cpp
 
 ${OBJECTDIR}/Modifier/ModificatorComponent.o: Modifier/ModificatorComponent.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Modifier
@@ -269,6 +289,11 @@ ${OBJECTDIR}/Objects/MaskCreationMethod.o: Objects/MaskCreationMethod.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/Objects/MaskCreationMethod.o Objects/MaskCreationMethod.cpp
 
+${OBJECTDIR}/Helper/ThumbUpPositiveSample.o: Helper/ThumbUpPositiveSample.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Helper
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/Helper/ThumbUpPositiveSample.o Helper/ThumbUpPositiveSample.cpp
+
 ${OBJECTDIR}/Helper/CreationBehavior.o: Helper/CreationBehavior.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Helper
 	${RM} $@.d
@@ -283,6 +308,11 @@ ${OBJECTDIR}/View/AImageAction.o: View/AImageAction.cpp
 	${MKDIR} -p ${OBJECTDIR}/View
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/View/AImageAction.o View/AImageAction.cpp
+
+${OBJECTDIR}/Helper/ThreeFingersPositiveSample.o: Helper/ThreeFingersPositiveSample.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Helper
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/Helper/ThreeFingersPositiveSample.o Helper/ThreeFingersPositiveSample.cpp
 
 ${OBJECTDIR}/Helper/MyMath.o: Helper/MyMath.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Helper

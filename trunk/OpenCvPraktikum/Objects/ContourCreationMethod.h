@@ -16,7 +16,15 @@ public:
     ContourCreationMethod();
     ContourCreationMethod(const ContourCreationMethod& orig);
     virtual ~ContourCreationMethod();
-    virtual PointArray createContour(Mat inputImg, int maxObjects, bool isColorImage)=0;
+    /**
+     * Erstellt ein Kontour-Array des Eingabebildes.
+     * @param inputImg Das Eingabebild.
+     * @param mask Eine optionale Eingabemaske.
+     * @param maxObjects maximale Anzahl an einzelnen Contourbereiche, die zusammengefasst werden sollen. 1 -> nur das gr&ouml;&szlig;te Objekt ist im Ergebnis enthalten.
+     * @param isColorImage
+     * @return Das errechnete Kontour-Array
+     */
+    virtual PointArray createContour(Mat inputImg,Mat mask, int maxObjects, bool isColorImage)=0;
 private:
 
 };
