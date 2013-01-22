@@ -132,6 +132,7 @@ typedef std::map<int, cv::String> ImageTypeMap;
 typedef std::vector<cv::DMatch> MatchesArray;
 typedef std::vector<cv::KeyPoint> KeyPointArray;
 typedef std::vector<cv::Mat*> ImagePointerArray;
+typedef std::vector<cv::Rect> RectangleArray;
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="             OS spezifische Includes">

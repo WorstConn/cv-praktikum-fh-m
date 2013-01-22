@@ -748,25 +748,25 @@ using namespace std;
 
 int main(int, char** argv) {
     InputHandler handler = InputHandler();
-    //handler.setInputSource(INPUT_CAM);
+    handler.setInputSource(INPUT_VIDEO);
     handler.addVideo("/home/ertai/Videos/VIDEO0026.mp4");
     handler.addVideo("/home/ertai/Videos/VIDEO0027.mp4");
     handler.addVideo("/home/ertai/Videos/VIDEO0028.mp4");
-    
+
     if (!handler.open()) {
         DBG("Konnte Eingabe nicht öffnen");
         return EXIT_FAILURE;
     }
-    //handler.requestFormat(r720p);
-    DBG("Lese einige Bilder damit Kamera sich einstellen kann(Helligkeit,Fokus,...).");
-    for (int i = 0; i <= 10; i++) {
-        if (!handler.grabNext()) {
-            DBG("Fehler beim lesen der Eingabe");
+    handler.requestFormat(r720p);
+        DBG("Lese einige Bilder damit Kamera sich einstellen kann(Helligkeit,Fokus,...).");
+        for (int i = 0; i <= 2; i++) {
+            if (!handler.grabNext()) {
+                DBG("Fehler beim lesen der Eingabe");
+            }
         }
-    }
 
     CvVideoCapture* cap = new CvVideoCapture(handler);
-    Output* out = new ImageListOutput("/home/ertai/Videos/negTmp", "neg2", ".jpg");
+    Output* out = new ImageListOutput("/home/ertai/Videos/negTmp", "neg2-", ".jpg");
     //BgFgSegmModificator mod = BgFgSegmModificator("/home/ertai/Videos/BG5/BG5-11.jpg");
     //cap->setImageModifikator(&mod);
 
