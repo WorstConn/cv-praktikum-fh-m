@@ -28,11 +28,11 @@ r den Test notwendige Agumente(Dateien, Flags, uva. ...)
  */
 int CreatePositiveSamplesTest::testMain(StringArray args) {
     SampleCreator* creator = SampleCreator::getInstance();
-    PlainHandPositiveSample posSamp = PlainHandPositiveSample();
+    ThreeFingersPositiveSample posSamp = ThreeFingersPositiveSample();
     creator->setCreationMethod(&posSamp);
-    creator->addInputDir("/home/ertai/Videos/POS1", "/home/ertai/Videos/Bg1/bg1-4.jpg");
-    creator->addInputDir("/home/ertai/Videos/POS2", "/home/ertai/Videos/BG2/bg2-30.jpg");
-    creator->setOutputPath("/home/ertai/Videos/POS1_DBG_ERG/positives.dat");
+    creator->addInputDir("/home/ertai/Videos/ThreeFingers/POS", "");
+//    creator->addInputDir("/home/ertai/Videos/POS2", "/home/ertai/Videos/BG2");
+    creator->setOutputPath("/home/ertai/Videos/ThreeFingers/Result/positives.dat");
     if (creator->createSampleFile()) {
         DBG("Erstellung erfolgreich");
     }

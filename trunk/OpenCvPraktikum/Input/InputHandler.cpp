@@ -215,7 +215,7 @@ bool InputHandler::grabNext() {
 
 
             currentImage = Mat::zeros(resolution, CV_8UC3);
-            cap>>currentImage;
+            cap >> currentImage;
             if (currentImage.empty()) {
                 if (videoFiles.empty()) {
                     DBG("Kein Bild bekommen.");
@@ -228,12 +228,12 @@ bool InputHandler::grabNext() {
                     DBG("Oeffne neue Videodatei...");
                     cap.open(videoFiles[0]);
                     videoFiles.erase(videoFiles.begin());
-                    if(cap.isOpened()){
+                    if (cap.isOpened()) {
                         DBG("Video geoeffnet");
-                        for(int i=0 ;i<5;i++){
-                            cap>>currentImage;
+                        for (int i = 0; i < 5; i++) {
+                            cap >> currentImage;
                         }
-                    }else{
+                    } else {
                         DBG("Video konnte nicht geoeffnet werden");
                     }
                     break;
@@ -249,7 +249,6 @@ bool InputHandler::grabNext() {
                 releaseCurrentImage();
                 last = Mat(currentImage.size(), currentImage.type());
                 currentImage.copyTo(last);
-                DBG("%s", helper->resToString(currentCamInputFormat()).c_str());
 
             }
 

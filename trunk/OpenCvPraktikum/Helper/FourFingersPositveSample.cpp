@@ -10,11 +10,10 @@
 using namespace std;
 using namespace cv;
 
-
 FourFingersPositveSample::FourFingersPositveSample() {
 }
 
-FourFingersPositveSample::FourFingersPositveSample(const FourFingersPositveSample& orig) {
+FourFingersPositveSample::FourFingersPositveSample(const FourFingersPositveSample& orig) : CreationBehavior(orig) {
 }
 
 FourFingersPositveSample::~FourFingersPositveSample() {

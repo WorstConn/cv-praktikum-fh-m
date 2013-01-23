@@ -99,7 +99,7 @@ void CvWindow::loop() {
         }
         imageMutex.unlock();
 
-        int c = waitKey(refreshDelay);
+
         if (cvWaitKey(refreshDelay) == ESC) {
             show = false;
             DBG("Schliesse Fenster: %s, ESC gedrueckt", name.c_str());
@@ -112,11 +112,11 @@ void CvWindow::loop() {
                 time(&lastupdate);
             } else {
                 this_thread::sleep_for(chrono::milliseconds((long int) (current - lastupdate)));
-//                if (cvWaitKey(current - lastupdate) == ESC) {
-//                    show = false;
-//                    DBG("Schliesse Fenster: %s, ESC gedrueckt", name.c_str());
-//                    break;
-//                }
+                //                if (cvWaitKey(current - lastupdate) == ESC) {
+                //                    show = false;
+                //                    DBG("Schliesse Fenster: %s, ESC gedrueckt", name.c_str());
+                //                    break;
+                //                }
             }
 
         }

@@ -13,7 +13,7 @@ using namespace cv;
 NegativeSample::NegativeSample() {
 }
 
-NegativeSample::NegativeSample(const NegativeSample& orig) {
+NegativeSample::NegativeSample(const NegativeSample& orig) : CreationBehavior(orig){
 }
 
 NegativeSample::~NegativeSample() {
@@ -58,7 +58,7 @@ String NegativeSample::createImageInfo(Mat& img, String imgPath, int pos) {
  * @param createMarkedOutputFiles Falls <code>TRUE</code>, wird bei der Operation eine Kopie jedes Eingabebildes erstellt, auf der erkannte Objekte mit einem Rechteck eingefasst sind.
  *          
  */
-void NegativeSample::createImageInfo(ArrayOfStringArrays input, String output, StringArray backgroundImagePath, bool createMarkedOutputFiles) {
+void NegativeSample::createImageInfo(ArrayOfStringArrays input, String output, StringArray backgroundImagePath, bool createMarkedOutputFiles,bool presegmentedData) {
     CV_Assert(!input.empty());
     CV_Assert(!output.empty());
     if (!backgroundImagePath.empty()) {

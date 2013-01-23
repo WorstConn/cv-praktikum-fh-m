@@ -167,7 +167,7 @@ Mat CvHelper::drawEdges(Mat img) {
     int thresh = 400;
 
     Mat canny_output;
-    vector<vector<Point> > contours;
+    ContourArray contours;
     vector<Vec4i> hierarchy;
 
     /*
@@ -869,6 +869,7 @@ double CvHelper::compareHistogram(MatND& hist1, MatND& hist2, int m) {
  * @return Das Akkumulierte Bild
  */
 Mat CvHelper::accumulateImages(ImageArray mats) {
+
     if (mats.size() < 2) {
         DBG("Vektor der Laenge: %i mind. 2 benoetigt", static_cast<int> (mats.size()));
         return Mat();
@@ -881,8 +882,10 @@ Mat CvHelper::accumulateImages(ImageArray mats) {
         Mat current = mats[i];
 
         //accumulate(current, erg);
-        add(erg, current, erg);
         erg /= 2;
+        current /= 2;
+        add(erg, current, erg);
+        
 
     }
 
@@ -1074,7 +1077,7 @@ PointHistogram CvHelper::filterPositionHistogramRange(PointHistogram hist, int f
     if (toBin < fromBin) {
         return filterPositionHistogramRange(hist, toBin, fromBin);
     }
-    vector<vector<Point> > erg = vector<vector<Point> >(hist.size());
+    PointHistogram erg =PointHistogram(hist.size());
     for (int i = 0; i < (int) hist.size(); i++) {
         if (i >= fromBin && i <= toBin) {
             erg[i] = hist[i];
@@ -1091,8 +1094,8 @@ PointHistogram CvHelper::filterPositionHistogramRange(PointHistogram hist, int f
  * @return Einen Vector von Punkten.
  */
 PointArray CvHelper::retransformPositionHistogram(PointHistogram hist) {
-    vector<Point> erg = vector<Point > ();
-    for (vector<vector<Point> >::iterator root = hist.begin(); root != hist.end(); root++) {
+    PointArray erg = PointArray();
+    for (PointHistogram::iterator root = hist.begin(); root != hist.end(); root++) {
         for (vector<Point>::iterator iter = (*root).begin(); iter != (*root).end(); iter++) {
             Point p = (*iter);
             erg.push_back(p);

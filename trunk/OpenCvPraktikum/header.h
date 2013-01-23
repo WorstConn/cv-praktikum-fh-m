@@ -122,6 +122,7 @@ enum OUTPUT_TYPE {
 
 // <editor-fold defaultstate="collapsed" desc="             Typendefinitionen">
 typedef std::vector<std::vector<cv::Point> > PointHistogram;
+typedef std::vector<std::vector<cv::Point> > ContourArray;
 typedef std::vector<cv::Point> PointArray;
 typedef std::vector<bool> BooleanArray;
 typedef std::vector<cv::String> StringArray;
