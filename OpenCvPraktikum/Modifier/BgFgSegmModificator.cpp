@@ -46,7 +46,7 @@ void BgFgSegmModificator::modify(Mat& mat) {
     // leict verwischen, um stoerungen zu unterdruecken.
     blur(bw, bw, Size(7, 7), Point(-1, -1), CV_BLUR);
     // zu Schwarz-Weiß konvertieren
-    threshold(bw, bw, 25, 255, CV_THRESH_BINARY);
+    threshold(bw, bw, 15, 255, CV_THRESH_BINARY);
     erg = Mat::zeros(mat.size(), CV_8UC3);
     // unter Verwendung des Eingabebildes und der erstellten Maske, das Ergebnisbild erzeugen.
     mat.copyTo(erg, bw);

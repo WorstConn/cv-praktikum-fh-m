@@ -44,7 +44,9 @@ void SampleCreator::setCreationMethod(CreationBehavior* cb) {
 void SampleCreator::addInputDir(String dir, String backgroundImage) {
     if (inputDirectories.empty()) {
         inputDirectories.push_back(dir);
-        backgroundImages.push_back(backgroundImage);
+        if (!backgroundImage.empty()) {
+            backgroundImages.push_back(backgroundImage);
+        }
     } else {
         bool contains = false;
         for (StringArray::iterator iter = inputDirectories.begin(); iter != inputDirectories.end(); iter++) {
@@ -57,8 +59,11 @@ void SampleCreator::addInputDir(String dir, String backgroundImage) {
         if (!contains) {
             inputDirectories.push_back(dir);
 
-            backgroundImages.push_back(backgroundImage);
-            DBG("Eingabeordner: %s und Hintergrundbild: %s hinzugefuegt.", dir.c_str(), backgroundImage.c_str());
+            if (!backgroundImage.empty()) {
+                backgroundImages.push_back(backgroundImage);
+                DBG("Eingabeordner: %s und Hintergrundbild: %s hinzugefuegt.", dir.c_str(), backgroundImage.c_str());
+            }
+
         }
     }
 }
@@ -128,9 +133,9 @@ bool SampleCreator::createSampleFile() {
 
 #if DEBUG
     /*Falls wir uns im Debugmodus befinden, moechten wir, falls möglich die Zwischenergebnisse(Bilder) der Erstellung sehen.*/
-    creationMethod->createImageInfo(images, outputFilePath, backgroundImages, true);
+    creationMethod->createImageInfo(images, outputFilePath, backgroundImages, true, (backgroundImages.empty()) ? true : false);
 #else
-    creationMethod->createImageInfo(images, outputFilePath, backgroundImages);
+    creationMethod->createImageInfo(images, outputFilePath, backgroundImages, false, (backgroundImages.empty()) ? true : false);
 #endif
     return true;
 }

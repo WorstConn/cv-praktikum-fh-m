@@ -13,18 +13,215 @@
 #include <map>
 #include <string>
 
-// <editor-fold defaultstate="collapsed" desc="                         CvDTree-Test">
-#if /* CvDTree-Test */ 0
+// <editor-fold defaultstate="collapsed" desc="                         CvTree-Test">
+#if /* CvTree-Test */ 0
 
-int main(int, char** argv) {
+i// Example : random forest (tree) learning
+        // usage: prog training_data_file testing_data_file
 
-    RandomizedTree randTree = RandomizedTree();
+        // For use with test / training datasets : opticaldigits_ex
 
+        // Author : Toby Breckon, toby.breckon@cranfield.ac.uk
 
+        // Copyright (c) 2011 School of Engineering, Cranfield University
+        // License : LGPL - http://www.gnu.org/licenses/lgpl.html
 
+#include <cv.h>       // opencv general include file
+#include <ml.h>		  // opencv machine learning include file
 
-    return EXIT_SUCCESS;
+        using namespace cv; // OpenCV API is in the C++ "cv" namespace
+
+#include <stdio.h>
+
+/******************************************************************************/
+// global definitions (for speed and ease of use)
+
+#define NUMBER_OF_TRAINING_SAMPLES 3823
+#define ATTRIBUTES_PER_SAMPLE 64
+#define NUMBER_OF_TESTING_SAMPLES 1797
+
+#define NUMBER_OF_CLASSES 10
+
+// N.B. classes are integer handwritten digits in range 0-9
+
+/******************************************************************************/
+
+// loads the sample database from file (which is a CSV text file)
+
+int read_data_from_csv(const char* filename, Mat data, Mat classes,
+        int n_samples) {
+    float tmp;
+
+    // if we can't read the input file then return 0
+    FILE* f = fopen(filename, "r");
+    if (!f) {
+        printf("ERROR: cannot read file %s\n", filename);
+        return 0; // all not OK
+    }
+
+    // for each sample in the file
+
+    for (int line = 0; line < n_samples; line++) {
+
+        // for each attribute on the line in the file
+
+        for (int attribute = 0; attribute < (ATTRIBUTES_PER_SAMPLE + 1); attribute++) {
+            if (attribute < 64) {
+
+                // first 64 elements (0-63) in each line are the attributes
+
+                fscanf(f, "%f,", &tmp);
+                data.at<float>(line, attribute) = tmp;
+                // printf("%f,", data.at<float>(line, attribute));
+
+            } else if (attribute == 64) {
+
+                // attribute 65 is the class label {0 ... 9}
+
+                fscanf(f, "%f,", &tmp);
+                classes.at<float>(line, 0) = tmp;
+                // printf("%f\n", classes.at<float>(line, 0));
+
+            }
+        }
+    }
+
+    fclose(f);
+
+    return 1; // all OK
 }
+
+/******************************************************************************/
+
+int main(int argc, char** argv) {
+    // lets just check the version first
+
+    printf("OpenCV version %s (%d.%d.%d)\n",
+            CV_VERSION,
+            CV_MAJOR_VERSION, CV_MINOR_VERSION, CV_SUBMINOR_VERSION);
+
+    // define training data storage matrices (one for attribute examples, one
+    // for classifications)
+
+    Mat training_data = Mat(NUMBER_OF_TRAINING_SAMPLES, ATTRIBUTES_PER_SAMPLE, CV_32FC1);
+    Mat training_classifications = Mat(NUMBER_OF_TRAINING_SAMPLES, 1, CV_32FC1);
+
+    //define testing data storage matrices
+
+    Mat testing_data = Mat(NUMBER_OF_TESTING_SAMPLES, ATTRIBUTES_PER_SAMPLE, CV_32FC1);
+    Mat testing_classifications = Mat(NUMBER_OF_TESTING_SAMPLES, 1, CV_32FC1);
+
+    // define all the attributes as numerical
+    // alternatives are CV_VAR_CATEGORICAL or CV_VAR_ORDERED(=CV_VAR_NUMERICAL)
+    // that can be assigned on a per attribute basis
+
+    Mat var_type = Mat(ATTRIBUTES_PER_SAMPLE + 1, 1, CV_8U);
+    var_type.setTo(Scalar(CV_VAR_NUMERICAL)); // all inputs are numerical
+
+    // this is a classification problem (i.e. predict a discrete number of class
+    // outputs) so reset the last (+1) output var_type element to CV_VAR_CATEGORICAL
+
+    var_type.at<uchar > (ATTRIBUTES_PER_SAMPLE, 0) = CV_VAR_CATEGORICAL;
+
+    double result; // value returned from a prediction
+
+    // load training and testing data sets
+
+    if (read_data_from_csv(argv[1], training_data, training_classifications, NUMBER_OF_TRAINING_SAMPLES) &&
+            read_data_from_csv(argv[2], testing_data, testing_classifications, NUMBER_OF_TESTING_SAMPLES)) {
+        // define the parameters for training the random forest (trees)
+
+        float priors[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}; // weights of each classification for classes
+        // (all equal as equal samples of each digit)
+
+        CvRTParams params = CvRTParams(25, // max depth
+                5, // min sample count
+                0, // regression accuracy: N/A here
+                false, // compute surrogate split, no missing data
+                15, // max number of categories (use sub-optimal algorithm for larger numbers)
+                priors, // the array of priors
+                false, // calculate variable importance
+                4, // number of variables randomly selected at node and used to find the best split(s).
+                100, // max number of trees in the forest
+                0.01f, // forrest accuracy
+                CV_TERMCRIT_ITER | CV_TERMCRIT_EPS // termination cirteria
+                );
+
+        // train random forest classifier (using training data)
+
+        printf("\nUsing training database: %s\n\n", argv[1]);
+        CvRTrees* rtree = new CvRTrees;
+
+        rtree->train(training_data, CV_ROW_SAMPLE, training_classifications,
+                Mat(), Mat(), var_type, Mat(), params);
+
+        // perform classifier testing and report results
+
+        Mat test_sample;
+        int correct_class = 0;
+        int wrong_class = 0;
+        int false_positives [NUMBER_OF_CLASSES] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+        printf("\nUsing testing database: %s\n\n", argv[2]);
+
+        for (int tsample = 0; tsample < NUMBER_OF_TESTING_SAMPLES; tsample++) {
+
+            // extract a row from the testing matrix
+
+            test_sample = testing_data.row(tsample);
+
+            // run random forest prediction
+
+            result = rtree->predict(test_sample, Mat());
+
+            printf("Testing Sample %i -> class result (digit %d)\n", tsample, (int) result);
+
+            // if the prediction and the (true) testing classification are the same
+            // (N.B. openCV uses a floating point decision tree implementation!)
+
+            if (fabs(result - testing_classifications.at<float>(tsample, 0))
+                    >= FLT_EPSILON) {
+                // if they differ more than floating point error => wrong class
+
+                wrong_class++;
+
+                false_positives[(int) result]++;
+
+            } else {
+
+                // otherwise correct
+
+                correct_class++;
+            }
+        }
+
+        printf("\nResults on the testing database: %s\n"
+                "\tCorrect classification: %d (%g%%)\n"
+                "\tWrong classifications: %d (%g%%)\n",
+                argv[2],
+                correct_class, (double) correct_class * 100 / NUMBER_OF_TESTING_SAMPLES,
+                wrong_class, (double) wrong_class * 100 / NUMBER_OF_TESTING_SAMPLES);
+
+        for (int i = 0; i < NUMBER_OF_CLASSES; i++) {
+            printf("\tClass (digit %d) false postives 	%d (%g%%)\n", i,
+                    false_positives[i],
+                    (double) false_positives[i]*100 / NUMBER_OF_TESTING_SAMPLES);
+        }
+
+
+        // all matrix memory free by destructors
+
+
+        // all OK : main returns 0
+
+        return 0;
+    }
+
+    // not OK : main returns -1
+
+    return -1;
+}
+/******************************************************************************/
 
 #endif
 // </editor-fold>
@@ -724,10 +921,11 @@ int main(int, char** argv) {
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="                         Einfacher (beliebiger Test)">
-#if /* Einfacher (beliebiger Test) */0
+#if /* Einfacher (beliebiger Test) */1
 
 int main(int, char** argv) {
-    ATest* test = new CreateNegativeSamplesTest();
+    ATest* test = new CreatePositiveSamplesTest();
+    // ATest* test = new CreateNegativeSamplesTest();
     if (test->testMain(StringArray()) == EXIT_SUCCESS) {
         cout << "Test erfolgreich! :-)" << endl;
         return EXIT_SUCCESS;
@@ -742,33 +940,41 @@ int main(int, char** argv) {
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="                         Video zu Bildsequenz">
-#if /* Video zu Bildsequenz */1
+#if /* Video zu Bildsequenz */0
 using namespace cv;
 using namespace std;
 
 int main(int, char** argv) {
     InputHandler handler = InputHandler();
-    handler.setInputSource(INPUT_VIDEO);
-    handler.addVideo("/home/ertai/Videos/VIDEO0026.mp4");
-    handler.addVideo("/home/ertai/Videos/VIDEO0027.mp4");
-    handler.addVideo("/home/ertai/Videos/VIDEO0028.mp4");
+    //    handler.setInputSource(INPUT_VIDEO);
+    //    handler.addVideo("/home/ertai/Videos/VIDEO0026.mp4");
+    //    handler.addVideo("/home/ertai/Videos/VIDEO0027.mp4");
+    //    handler.addVideo("/home/ertai/Videos/VIDEO0028.mp4");
+    handler.setInputSource(INPUT_CAM);
 
     if (!handler.open()) {
         DBG("Konnte Eingabe nicht öffnen");
         return EXIT_FAILURE;
     }
     handler.requestFormat(r720p);
-        DBG("Lese einige Bilder damit Kamera sich einstellen kann(Helligkeit,Fokus,...).");
-        for (int i = 0; i <= 2; i++) {
-            if (!handler.grabNext()) {
-                DBG("Fehler beim lesen der Eingabe");
-            }
+    DBG("Lese einige Bilder damit Kamera sich einstellen kann(Helligkeit,Fokus,...).");
+    for (int i = 0; i <= 10; i++) {
+        if (!handler.grabNext()) {
+            DBG("Fehler beim lesen der Eingabe");
         }
+    }
 
     CvVideoCapture* cap = new CvVideoCapture(handler);
-    Output* out = new ImageListOutput("/home/ertai/Videos/negTmp", "neg2-", ".jpg");
-    //BgFgSegmModificator mod = BgFgSegmModificator("/home/ertai/Videos/BG5/BG5-11.jpg");
-    //cap->setImageModifikator(&mod);
+    /*Positive*/
+    Output* out = new ImageListOutput("/home/ertai/Videos/FourFingers/POS", "POS1-", ".jpg");
+    BgFgSegmModificator mod = BgFgSegmModificator("/home/ertai/Videos/FourFingers/BG/BG-126.jpg");
+    cap->setImageModifikator(&mod);
+    cap->setTimeToRecord(1500);
+    cap->setRecordingTime(150000);
+
+    /*Negative*/
+//            Output* out = new ImageListOutput("/home/ertai/Videos/FourFingers/BG", "BG-", ".jpg");
+//            cap->setRecordingTime(10);
 
     cap->setOutput(out);
     WindowManager* man = WindowManager::getInstance();
@@ -776,8 +982,7 @@ int main(int, char** argv) {
     Mat img = handler.getImage();
     wnd->showWindow();
     wnd->setCurrentImage(&img);
-    cap->setTimeToRecord(1500);
-    cap->setRecordingTime(150000);
+
     cap->setWindow(wnd);
     cap->start();
 
@@ -873,7 +1078,7 @@ int main(int, char** argv) {
     dilate(erg, erg, kernel, Point(-1, -1), 2);
     erode(erg, erg, kernel, Point(-1, -1), 2);
 
-    vector<vector<Point> > contours0;
+    ContourArray contours0;
     vector<Vec4i> hierarchy;
     findContours(erg, contours0, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_TC89_L1, Point(0, 0));
     int accuracy = 4;

@@ -27,8 +27,8 @@ int CreateNegativeSamplesTest::testMain(StringArray args) {
     SampleCreator* creator = SampleCreator::getInstance();
     NegativeSample negSmp = NegativeSample();
     creator->setCreationMethod(&negSmp);
-    creator->addInputDir("/home/ertai/Videos/Negs2", "");
-    creator->setOutputPath("/home/ertai/Videos/Negs2/bg.dat");
+    creator->addInputDir("/home/ertai/Videos/Negative", "");
+    creator->setOutputPath("/home/ertai/Videos/bg.dat");
     if (creator->createSampleFile()) {
         DBG("Erstellung erfolgreich");
     }

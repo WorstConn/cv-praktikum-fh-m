@@ -44,9 +44,16 @@ public:
      * @param createMarkedOutputFiles Falls <code>TRUE</code>, wird bei der Operation eine Kopie jedes Eingabebildes erstellt, auf der erkannte Objekte mit einem Rechteck eingefasst sind.
      *          
      */
-    virtual void createImageInfo(ArrayOfStringArrays input, String output, StringArray backgroundImagePath, bool createMarkedOutputFiles = false) = 0;
+    virtual void createImageInfo(ArrayOfStringArrays input, String output, StringArray backgroundImagePath, bool createMarkedOutputFiles = false, bool presegmentedData = false) = 0;
+    virtual bool presegmentedData();
 protected:
     virtual String iToStr(int i);
+    bool usePresegmentedData;
+    String currentBackgroundPath;
+    Mat backgroundImage;
+    bool drawMarkedSamples;
+    String currentOutputPath;
+    RNG rng;
 };
 
 

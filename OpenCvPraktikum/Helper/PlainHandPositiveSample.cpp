@@ -12,14 +12,13 @@ using namespace cv;
 
 //FIXME: Sehr hohe Empfindlichkeit gegen Helligkeitsunterschiede
 
-
 PlainHandPositiveSample::PlainHandPositiveSample() {
     drawMarkedSamples = false;
     rng(1234576);
     backgroundImage = Mat();
 }
 
-PlainHandPositiveSample::PlainHandPositiveSample(const PlainHandPositiveSample& orig) {
+PlainHandPositiveSample::PlainHandPositiveSample(const PlainHandPositiveSample& orig) : CreationBehavior(orig) {
     currentBackgroundPath = orig.currentBackgroundPath;
     drawMarkedSamples = orig.drawMarkedSamples;
     currentOutputPath = orig.currentOutputPath;
@@ -64,7 +63,7 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
     Mat diff;
     Mat diffGray;
     Mat ergC3;
-    vector<vector<Point> > contours0;
+    ContourArray contours0;
     vector<Vec4i> hierarchy;
 
     // </editor-fold>
@@ -121,13 +120,13 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
 
     // <editor-fold defaultstate="collapsed" desc="Wenn DEBUG definiert ist, Zeige ein Bild mit allen Kontourpunkten, dem Polygonen und der konvexen Huelle des Objektes an.">
 #if DEBUG
-    vector<vector<Point> >hull(1);
+    ContourArray hull(1);
 
     convexHull(Mat(contour), hull[0], false);
 
 
     Mat drawing = img.clone(); //Mat::zeros(cannyImage.size(), CV_8UC3);
-    vector<vector<Point> >cont_conv_test(1);
+    ContourArray cont_conv_test(1);
     cont[0] = contour;
     Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
     drawContours(drawing, cont, 0, color, 1, 8, vector<Vec4i > (), 0, Point());
@@ -152,7 +151,7 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
 #endif
     // </editor-fold>
 
-    vector<vector<Point> > hist = vector<vector<Point> >();
+    PointHistogram hist = PointHistogram();
     CvHelper* helper = CvHelper::getInstance();
     hist = helper->createPositionHistogram(contour, img.size().width, img.size().height, 40, DIRECTION_X);
     hist = helper->removeIsolatedPoints(hist, 2);
@@ -264,7 +263,7 @@ String PlainHandPositiveSample::createImageInfo(Mat& img, String imgPath, int po
  * @param createMarkedOutputFiles Falls <code>TRUE</code>, wird bei der Operation eine Kopie jedes Eingabebildes erstellt, auf der erkannte Objekte mit einem Rechteck eingefasst sind.
  *          
  */
-void PlainHandPositiveSample::createImageInfo(ArrayOfStringArrays input, String output, StringArray backgroundImagePath, bool createMarkedOutputFiles) {
+void PlainHandPositiveSample::createImageInfo(ArrayOfStringArrays input, String output, StringArray backgroundImagePath, bool createMarkedOutputFiles, bool presegmentedData) {
     if (input.size() != backgroundImagePath.size()) {
         DBG("Falsche Grösse der Eingabe-Arrays: ist %i, soll %i", (int) backgroundImagePath.size(), (int) input.size());
     }
