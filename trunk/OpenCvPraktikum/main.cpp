@@ -21,8 +21,6 @@ i// Example : random forest (tree) learning
 
         // For use with test / training datasets : opticaldigits_ex
 
-        // Author : Toby Breckon, toby.breckon@cranfield.ac.uk
-
         // Copyright (c) 2011 School of Engineering, Cranfield University
         // License : LGPL - http://www.gnu.org/licenses/lgpl.html
 

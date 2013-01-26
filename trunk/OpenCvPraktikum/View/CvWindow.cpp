@@ -46,7 +46,7 @@ CvWindow::~CvWindow() {
 
 void CvWindow::setCurrentImage(Mat *current) {
     if (current == NULL) {
-        DBG("current Image of Window is null!");
+        DBG("Parameter sollte != NULL sein!");
         return;
     }
     Mat* cpy = new Mat(current->size(), current->type());
@@ -87,7 +87,6 @@ void CvWindow::closeWindow() {
 }
 
 void CvWindow::loop() {
-    DBG("Betrete loop")
     time_t current;
 
     while (show) {
@@ -122,8 +121,9 @@ void CvWindow::loop() {
         }
     }
 
-    DBG("Verlasse loop");
+
     closeWindow();
+    DBG("Fenster: %s geschlossen.", name.c_str());
 }
 
 bool CvWindow::isShowing() {

@@ -1,6 +1,6 @@
 /* 
  * File:   SimpleMaskCreation.cpp
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  * 
  * Created on 18. Januar 2013, 17:34
  */

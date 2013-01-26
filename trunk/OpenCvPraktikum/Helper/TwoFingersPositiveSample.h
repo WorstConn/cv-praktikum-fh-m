@@ -1,6 +1,6 @@
 /* 
  * File:   TwoFingersPositiveSample.h
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  *
  * Created on 22. Januar 2013, 00:09
  */
@@ -54,7 +54,5 @@ private:
 
 #endif	/* TWOFINGERSPOSITIVESAMPLE_H */
 
-//FIXME: Objektklassen erstellen und ausimplementieren.
-//FIXME: Einen Detektor, der alle Objekte(Objekt-Klassen) kennt, und bei Erkennung eine Instanz der Klasse(oder kopie) erstellt.
-//FIXME: Cascaden für alle fehlenden Objekte anlernen.
+//FIXME: Einen Detektor, der alle Objekte(Objekt-Klassen) kennt, und bei Erkennung eine Instanz der Klasse erstellt.
 //FIXME: Referenzobjekte (Vorsegmentierte) Bilder einlesen, Informationen extrahieren, speichern und dem Detektor eine Vergleichs-/Erkennungs- Möglichkeit bieten.

@@ -1,6 +1,6 @@
 /* 
  * File:   HsvHistogamCreation.h
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  *
  * Created on 21. Januar 2013, 00:11
  */

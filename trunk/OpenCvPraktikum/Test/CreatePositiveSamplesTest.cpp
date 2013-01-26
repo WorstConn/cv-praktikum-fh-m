@@ -1,6 +1,6 @@
 /* 
  * File:   CreatePositiveSamplesTest.cpp
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  * 
  * Created on 11. Januar 2013, 00:17
  */
@@ -28,11 +28,11 @@ r den Test notwendige Agumente(Dateien, Flags, uva. ...)
  */
 int CreatePositiveSamplesTest::testMain(StringArray args) {
     SampleCreator* creator = SampleCreator::getInstance();
-    ThreeFingersPositiveSample posSamp = ThreeFingersPositiveSample();
+    FourFingersPositveSample posSamp = FourFingersPositveSample();
     creator->setCreationMethod(&posSamp);
-    creator->addInputDir("/home/ertai/Videos/ThreeFingers/POS", "");
+    creator->addInputDir("/home/ertai/Videos/FourFingers/POS", "");
 //    creator->addInputDir("/home/ertai/Videos/POS2", "/home/ertai/Videos/BG2");
-    creator->setOutputPath("/home/ertai/Videos/ThreeFingers/Result/positives.dat");
+    creator->setOutputPath("/home/ertai/Videos/FourFingers/Result/positives.dat");
     if (creator->createSampleFile()) {
         DBG("Erstellung erfolgreich");
     }
