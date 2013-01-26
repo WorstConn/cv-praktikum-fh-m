@@ -1,6 +1,6 @@
 /* 
  * File:   VideoInputToImageSequenceOutputTest.cpp
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  * 
  * Created on 10. Januar 2013, 21:50
  */

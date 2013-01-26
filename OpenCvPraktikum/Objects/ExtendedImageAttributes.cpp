@@ -1,6 +1,6 @@
 /* 
  * File:   ExtendedImageAttributes.cpp
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  * 
  * Created on 17. Januar 2013, 13:54
  */

@@ -1,6 +1,6 @@
 /* 
  * File:   PixelObject.h
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  *
  * Created on 17. Januar 2013, 12:45
  */

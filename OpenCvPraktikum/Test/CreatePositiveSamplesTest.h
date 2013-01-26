@@ -1,6 +1,6 @@
 /* 
  * File:   CreatePositiveSamplesTest.h
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  *
  * Created on 11. Januar 2013, 00:17
  */

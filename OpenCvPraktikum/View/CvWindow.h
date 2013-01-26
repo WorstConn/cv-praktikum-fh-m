@@ -1,6 +1,6 @@
 /* 
  * File:   CvWindow.h
- * Author: julian
+ * Author: Julian Cordes, Nils Frenking
  *
  * Created on 10. Dezember 2012, 15:50
  */

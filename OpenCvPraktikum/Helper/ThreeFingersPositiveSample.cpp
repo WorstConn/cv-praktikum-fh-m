@@ -1,6 +1,6 @@
 /* 
  * File:   ThreeFingersPositiveSample.cpp
- * Author: Nils Frenking
+ * Author: Julian Cordes, Nils Frenking
  * 
  * Created on 22. Januar 2013, 00:24
  */
