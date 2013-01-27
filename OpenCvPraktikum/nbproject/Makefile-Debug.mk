@@ -70,6 +70,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/Helper/CvHelper.o \
 	${OBJECTDIR}/Output/Output.o \
 	${OBJECTDIR}/View/AAction.o \
+	${OBJECTDIR}/Test/ClassificationTest.o \
 	${OBJECTDIR}/Objects/MaskCreationMethod.o \
 	${OBJECTDIR}/Helper/ThumbUpPositiveSample.o \
 	${OBJECTDIR}/Helper/CreationBehavior.o \
@@ -89,8 +90,8 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-m64 -std=gnu++0x
-CXXFLAGS=-m64 -std=gnu++0x
+CCFLAGS=-m32 -std=gnu++0x
+CXXFLAGS=-m32 -std=gnu++0x
 
 # Fortran Compiler Flags
 FFLAGS=
@@ -283,6 +284,11 @@ ${OBJECTDIR}/View/AAction.o: View/AAction.cpp
 	${MKDIR} -p ${OBJECTDIR}/View
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/View/AAction.o View/AAction.cpp
+
+${OBJECTDIR}/Test/ClassificationTest.o: Test/ClassificationTest.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Test
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -DDEBUG -D__GXX_EXPERIMENTAL_CXX0X__ -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv`    -MMD -MP -MF $@.d -o ${OBJECTDIR}/Test/ClassificationTest.o Test/ClassificationTest.cpp
 
 ${OBJECTDIR}/Objects/MaskCreationMethod.o: Objects/MaskCreationMethod.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Objects

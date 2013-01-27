@@ -5,6 +5,9 @@
  *  Modified by: Nils Frenking, Julian Cordes
  */
 
+#include <vector>
+
+
 
 
 #include "../header.h"
@@ -400,9 +403,23 @@ RectangleArray CvHelper::detectAll(Mat& img, CascadeClassifier& cascade, int min
     cvtColor(img, gray, CV_BGR2GRAY);
     resize(gray, smallImg, smallImg.size(), 0, 0, INTER_LINEAR);
     equalizeHist(smallImg, smallImg);
-    cascade.detectMultiScale(smallImg, objects, 1.1, 3, 0 | CV_HAAR_SCALE_IMAGE, Size(64, 64));
-    DBG("%i Hände gefunden.", (int) objects.size());
+    cascade.detectMultiScale(smallImg, objects, 1.1, 2, 0, Size(30, 30));
 
+
+    vector<int> invalid = vector<int>();
+
+    for (int i = 0; i < (int) objects.size(); i++) {
+        if (objects[i].width < minWidth) {
+            invalid.push_back(i);
+        }
+    }
+    
+    if(!invalid.empty()){
+        for(int j=0; j<invalid.size();j++){
+            objects.erase((objects.begin()+j));
+        }
+    }
+    invalid.clear();
     return objects;
 
 }
@@ -885,7 +902,7 @@ Mat CvHelper::accumulateImages(ImageArray mats) {
         erg /= 2;
         current /= 2;
         add(erg, current, erg);
-        
+
 
     }
 
@@ -1077,7 +1094,7 @@ PointHistogram CvHelper::filterPositionHistogramRange(PointHistogram hist, int f
     if (toBin < fromBin) {
         return filterPositionHistogramRange(hist, toBin, fromBin);
     }
-    PointHistogram erg =PointHistogram(hist.size());
+    PointHistogram erg = PointHistogram(hist.size());
     for (int i = 0; i < (int) hist.size(); i++) {
         if (i >= fromBin && i <= toBin) {
             erg[i] = hist[i];

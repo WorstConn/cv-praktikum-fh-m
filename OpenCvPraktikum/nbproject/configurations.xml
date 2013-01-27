@@ -95,6 +95,8 @@
       <logicalFolder name="f7" displayName="Test" projectFiles="true">
         <itemPath>Test/ATest.cpp</itemPath>
         <itemPath>Test/ATest.h</itemPath>
+        <itemPath>Test/ClassificationTest.cpp</itemPath>
+        <itemPath>Test/ClassificationTest.h</itemPath>
         <itemPath>Test/CreateNegativeSamplesTest.cpp</itemPath>
         <itemPath>Test/CreateNegativeSamplesTest.h</itemPath>
         <itemPath>Test/CreatePositiveSamplesTest.cpp</itemPath>
@@ -157,7 +159,7 @@
           </incDir>
         </cTool>
         <ccTool>
-          <architecture>2</architecture>
+          <architecture>1</architecture>
           <incDir>
             <pElem>/usr/local/include/opencv</pElem>
             <pElem>/usr/local/include/opencv2</pElem>

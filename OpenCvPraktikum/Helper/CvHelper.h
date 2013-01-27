@@ -28,16 +28,6 @@ private:
     String imageTypeToString(Mat img);
     static CvHelper *instance;
 
-    /**
-     * Zeichnet Text auf ein Bild
-     * @param inputImg Das Bild
-     * @param text Der Text
-     * @param color Farbe des Textes
-     * @param posX X-Offset des Textes
-     * @param posY Y-Offset des Textes
-     * @return das Eingabebild mit enthaltenem Text
-     */
-    Mat drawString(Mat inputImg, String text, Scalar color, int posX, int posY);
     BooleanArray initVector(BooleanArray vec, bool initValue);
 public:
     virtual ~CvHelper();
@@ -257,8 +247,21 @@ public:
 
     Size resToSize(INPUT_FORMAT fmt);
 
-    
+
     String resToString(INPUT_FORMAT fmt);
+
+    /**
+     * Zeichnet Text auf ein Bild
+     * @param inputImg Das Bild
+     * @param text Der Text
+     * @param color Farbe des Textes
+     * @param posX X-Offset des Textes
+     * @param posY Y-Offset des Textes
+     * @return das Eingabebild mit enthaltenem Text
+     */
+    Mat drawString(Mat inputImg, String text, Scalar color, int posX, int posY);
+
+
     //Mat createBackproject(Mat& src, Mat& mask, int minVal, int maxVal);
 
     //FIXME: BACKPROJEKTION:
