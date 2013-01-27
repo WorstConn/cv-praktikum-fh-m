@@ -25,7 +25,6 @@ enum INPUT_TYPE {
     INPUT_NONE, INPUT_VIDEO, INPUT_CAM, INPUT_IP_CAM, INPUT_FOLDER
 };
 
-
 enum KEY_CHAR {
     ESC = 0x1B,
     ENTER = '\r',
@@ -54,6 +53,19 @@ enum OUTPUT_TYPE {
 #define CODEC_DEFAULT CV_FOURCC('D','I','V','X')
 #define PREF_VIDEO_OUTPUT_FILE_EXT ".avi"
 #define PREF_IMAGE_OUTPUT_FILE_EXT ".png"
+
+
+//FIXME: Muss auf jeweilige Umgebung angepasst oder der Ordner an die entsprechende Stelle verschoben werden.
+#define CASCADE_BASE_PATH cv::String("cascade/")
+#define SAMPLES_BASE_PATH cv::String("/media/ertai/Data/cvStuff/Videos/")
+#define POSITIVES_SUB_DIR cv::String("POS")
+#define SAMPLES_FIST_DIR cv::String("Fist")
+#define SAMPLES_THUMB_DIR cv::String("ThumbUp")
+#define SAMPLES_TWO_FINGER_DIR cv::String("TwoFingers")
+#define SAMPLES_THREE_FINGER_DIR cv::String("ThreeFingers")
+#define SAMPLES_FOUR_FINGER_DIR cv::String("FourFingers")
+#define SAMPLES_PLAIN_HAND_DIR cv::String("PlainHand")
+#define SAMPLES_NEGATIVES_PATH cv::String("/media/ertai/Data/cvStuff/Videos/Negative")
 
 // <editor-fold defaultstate="collapsed" desc="             Versuche libfreenect">
 #ifdef TRY_KINECT
@@ -87,6 +99,7 @@ enum OUTPUT_TYPE {
 /**
  * System Header
  */
+
 #include <algorithm>
 #include <stdio.h>
 #include <thread>
@@ -107,15 +120,12 @@ enum OUTPUT_TYPE {
 #include "opencv2/features2d/features2d.hpp"
 #include "opencv2/nonfree/nonfree.hpp"
 #include "opencv2/highgui/highgui.hpp"
-#include "calib3d/calib3d.hpp"
 #include <opencv.hpp>
 #include <cvaux.hpp>
 #include <cv.hpp>
 #include <cxcore.hpp>
 #include <pthread.h>
 #include <highgui/highgui.hpp>
-#include <gpu/gpu.hpp>
-#include <gpu/gpumat.hpp>
 #include <opencv2/video/video.hpp>
 
 // </editor-fold>
@@ -264,6 +274,7 @@ typedef ExtendedImageAttributes ImageAttributes;
 #include "Test/Prak3A8.h"
 #include "Test/WindowManagerTest.h"
 #include "Test/MainTest.h"
+#include "Test/ClassificationTest.h"
 
 
 // </editor-fold>

@@ -13,213 +13,110 @@
 #include <map>
 #include <string>
 
-// <editor-fold defaultstate="collapsed" desc="                         CvTree-Test">
-#if /* CvTree-Test */ 0
+// <editor-fold defaultstate="collapsed" desc="Letzte Aufgabe">
+#if /* Letzte Aufgabe */1
 
-i// Example : random forest (tree) learning
-        // usage: prog training_data_file testing_data_file
-
-        // For use with test / training datasets : opticaldigits_ex
-
-        // Copyright (c) 2011 School of Engineering, Cranfield University
-        // License : LGPL - http://www.gnu.org/licenses/lgpl.html
-
-#include <cv.h>       // opencv general include file
-#include <ml.h>		  // opencv machine learning include file
-
-        using namespace cv; // OpenCV API is in the C++ "cv" namespace
-
-#include <stdio.h>
-
-/******************************************************************************/
-// global definitions (for speed and ease of use)
-
-#define NUMBER_OF_TRAINING_SAMPLES 3823
-#define ATTRIBUTES_PER_SAMPLE 64
-#define NUMBER_OF_TESTING_SAMPLES 1797
-
-#define NUMBER_OF_CLASSES 10
-
-// N.B. classes are integer handwritten digits in range 0-9
-
-/******************************************************************************/
-
-// loads the sample database from file (which is a CSV text file)
-
-int read_data_from_csv(const char* filename, Mat data, Mat classes,
-        int n_samples) {
-    float tmp;
-
-    // if we can't read the input file then return 0
-    FILE* f = fopen(filename, "r");
-    if (!f) {
-        printf("ERROR: cannot read file %s\n", filename);
-        return 0; // all not OK
-    }
-
-    // for each sample in the file
-
-    for (int line = 0; line < n_samples; line++) {
-
-        // for each attribute on the line in the file
-
-        for (int attribute = 0; attribute < (ATTRIBUTES_PER_SAMPLE + 1); attribute++) {
-            if (attribute < 64) {
-
-                // first 64 elements (0-63) in each line are the attributes
-
-                fscanf(f, "%f,", &tmp);
-                data.at<float>(line, attribute) = tmp;
-                // printf("%f,", data.at<float>(line, attribute));
-
-            } else if (attribute == 64) {
-
-                // attribute 65 is the class label {0 ... 9}
-
-                fscanf(f, "%f,", &tmp);
-                classes.at<float>(line, 0) = tmp;
-                // printf("%f\n", classes.at<float>(line, 0));
-
-            }
-        }
-    }
-
-    fclose(f);
-
-    return 1; // all OK
-}
-
-/******************************************************************************/
+String getNameByDetectionIdx(int i);
 
 int main(int argc, char** argv) {
-    // lets just check the version first
-
-    printf("OpenCV version %s (%d.%d.%d)\n",
-            CV_VERSION,
-            CV_MAJOR_VERSION, CV_MINOR_VERSION, CV_SUBMINOR_VERSION);
-
-    // define training data storage matrices (one for attribute examples, one
-    // for classifications)
-
-    Mat training_data = Mat(NUMBER_OF_TRAINING_SAMPLES, ATTRIBUTES_PER_SAMPLE, CV_32FC1);
-    Mat training_classifications = Mat(NUMBER_OF_TRAINING_SAMPLES, 1, CV_32FC1);
-
-    //define testing data storage matrices
-
-    Mat testing_data = Mat(NUMBER_OF_TESTING_SAMPLES, ATTRIBUTES_PER_SAMPLE, CV_32FC1);
-    Mat testing_classifications = Mat(NUMBER_OF_TESTING_SAMPLES, 1, CV_32FC1);
-
-    // define all the attributes as numerical
-    // alternatives are CV_VAR_CATEGORICAL or CV_VAR_ORDERED(=CV_VAR_NUMERICAL)
-    // that can be assigned on a per attribute basis
-
-    Mat var_type = Mat(ATTRIBUTES_PER_SAMPLE + 1, 1, CV_8U);
-    var_type.setTo(Scalar(CV_VAR_NUMERICAL)); // all inputs are numerical
-
-    // this is a classification problem (i.e. predict a discrete number of class
-    // outputs) so reset the last (+1) output var_type element to CV_VAR_CATEGORICAL
-
-    var_type.at<uchar > (ATTRIBUTES_PER_SAMPLE, 0) = CV_VAR_CATEGORICAL;
-
-    double result; // value returned from a prediction
-
-    // load training and testing data sets
-
-    if (read_data_from_csv(argv[1], training_data, training_classifications, NUMBER_OF_TRAINING_SAMPLES) &&
-            read_data_from_csv(argv[2], testing_data, testing_classifications, NUMBER_OF_TESTING_SAMPLES)) {
-        // define the parameters for training the random forest (trees)
-
-        float priors[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}; // weights of each classification for classes
-        // (all equal as equal samples of each digit)
-
-        CvRTParams params = CvRTParams(25, // max depth
-                5, // min sample count
-                0, // regression accuracy: N/A here
-                false, // compute surrogate split, no missing data
-                15, // max number of categories (use sub-optimal algorithm for larger numbers)
-                priors, // the array of priors
-                false, // calculate variable importance
-                4, // number of variables randomly selected at node and used to find the best split(s).
-                100, // max number of trees in the forest
-                0.01f, // forrest accuracy
-                CV_TERMCRIT_ITER | CV_TERMCRIT_EPS // termination cirteria
-                );
-
-        // train random forest classifier (using training data)
-
-        printf("\nUsing training database: %s\n\n", argv[1]);
-        CvRTrees* rtree = new CvRTrees;
-
-        rtree->train(training_data, CV_ROW_SAMPLE, training_classifications,
-                Mat(), Mat(), var_type, Mat(), params);
-
-        // perform classifier testing and report results
-
-        Mat test_sample;
-        int correct_class = 0;
-        int wrong_class = 0;
-        int false_positives [NUMBER_OF_CLASSES] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-        printf("\nUsing testing database: %s\n\n", argv[2]);
-
-        for (int tsample = 0; tsample < NUMBER_OF_TESTING_SAMPLES; tsample++) {
-
-            // extract a row from the testing matrix
-
-            test_sample = testing_data.row(tsample);
-
-            // run random forest prediction
-
-            result = rtree->predict(test_sample, Mat());
-
-            printf("Testing Sample %i -> class result (digit %d)\n", tsample, (int) result);
-
-            // if the prediction and the (true) testing classification are the same
-            // (N.B. openCV uses a floating point decision tree implementation!)
-
-            if (fabs(result - testing_classifications.at<float>(tsample, 0))
-                    >= FLT_EPSILON) {
-                // if they differ more than floating point error => wrong class
-
-                wrong_class++;
-
-                false_positives[(int) result]++;
-
-            } else {
-
-                // otherwise correct
-
-                correct_class++;
-            }
-        }
-
-        printf("\nResults on the testing database: %s\n"
-                "\tCorrect classification: %d (%g%%)\n"
-                "\tWrong classifications: %d (%g%%)\n",
-                argv[2],
-                correct_class, (double) correct_class * 100 / NUMBER_OF_TESTING_SAMPLES,
-                wrong_class, (double) wrong_class * 100 / NUMBER_OF_TESTING_SAMPLES);
-
-        for (int i = 0; i < NUMBER_OF_CLASSES; i++) {
-            printf("\tClass (digit %d) false postives 	%d (%g%%)\n", i,
-                    false_positives[i],
-                    (double) false_positives[i]*100 / NUMBER_OF_TESTING_SAMPLES);
-        }
+    InputHandler handler = InputHandler();
+    CvHelper* helper = CvHelper::getInstance();
+    handler.setInputSource(INPUT_CAM);
+    handler.open();
+    handler.requestFormat(r720p);
+    Mat currentImage;
+    WindowManager* winman = WindowManager::getInstance();
+    CvWindow* wnd = winman->createWindow("Detection", 0, 0);
 
 
-        // all matrix memory free by destructors
+    // <editor-fold defaultstate="collapsed" desc="Initialisieren der Cascaden">
+    vector<CascadeClassifier> cascades;
+    CascadeClassifier ccf;
+    ccf.load(CASCADE_BASE_PATH + "fist_cascade.xml");
+    cascades.push_back(ccf);
+    ccf = CascadeClassifier();
+    ccf.load(CASCADE_BASE_PATH + "thumb_cascade.xml");
+    cascades.push_back(ccf);
 
+    ccf = CascadeClassifier();
+    ccf.load(CASCADE_BASE_PATH + "two_finger_cascade.xml");
+    cascades.push_back(ccf);
 
-        // all OK : main returns 0
+    ccf = CascadeClassifier();
+    ccf.load(CASCADE_BASE_PATH + "three_finger_cascade.xml");
+    cascades.push_back(ccf);
 
-        return 0;
+    ccf = CascadeClassifier();
+    ccf.load(CASCADE_BASE_PATH + "four_finger_cascade.xml");
+    cascades.push_back(ccf);
+
+    ccf = CascadeClassifier();
+    ccf.load(CASCADE_BASE_PATH + "plain_hand_cascade.xml");
+    cascades.push_back(ccf);
+    // </editor-fold>
+
+    for (int i = 0; i < 5; i++) {
+        handler.next();
+        currentImage = handler.getImage();
     }
 
-    // not OK : main returns -1
+    wnd->showWindow();
+    wnd->setCurrentImage(&currentImage);
+    RectangleArray detection;
+    while (true) {
+        handler.next();
+        currentImage = handler.getImage();
+        for (int i = 0; i < 6; i++) {
+            detection = helper->detectAll(currentImage, cascades[i], 100, 0.0f, 0.0f);
+            if (!detection.empty()) {
+                for (int j = 0; j < detection.size(); j++) {
+                    rectangle(currentImage, detection[j], Scalar(0, 255, 0), 3);
+                    helper->drawString(currentImage, getNameByDetectionIdx(i), Scalar(0, 255, 0), detection[i].x, detection[i].y + detection[i].height + 1);
+                }
+            }
 
-    return -1;
+        }
+        wnd->setCurrentImage(&currentImage);
+        if (cvWaitKey(40) == KEY_CHAR::ESC) {
+            cout << "ESC-Gedrueckt -> Ende!"<<endl;
+            break;
+        }
+    }
+    winman->relesase();
+    wnd->closeWindow();
+
+    return EXIT_SUCCESS;
 }
-/******************************************************************************/
+
+String getNameByDetectionIdx(int i) {
+    switch (i) {
+        case 0: return "Faust";
+        case 1: return "Daumen hoch";
+        case 2: return "Zwei Finger";
+        case 3: return "Drei Finger";
+        case 4: return "Vier Finger";
+        case 5: return "Flache Hand";
+        default: return "Unbekannt";
+    }
+}
+
+
+#endif// </editor-fold>
+
+// <editor-fold defaultstate="collapsed" desc="                         Beurteilung der Klassifikation">
+#if /* Beurteilung der Klassifikation */0
+
+int main(int argc, char** argv) {
+    ATest* test = new ClassificationTest();
+    if (test->testMain(StringArray()) == EXIT_SUCCESS) {
+        cout << "Test erfolgreich! :-)" << endl;
+        return EXIT_SUCCESS;
+    } else {
+        cout << "Test fehlgeschlagen! :-(" << endl;
+        return EXIT_FAILURE;
+    }
+
+}
 
 #endif
 // </editor-fold>
@@ -236,12 +133,12 @@ typedef vector<Rect> RectArray;
 int main(int, char** argv) {
     CvHelper* helper = CvHelper::getInstance();
     CascadeClassifier cascade;
-    cascade.load(String("/home/ertai/Videos/cascade/cascade.xml"));
+    cascade.load(CASCADE_BASE_PATH + String("thumb_cascade.xml"));
     InputHandler handler = InputHandler();
     handler.setInputSource(INPUT_CAM);
     handler.open();
     Mat img;
-    handler.requestFormat(r720p);
+    // handler.requestFormat(r720p);
     handler.next();
     img = handler.getImage();
     namedWindow("Cam");
@@ -316,7 +213,7 @@ void help(char** argv) {
 }
 
 #define DRAW_RICH_KEYPOINTS_MODE     0
-#define DRAW_OUTLIERS_MODE           0
+#define DRAW_OUTLIERS_MODE           1
 
 const string winName = "correspondences";
 
@@ -501,7 +398,7 @@ void doIteration(const Mat& img1, Mat& img2, bool isWarpPerspective,
 
 int main(int argc, char** argv) {
 
-    bool isWarpPerspective = true;
+    bool isWarpPerspective = false;
     double ransacReprojThreshold = -1.1;
     if (!isWarpPerspective)
         ransacReprojThreshold = 1.2;
@@ -517,11 +414,16 @@ int main(int argc, char** argv) {
         cout << "Can not create detector or descriptor exstractor or descriptor matcher of given types" << endl;
         return -1;
     }
-
+    InputHandler handler = InputHandler();
+    handler.setInputSource(INPUT_CAM);
+    handler.open();
+    for (int i = 0; i < 5; i++) {
+        handler.next();
+    }
     cout << "< Reading the images..." << endl;
-    Mat img1 = imread("/home/ertai/Videos/POS1/pos1-0009.jpg"), img2;
+    Mat img1 = imread("/media/ertai/Data/cvStuff/Videos/Fist/POS-63.jpg"), img2;
     if (!isWarpPerspective)
-        img2 = imread("/home/ertai/Videos/POS1/pos1-0255.jpg");
+        img2 = handler.getImage(); //imread("/home/ertai/Videos/POS1/pos1-0255.jpg");
     cout << ">" << endl;
     if (img1.empty() || (!isWarpPerspective && img2.empty())) {
         cout << "Can not read images" << endl;
@@ -919,7 +821,7 @@ int main(int, char** argv) {
 // </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="                         Einfacher (beliebiger Test)">
-#if /* Einfacher (beliebiger Test) */1
+#if /* Einfacher (beliebiger Test) */0
 
 int main(int, char** argv) {
     ATest* test = new CreatePositiveSamplesTest();
@@ -971,8 +873,8 @@ int main(int, char** argv) {
     cap->setRecordingTime(150000);
 
     /*Negative*/
-//            Output* out = new ImageListOutput("/home/ertai/Videos/FourFingers/BG", "BG-", ".jpg");
-//            cap->setRecordingTime(10);
+    //            Output* out = new ImageListOutput("/home/ertai/Videos/FourFingers/BG", "BG-", ".jpg");
+    //            cap->setRecordingTime(10);
 
     cap->setOutput(out);
     WindowManager* man = WindowManager::getInstance();

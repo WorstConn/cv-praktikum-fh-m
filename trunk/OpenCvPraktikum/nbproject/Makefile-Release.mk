@@ -70,6 +70,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/Helper/CvHelper.o \
 	${OBJECTDIR}/Output/Output.o \
 	${OBJECTDIR}/View/AAction.o \
+	${OBJECTDIR}/Test/ClassificationTest.o \
 	${OBJECTDIR}/Objects/MaskCreationMethod.o \
 	${OBJECTDIR}/Helper/ThumbUpPositiveSample.o \
 	${OBJECTDIR}/Helper/CreationBehavior.o \
@@ -283,6 +284,11 @@ ${OBJECTDIR}/View/AAction.o: View/AAction.cpp
 	${MKDIR} -p ${OBJECTDIR}/View
 	${RM} $@.d
 	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/View/AAction.o View/AAction.cpp
+
+${OBJECTDIR}/Test/ClassificationTest.o: Test/ClassificationTest.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Test
+	${RM} $@.d
+	$(COMPILE.cc) -Wall -I/usr/local/include/opencv -I/usr/local/include/opencv2 `pkg-config --cflags opencv` -std=c++11   -MMD -MP -MF $@.d -o ${OBJECTDIR}/Test/ClassificationTest.o Test/ClassificationTest.cpp
 
 ${OBJECTDIR}/Objects/MaskCreationMethod.o: Objects/MaskCreationMethod.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Objects
