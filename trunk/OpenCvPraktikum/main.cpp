@@ -19,11 +19,13 @@
 String getNameByDetectionIdx(int i);
 
 int main(int argc, char** argv) {
+    RectangleArray history = RectangleArray();
+    const int histMax = 7;
     InputHandler handler = InputHandler();
     CvHelper* helper = CvHelper::getInstance();
     handler.setInputSource(INPUT_CAM);
     handler.open();
-    handler.requestFormat(r720p);
+    //handler.requestFormat(r720p);
     Mat currentImage;
     WindowManager* winman = WindowManager::getInstance();
     CvWindow* wnd = winman->createWindow("Detection", 0, 0);
@@ -69,15 +71,17 @@ int main(int argc, char** argv) {
         for (int i = 0; i < 6; i++) {
             detection = helper->detectAll(currentImage, cascades[i], 100, 0.0f, 0.0f);
             if (!detection.empty()) {
-                for (int j = 0; j < detection.size(); j++) {
-                    rectangle(currentImage, detection[j], Scalar(0, 255, 0), 3);
-                    helper->drawString(currentImage, getNameByDetectionIdx(i), Scalar(0, 255, 0), detection[i].x, detection[i].y + detection[i].height + 1);
-                }
+                
+                    rectangle(currentImage, detection[0], Scalar(0, 255, 0), 3);
+                    
+                    helper->drawString(currentImage, getNameByDetectionIdx(i), Scalar(0, 255, 0), detection[0].x, detection[0].y + detection[0].height + 1);
+                
+                
             }
 
         }
         wnd->setCurrentImage(&currentImage);
-        if (cvWaitKey(40) == KEY_CHAR::ESC) {
+        if (cvWaitKey(10) == KEY_CHAR::ESC) {
             cout << "ESC-Gedrueckt -> Ende!"<<endl;
             break;
         }
@@ -99,6 +103,7 @@ String getNameByDetectionIdx(int i) {
         default: return "Unbekannt";
     }
 }
+
 
 
 #endif// </editor-fold>

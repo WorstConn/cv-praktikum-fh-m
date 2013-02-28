@@ -403,17 +403,23 @@ RectangleArray CvHelper::detectAll(Mat& img, CascadeClassifier& cascade, int min
     cvtColor(img, gray, CV_BGR2GRAY);
     resize(gray, smallImg, smallImg.size(), 0, 0, INTER_LINEAR);
     equalizeHist(smallImg, smallImg);
-    cascade.detectMultiScale(smallImg, objects, 1.1, 2, 0, Size(30, 30));
+    cascade.detectMultiScale(smallImg, objects, 1.1, 2, 0, Size(50, 50));
 
 
     vector<int> invalid = vector<int>();
 
+    /*
+     * Markiert die zu kleinen Objekt-Indizes als Ungueltig
+     */
     for (int i = 0; i < (int) objects.size(); i++) {
         if (objects[i].width < minWidth) {
             invalid.push_back(i);
         }
     }
     
+    /*
+     * Wenn es ungueltig Objekte gibt, entferne sie aus der Erkennung 
+     */
     if(!invalid.empty()){
         for(int j=0; j<invalid.size();j++){
             objects.erase((objects.begin()+j));
@@ -766,6 +772,7 @@ MatND CvHelper::makeHSHist(Mat& mat, Mat& mask) {
 
 
     cvtColor(src, hsv, CV_BGR2HSV);
+    
 
     // Quantize the hue to 30 levels
     // and the saturation to 32 levels

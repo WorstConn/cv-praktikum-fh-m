@@ -53,11 +53,7 @@ CvVideoCapture::~CvVideoCapture() {
 
 bool CvVideoCapture::start() {
     recthread = new thread(&CvVideoCapture::record, this);
-    DBG("thread gestartet!");
     return true;
-
-
-
 }
 
 void CvVideoCapture::stop() {
