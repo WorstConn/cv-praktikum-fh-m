@@ -159,7 +159,7 @@
           </incDir>
         </cTool>
         <ccTool>
-          <architecture>1</architecture>
+          <architecture>2</architecture>
           <incDir>
             <pElem>/usr/local/include/opencv</pElem>
             <pElem>/usr/local/include/opencv2</pElem>
@@ -171,6 +171,9 @@
           </preprocessorList>
           <warningLevel>2</warningLevel>
         </ccTool>
+        <asmTool>
+          <architecture>2</architecture>
+        </asmTool>
         <linkerTool>
           <linkerAddLib>
             <pElem>/usr/local/lib</pElem>

@@ -90,14 +90,14 @@ OBJECTFILES= \
 CFLAGS=
 
 # CC Compiler Flags
-CCFLAGS=-m32 -std=gnu++0x
-CXXFLAGS=-m32 -std=gnu++0x
+CCFLAGS=-m64 -std=gnu++0x
+CXXFLAGS=-m64 -std=gnu++0x
 
 # Fortran Compiler Flags
 FFLAGS=
 
 # Assembler Flags
-ASFLAGS=
+ASFLAGS=--64
 
 # Link Libraries and Options
 LDLIBSOPTIONS=-L/usr/local/lib `pkg-config --libs opencv`  
