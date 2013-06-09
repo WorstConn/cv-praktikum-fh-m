@@ -13,17 +13,26 @@
 #include <map>
 #include <string>
 
-// <editor-fold defaultstate="collapsed" desc="Letzte Aufgabe">
+// <editor-fold defaultstate="collapsed" desc="                         Letzte Aufgabe">
 #if /* Letzte Aufgabe */1
+
+/**
+ * Struktur, die einem Rechteck anhand von Indizes die Beinhaltenden Objekte markiert.
+ */
+struct TaggedRect {
+    Rect rect;
+    int objectType;
+};
 
 String getNameByDetectionIdx(int i);
 
 int main(int argc, char** argv) {
     RectangleArray history = RectangleArray();
-    const int histMax = 7;
+    const int histMax = 3;
     InputHandler handler = InputHandler();
     CvHelper* helper = CvHelper::getInstance();
     handler.setInputSource(INPUT_CAM);
+    //    handler.addVideo("/home/ertai/Downloads/test.avi");
     handler.open();
     //handler.requestFormat(r720p);
     Mat currentImage;
@@ -71,18 +80,18 @@ int main(int argc, char** argv) {
         for (int i = 0; i < 6; i++) {
             detection = helper->detectAll(currentImage, cascades[i], 100, 0.0f, 0.0f);
             if (!detection.empty()) {
-                
-                    rectangle(currentImage, detection[0], Scalar(0, 255, 0), 3);
-                    
-                    helper->drawString(currentImage, getNameByDetectionIdx(i), Scalar(0, 255, 0), detection[0].x, detection[0].y + detection[0].height + 1);
-                
-                
+                for (unsigned int j = 0; j < detection.size(); j++) {
+                    rectangle(currentImage, detection[j], Scalar(0, 255, 0), 3);
+
+                    helper->drawString(currentImage, getNameByDetectionIdx(i), Scalar(0, 255, 0), detection[j].x, detection[j].y + detection[j].height + 1);
+                }
+
             }
 
         }
         wnd->setCurrentImage(&currentImage);
-        if (cvWaitKey(10) == KEY_CHAR::ESC) {
-            cout << "ESC-Gedrueckt -> Ende!"<<endl;
+        if (cvWaitKey(100) == KEY_CHAR::ESC) {
+            cout << "ESC-Gedrueckt -> Ende!" << endl;
             break;
         }
     }
@@ -106,7 +115,8 @@ String getNameByDetectionIdx(int i) {
 
 
 
-#endif// </editor-fold>
+#endif
+// </editor-fold>
 
 // <editor-fold defaultstate="collapsed" desc="                         Beurteilung der Klassifikation">
 #if /* Beurteilung der Klassifikation */0
