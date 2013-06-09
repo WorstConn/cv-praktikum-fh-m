@@ -111,11 +111,11 @@ void CvWindow::loop() {
                 time(&lastupdate);
             } else {
                 this_thread::sleep_for(chrono::milliseconds((long int) (current - lastupdate)));
-                //                if (cvWaitKey(current - lastupdate) == ESC) {
-                //                    show = false;
-                //                    DBG("Schliesse Fenster: %s, ESC gedrueckt", name.c_str());
-                //                    break;
-                //                }
+                                if (cvWaitKey(current - lastupdate) == ESC) {
+                                    show = false;
+                                    DBG("Schliesse Fenster: %s, ESC gedrueckt", name.c_str());
+                                    break;
+                                }
             }
 
         }

@@ -396,6 +396,10 @@ Rect CvHelper::detectBiggest(Mat& img, CascadeClassifier& cascade) {
  */
 RectangleArray CvHelper::detectAll(Mat& img, CascadeClassifier& cascade, int minWidth, float maxWidth, float aspectRatio) {
 
+    if(cascade.empty()){
+        DBG("Klassifizierer wurde noch nicht geladen!");
+        return RectangleArray();
+    }
     RectangleArray objects = RectangleArray();
     Mat gray;
     Mat smallImg(cvRound(img.rows), cvRound(img.cols), CV_8UC1);
@@ -403,7 +407,7 @@ RectangleArray CvHelper::detectAll(Mat& img, CascadeClassifier& cascade, int min
     cvtColor(img, gray, CV_BGR2GRAY);
     resize(gray, smallImg, smallImg.size(), 0, 0, INTER_LINEAR);
     equalizeHist(smallImg, smallImg);
-    cascade.detectMultiScale(smallImg, objects, 1.1, 2, 0, Size(50, 50));
+    cascade.detectMultiScale(smallImg, objects, 1.09, 2, 0, Size(50, 50));
 
 
     vector<int> invalid = vector<int>();
